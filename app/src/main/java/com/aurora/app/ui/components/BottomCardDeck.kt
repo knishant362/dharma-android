@@ -1,13 +1,12 @@
 package com.aurora.app.ui.components
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,15 +14,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,7 +37,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.aurora.app.R
-import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -49,7 +47,6 @@ data class TarotCard(
     val backImageRes: Int,
     var isFlipped: Boolean = false
 )
-
 @Composable
 fun RotatableFanCardDeck(
     cards: List<TarotCard>,
@@ -83,18 +80,19 @@ fun RotatableFanCardDeck(
             val rad = Math.toRadians(angle.toDouble())
             val x = sin(rad) * baseRadius
             val y = -cos(rad) * baseRadius
+            val isSelected = selectedCards.any { it.id == card.id }
 
             TarotCardItem(
                 card = card,
                 angle = angle,
                 translationX = x.toFloat(),
                 translationY = y.toFloat(),
+                isSelected = isSelected,
                 onClick = { onCardSelected(card) }
             )
         }
     }
 }
-
 
 fun generateTarotCards(count: Int = 24): List<TarotCard> {
     return List(count) { index ->
@@ -108,11 +106,14 @@ fun generateTarotCards(count: Int = 24): List<TarotCard> {
 
 @Composable
 fun TarotCardGameScreen() {
-    LocalDensity.current
     val cards = remember { mutableStateListOf<TarotCard>().apply { addAll(generateTarotCards()) } }
     val selectedCards = remember { mutableStateListOf<TarotCard>() }
+    val isRevealed = remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
+
+        TopSelectedCardsRow(selectedCards = selectedCards, isRevealed = isRevealed.value)
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -122,10 +123,8 @@ fun TarotCardGameScreen() {
                 cards = cards,
                 selectedCards = selectedCards,
                 onCardSelected = { selected ->
-                    if (!selectedCards.contains(selected) && selectedCards.size < 5) {
-                        val index = cards.indexOfFirst { it.id == selected.id }
-                        cards[index] = selected.copy(isFlipped = true)
-                        selectedCards.add(cards[index])
+                    if (selectedCards.size < 5 && !selectedCards.contains(selected)) {
+                        selectedCards.add(selected)
                     }
                 },
                 modifier = Modifier.align(Alignment.BottomCenter)
@@ -140,17 +139,14 @@ fun TarotCardGameScreen() {
         ) {
             Button(onClick = {
                 selectedCards.clear()
-                cards.replaceAll { it.copy(isFlipped = false) }
+                isRevealed.value = false
             }) {
                 Text("Reset Deck")
             }
 
             Button(
                 onClick = {
-                    selectedCards.forEach { selected ->
-                        val index = cards.indexOfFirst { it.id == selected.id }
-                        cards[index] = selected.copy(isFlipped = true)
-                    }
+                    isRevealed.value = true
                 },
                 enabled = selectedCards.size == 5
             ) {
@@ -160,47 +156,36 @@ fun TarotCardGameScreen() {
     }
 }
 
+
 @Composable
 fun TarotCardItem(
     card: TarotCard,
     angle: Float,
     translationX: Float,
     translationY: Float,
+    isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val rotationY = remember { Animatable(0f) }
     val density = LocalDensity.current
-    val scope = rememberCoroutineScope()
-
-    LaunchedEffect(card.isFlipped) {
-        val target = if (card.isFlipped) 180f else 0f
-        scope.launch {
-            rotationY.animateTo(target, animationSpec = tween(600))
-        }
-    }
-
-    val showFront = rotationY.value > 90f
-    val imageRes = if (showFront) card.frontImageRes else card.backImageRes
 
     Box(
         modifier = Modifier
             .graphicsLayer {
                 this.translationX = translationX
-                this.translationY = translationY
+                this.translationY = translationY + if (isSelected) -40f else 0f
                 this.rotationZ = angle
-                this.rotationY = rotationY.value
                 this.transformOrigin = TransformOrigin(0.5f, 1f)
                 this.cameraDistance = 12 * density.density
             }
-            .clickable { onClick() }
+            .clickable(enabled = !isSelected) { onClick() }
             .border(
                 width = 2.dp,
-                color = if (card.isFlipped) Color.Yellow else Color.Transparent,
+                color = if (isSelected) Color.Yellow else Color.Transparent,
                 shape = RoundedCornerShape(12.dp)
             )
     ) {
         Image(
-            painter = painterResource(id = imageRes),
+            painter = painterResource(id = card.backImageRes),
             contentDescription = null,
             modifier = Modifier
                 .size(100.dp, 150.dp)
@@ -211,4 +196,47 @@ fun TarotCardItem(
     }
 }
 
+@Composable
+fun TopSelectedCardsRow(
+    selectedCards: List<TarotCard>,
+    isRevealed: Boolean
+) {
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 24.dp)
+    ) {
+        val maxCardWidth = (maxWidth - 40.dp) / 5  // Small padding included
+        val cardHeight = maxCardWidth * (3f / 2f)  // Maintain 2:3 aspect ratio
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            repeat(5) { index ->
+                val card = selectedCards.getOrNull(index)
+
+                Box(
+                    modifier = Modifier
+                        .width(maxCardWidth)
+                        .height(cardHeight)
+                        .clip(RoundedCornerShape(12.dp))
+                        .border(2.dp, Color.Gray, RoundedCornerShape(12.dp))
+                ) {
+                    card?.let {
+                        val imageRes = if (isRevealed) card.frontImageRes else card.backImageRes
+                        Image(
+                            painter = painterResource(id = imageRes),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(12.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
 
