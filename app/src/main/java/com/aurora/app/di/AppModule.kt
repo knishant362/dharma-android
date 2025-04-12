@@ -4,7 +4,9 @@ import android.content.Context
 import com.aurora.app.BuildConfig
 import com.aurora.app.data.remote.api.ApiService
 import com.aurora.app.data.repo.MainRepositoryImpl
+import com.aurora.app.data.repo.TarotRepositoryImpl
 import com.aurora.app.domain.repo.MainRepository
+import com.aurora.app.domain.repo.TarotRepository
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import dagger.Module
 import dagger.Provides
@@ -82,6 +84,12 @@ object AppModule {
     @Singleton
     fun provideMainRepository(apiService: ApiService): MainRepository {
         return MainRepositoryImpl(apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTarotRepository(@ApplicationContext context: Context): TarotRepository {
+        return TarotRepositoryImpl(context)
     }
 
 }

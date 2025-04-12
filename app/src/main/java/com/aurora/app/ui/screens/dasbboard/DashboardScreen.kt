@@ -14,7 +14,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aurora.app.R
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.BottomBar
-import com.aurora.app.ui.screens.dasbboard.DashboardViewModel
 import com.aurora.app.ui.screens.destinations.DashboardScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator

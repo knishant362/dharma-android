@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AuroraTemplate"
+rootProject.name = "Tarot Card Reader"
 include(":app")
  
