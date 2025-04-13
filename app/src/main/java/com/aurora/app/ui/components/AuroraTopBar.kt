@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import com.aurora.app.designsystem.theme.calistogaFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -27,9 +28,9 @@ fun AuroraTopBar(
     onNavigationClick: () -> Unit = {},
     onActionClick: () -> Unit = {},
 ) {
-
+    val calistoga = calistogaFontFamily()
     CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(id = titleRes)) },
+        title = { Text(text = stringResource(id = titleRes), fontFamily = calistoga) },
         navigationIcon = {
             if (navigationIcon != null) {
                 IconButton(onClick = onNavigationClick) {

@@ -1,4 +1,4 @@
-package com.aurora.app.ui.screens.spreadDetail
+package com.aurora.app.ui.screens.spreadResult
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -19,7 +19,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -35,24 +34,18 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.R
 import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.ui.components.AuroraTopBar
-import com.aurora.app.ui.components.BottomBar
-import com.aurora.app.ui.screens.destinations.SpreadDetailScreenDestination
-import com.aurora.app.ui.screens.destinations.TarotSelectScreenDestination
-import com.aurora.app.ui.screens.tarotSelect.SelectableTarotCard
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@RootNavGraph(start = true)
 @Destination
 @Composable
-fun SpreadDetailScreen(
+fun SpreadResultScreen(
     navigator: DestinationsNavigator,
-    viewModel: SpreadViewModel = hiltViewModel()
+    viewModel: SpreadResultViewModel = hiltViewModel()
 ) {
 
-    val uiState by viewModel.spreadUiState
+    val uiState by viewModel.uiState
 
     Scaffold(
         topBar = {
@@ -65,7 +58,7 @@ fun SpreadDetailScreen(
             ) {
 
                 when (uiState) {
-                    is SpreadDetailUiState.Loading -> {
+                    is SpreadResultUIState.Loading -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
@@ -74,22 +67,20 @@ fun SpreadDetailScreen(
                         }
                     }
 
-                    is SpreadDetailUiState.Error -> {
+                    is SpreadResultUIState.Error -> {
                         Box(
                             modifier = Modifier.fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(text = (uiState as SpreadDetailUiState.Error).message)
+                            Text(text = (uiState as SpreadResultUIState.Error).message)
                         }
                     }
 
-                    is SpreadDetailUiState.Success -> {
-                        val spreads = (uiState as SpreadDetailUiState.Success).spreads
+                    is SpreadResultUIState.Success -> {
+                        val spreads = (uiState as SpreadResultUIState.Success).spreads
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
-                            items(spreads) { spread ->
-                                SpreadCardItem(spread = spread, onClick = { navigator.navigate(
-                                    TarotSelectScreenDestination(spread)
-                                )})
+                            items(spreads.take(3)) { spread ->
+                                SpreadCardItem(spread = spread, onClick = { })
                             }
                         }
                     }
@@ -97,9 +88,6 @@ fun SpreadDetailScreen(
 
             }
         },
-        bottomBar = {
-            BottomBar(navigator, SpreadDetailScreenDestination.route)
-        }
     )
 
 }

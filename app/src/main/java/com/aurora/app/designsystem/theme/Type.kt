@@ -15,6 +15,13 @@ val provider = GoogleFont.Provider(
     certificates = R.array.com_google_android_gms_fonts_certs
 )
 
+fun calistogaFontFamily(): FontFamily {
+    val googleFont = GoogleFont("Calistoga")
+    return FontFamily(
+        Font(googleFont, provider, FontWeight.Normal)
+    )
+}
+
 val PoppinsFont = GoogleFont(name = "Poppins")
 
 val PoppinsFontFamily = FontFamily(

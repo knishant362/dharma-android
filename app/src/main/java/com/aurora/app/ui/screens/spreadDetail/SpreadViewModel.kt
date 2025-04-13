@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.aurora.app.R
 import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.domain.repo.TarotRepository
+import com.aurora.app.ui.screens.tarotSelect.SelectableTarotCard
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,7 +28,7 @@ class SpreadViewModel @Inject constructor(
     private fun loadSpreadDetails() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val spreads = repository.loadSpreadDetails()
+                val spreads = repository.loadSpreadDetails().filter { it.title in listOf("Daily Reading", "Single Card", "Past, Present, Future") }.distinct()
                 _spreadUiState.value = SpreadDetailUiState.Success(spreadList)
             } catch (e: Exception) {
                 _spreadUiState.value =
@@ -61,7 +62,7 @@ class SpreadViewModel @Inject constructor(
         SpreadDetail(
             id = "3",
             title = "Card of the Day",
-            description = "Pick a card that will help you discover what you are destined to experience today",
+            description = "Pick a card that will help you discover what you are destined to experience today.",
             cards = emptyList(),
             icon = R.drawable.ic_one_card
         ),
