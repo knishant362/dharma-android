@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.aurora.app.ui.screens.destinations.DashboardScreenDestination
 import com.aurora.app.ui.screens.destinations.SettingsScreenDestination
+import com.aurora.app.ui.screens.destinations.SpreadDetailScreenDestination
 import com.aurora.app.ui.screens.destinations.TarotCardListScreenDestination
 import com.aurora.app.ui.screens.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
@@ -18,7 +19,6 @@ enum class BottomBarDestination(
     val icon: ImageVector,
     val label: String
 ) {
-    CardsList(TarotCardListScreenDestination, Icons.AutoMirrored.Filled.List, label = "Cards"),
-    Dashboard(DashboardScreenDestination, Icons.Default.Home, "Home"),
-    Tarot(TarotSelectScreenDestination, Icons.Default.Star, "Tarot")
+    SpreadDetail(SpreadDetailScreenDestination, Icons.Default.Face, "Tarot"),
+    CardsList(TarotCardListScreenDestination, Icons.AutoMirrored.Filled.List, label = "Cards")
 }

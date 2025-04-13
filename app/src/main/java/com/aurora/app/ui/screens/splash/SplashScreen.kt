@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.aurora.app.R
 import com.aurora.app.ui.screens.NavGraphs
 import com.aurora.app.ui.screens.destinations.DashboardScreenDestination
+import com.aurora.app.ui.screens.destinations.SpreadDetailScreenDestination
 import com.aurora.app.ui.screens.destinations.TarotCardListScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -25,7 +26,6 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 
-@RootNavGraph(start = true)
 @Destination
 @Composable
 fun SplashScreen(modifier: Modifier = Modifier, navigator: DestinationsNavigator) {
@@ -48,7 +48,7 @@ fun SplashScreen(modifier: Modifier = Modifier, navigator: DestinationsNavigator
     LaunchedEffect(Unit) {
         coroutineScope {
             delay(1000)
-            navigator.navigate(TarotCardListScreenDestination) {
+            navigator.navigate(SpreadDetailScreenDestination) {
                 popUpTo(NavGraphs.root) {
                     saveState = true
                 }

@@ -21,7 +21,7 @@ class DashboardViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        fetchHomepageData()
+//        fetchHomepageData()
     }
     private fun fetchHomepageData() = viewModelScope.launch {
         Timber.tag("fetchHomepageData").d("fetchHomepageData")
