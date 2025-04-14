@@ -32,7 +32,7 @@ fun TopSelectedCardsRow(
     onClick: (SelectableTarotCard) -> Unit
 ) {
     BoxWithConstraints(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = 24.dp)
     ) {

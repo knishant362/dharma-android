@@ -2,13 +2,12 @@ package com.aurora.app.ui.screens.tarotSelect
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,60 +47,67 @@ fun TarotSelectScreen(
 
     Timber.e("TarotSelectScreen: ${uiState.selectableCards}")
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        topBar = {},
+        content = { paddingValues ->
 
-        TopSelectedCardsRow(
-            spreadCount = uiState.maxSelectedCards,
-            selectedCards = selectedCards,
-            isRevealed = isRevealed.value,
-            onClick = { card ->
-                if (isRevealed.value){
-                    navigator.navigate(SpreadDetailScreenDestination(card))
-                } else {
-                    Timber.e("Reveal is pending")
+            Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+
+                TopSelectedCardsRow(
+                    spreadCount = uiState.maxSelectedCards,
+                    selectedCards = selectedCards,
+                    isRevealed = isRevealed.value,
+                    onClick = { card ->
+                        if (isRevealed.value){
+                            navigator.navigate(SpreadDetailScreenDestination())
+                        } else {
+                            Timber.e("Reveal is pending")
+                        }
+                    }
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                ) {
+                    BottomCardCardDeck(
+                        cards = uiState.selectableCards,
+                        selectedCards = selectedCards,
+                        onCardSelected = { selected ->
+                            if (selectedCards.size < uiState.maxSelectedCards && !selectedCards.contains(selected)) {
+                                selectedCards.add(selected)
+                            }
+                        },
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        maxSelectedCards = uiState.maxSelectedCards
+                    )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(onClick = {
+                        selectedCards.clear()
+                        isRevealed.value = false
+                    }) {
+                        Text("Reset Deck")
+                    }
+
+                    Button(
+                        onClick = { isRevealed.value = true },
+                        enabled = selectedCards.size == uiState.maxSelectedCards
+                    ) {
+                        Text("Reveal Cards")
+                    }
                 }
             }
-        )
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-        ) {
-            BottomCardCardDeck(
-                cards = uiState.selectableCards,
-                selectedCards = selectedCards,
-                onCardSelected = { selected ->
-                    if (selectedCards.size < 5 && !selectedCards.contains(selected)) {
-                        selectedCards.add(selected)
-                    }
-                },
-                modifier = Modifier.align(Alignment.BottomCenter),
-                maxSelectedCards = uiState.maxSelectedCards
-            )
         }
-
-        Row(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(onClick = {
-                selectedCards.clear()
-                isRevealed.value = false
-            }) {
-                Text("Reset Deck")
-            }
-
-            Button(
-                onClick = { isRevealed.value = true },
-                enabled = selectedCards.size == 5
-            ) {
-                Text("Reveal Cards")
-            }
-        }
-    }
+    )
 
 }
