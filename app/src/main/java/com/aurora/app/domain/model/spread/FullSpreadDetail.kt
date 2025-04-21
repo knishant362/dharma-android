@@ -1,11 +1,10 @@
-package com.aurora.app.ui.screens.cardDetail
+package com.aurora.app.domain.model.spread
 
 import com.aurora.app.R
-import com.aurora.app.domain.model.spread.Property
 
-data class CardDetailUIState(
+data class FullSpreadDetail(
     val title: String = "",
-    val imageRes: Int = R.drawable.ic_one_card, // your default placeholder
+    val imageRes: Int = R.drawable.ic_one_card,
     val tags: List<String> = emptyList(),
     val affirmation: String = "",
     val description: String = "",

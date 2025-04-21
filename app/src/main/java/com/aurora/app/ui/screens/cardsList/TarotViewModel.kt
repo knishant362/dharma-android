@@ -3,11 +3,13 @@ package com.aurora.app.ui.screens.cardsList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aurora.app.domain.repo.TarotRepository
+import com.aurora.app.utils.Constants.PACK_NAME
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,13 +26,13 @@ class TarotViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val cards = repository.loadTarotCards()
+                val cards = repository.loadTarotCards(packName = PACK_NAME)
+                Timber.e("TarotViewModel: Cards: ${cards.size}")
                 _uiState.value = TarotUiState.Success(cards)
 
                 val dynamicFilters = buildList {
                     add("All")
-                    addAll(cards.map { it.type }.filterNot { it == "Minor" }.distinct())
-                    addAll(cards.mapNotNull { it.suit }.distinct())
+                    addAll(cards.map { it.type }.distinct())
                 }
                 _filters.value = dynamicFilters.distinct()
 

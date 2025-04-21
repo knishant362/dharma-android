@@ -1,73 +1,45 @@
 [
   {
-    "id": "major_0",
+    "id": "major-01",
     "name": "The Fool",
     "type": "Major",
-    "number": 0,
-    "imageRes": "the_fool",
-    "meaningUpright": "",
-    "meaningReversed": "",
-    "keywords": []
+    "number": 1
   },
   {
-    "id": "major_1",
+    "id": "major-02",
     "name": "The Magician",
     "type": "Major",
-    "number": 1,
-    "imageRes": "the_magician",
-    "meaningUpright": "",
-    "meaningReversed": "",
-    "keywords": []
+    "number": 2
   },
   {
-    "id": "major_2",
+    "id": "major-03",
     "name": "The High Priestess",
     "type": "Major",
-    "number": 2,
-    "imageRes": "the_high_priestess",
-    "meaningUpright": "",
-    "meaningReversed": "",
-    "keywords": []
+    "number": 3
   },
   {
     "id": "major_3",
     "name": "The Empress",
     "type": "Major",
-    "number": 3,
-    "imageRes": "the_empress",
-    "meaningUpright": "",
-    "meaningReversed": "",
-    "keywords": []
+    "number": 3
   },
   {
     "id": "major_4",
     "name": "The Emperor",
     "type": "Major",
-    "number": 4,
-    "imageRes": "the_emperor",
-    "meaningUpright": "",
-    "meaningReversed": "",
-    "keywords": []
+    "number": 4
   },
   {
     "id": "major_5",
     "name": "The Hierophant",
     "type": "Major",
-    "number": 5,
-    "imageRes": "the_hierophant",
-    "meaningUpright": "",
-    "meaningReversed": "",
-    "keywords": []
+    "number": 5
   },
   {
     "id": "major_6",
     "name": "The Lovers",
     "type": "Major",
-    "number": 6,
-    "imageRes": "the_lovers",
-    "meaningUpright": "",
-    "meaningReversed": "",
-    "keywords": []
+    "number": 6
   },
   {
     "id": "major_7",

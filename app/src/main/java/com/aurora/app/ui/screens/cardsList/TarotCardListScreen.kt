@@ -3,6 +3,7 @@ package com.aurora.app.ui.screens.cardsList
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,20 +40,21 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.R
 import com.aurora.app.domain.model.TarotCard
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.BottomBar
-import com.aurora.app.ui.screens.destinations.DashboardScreenDestination
+import com.aurora.app.ui.screens.destinations.CardDetailScreenDestination
 import com.aurora.app.ui.screens.destinations.TarotCardListScreenDestination
 import com.aurora.app.utils.AssetImageLoader
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
+@RootNavGraph(start = true)
 @Destination
 @Composable
 fun TarotCardListScreen(
@@ -113,7 +115,6 @@ fun TarotCardListScreen(
                             val filteredCards = when (selectedFilter) {
                                 "All" -> allCards
                                 in allCards.map { it.type } -> allCards.filter { it.type == selectedFilter }
-                                in allCards.mapNotNull { it.suit } -> allCards.filter { it.suit == selectedFilter }
                                 else -> allCards
                             }
 
@@ -124,13 +125,13 @@ fun TarotCardListScreen(
                                     modifier = Modifier.fillMaxSize()
                                 ) {
                                     items(filteredCards.size) { index ->
-                                        TarotCardItem(card = filteredCards[index])
+                                        TarotCardItem(card = filteredCards[index], onClick = { card -> navigator.navigate(CardDetailScreenDestination(card)) })
                                     }
                                 }
                             } else {
                                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                                     items(filteredCards.size) { index ->
-                                        TarotCardItem(card = filteredCards[index])
+                                        TarotCardItem(card = filteredCards[index], onClick = { card -> navigator.navigate(CardDetailScreenDestination(card)) })
                                     }
                                 }
                             }
@@ -173,9 +174,9 @@ fun TarotFilterChips(
 }
 
 @Composable
-fun TarotCardItem(card: TarotCard) {
+fun TarotCardItem(card: TarotCard, onClick: (TarotCard) -> Unit = {}) {
     val context = LocalContext.current
-    val bitmap by remember(card.imageRes) {
+    val bitmap by remember(card.id) {
         mutableStateOf(AssetImageLoader.loadBitmapFromAsset(context, card))
     }
 
@@ -190,6 +191,7 @@ fun TarotCardItem(card: TarotCard) {
                 shape = RoundedCornerShape(4.dp)
             )
             .shadow(elevation = 6.dp, shape = RoundedCornerShape(1.dp))
+            .clickable { onClick.invoke(card) }
     ) {
         bitmap?.let {
             Image(

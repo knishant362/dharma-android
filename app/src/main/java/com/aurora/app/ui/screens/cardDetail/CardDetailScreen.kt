@@ -24,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,13 +36,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.aurora.app.domain.model.TarotCard
+import com.aurora.app.domain.model.spread.Property
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
 
-@RootNavGraph(start = true)
 @Destination
 @Composable
-fun CardDetailScreen(viewModel: CardDetailViewModel = hiltViewModel()) {
+fun CardDetailScreen(
+    tarotCard: TarotCard,
+    viewModel: CardDetailViewModel = hiltViewModel()) {
+
+    LaunchedEffect(Unit) {
+        viewModel.initialSetup(tarotCard)
+    }
+
     val state = viewModel.uiState.value
 
     Scaffold(

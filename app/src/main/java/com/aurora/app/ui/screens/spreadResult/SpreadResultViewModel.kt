@@ -27,7 +27,7 @@ class SpreadResultViewModel @Inject constructor(
     private fun loadSpreadDetails() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val spreads = repository.loadSpreadDetails().filter { it.title in listOf("Daily Reading", "Single Card", "Past, Present, Future") }.distinct()
+//                val spreads = repository.loadSpreadDetails().filter { it.title in listOf("Daily Reading", "Single Card", "Past, Present, Future") }.distinct()
 //                _uiState.value = SpreadResultUIState.Success()
             } catch (e: Exception) {
                 _uiState.value =

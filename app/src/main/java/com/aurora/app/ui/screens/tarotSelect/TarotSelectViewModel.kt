@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.domain.repo.TarotRepository
+import com.aurora.app.utils.Constants.PACK_NAME
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +34,7 @@ class TarotSelectViewModel @Inject constructor(
     private fun loadCardsData() {
         viewModelScope.launch {
             try {
-                val cards = repository.loadTarotCards()
+                val cards = repository.loadTarotCards(packName = PACK_NAME)
                 Timber.e("cards: $cards")
                 val selectableCards =
                     cards.shuffled().mapIndexed { index, it -> it.toSelectableTarotCard(index) }

@@ -9,7 +9,7 @@ import com.aurora.app.domain.model.TarotCard
 object AssetImageLoader {
     fun loadBitmapFromAsset(context: Context, card: TarotCard): ImageBitmap? {
         return try {
-            context.assets.open("images/${card.imageRes}.png").use {
+            context.assets.open("images/${card.id}.png").use {
                 BitmapFactory.decodeStream(it)?.asImageBitmap()
             }
         } catch (_: Exception) {
