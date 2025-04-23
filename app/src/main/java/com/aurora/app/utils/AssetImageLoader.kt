@@ -5,14 +5,17 @@ import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import com.aurora.app.domain.model.TarotCard
+import timber.log.Timber
 
 object AssetImageLoader {
     fun loadBitmapFromAsset(context: Context, card: TarotCard): ImageBitmap? {
         return try {
-            context.assets.open("images/${card.id}.png").use {
+            Timber.e("AssetImageLoader: ${card.image}")
+            context.assets.open(card.image).use {
                 BitmapFactory.decodeStream(it)?.asImageBitmap()
             }
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            Timber.e(e)
             null
         }
     }

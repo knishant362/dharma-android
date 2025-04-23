@@ -8,6 +8,7 @@ import com.aurora.app.domain.model.spread.Property
 import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.domain.repo.TarotRepository
 import com.aurora.app.utils.Constants.CONTENT_FILE
+import com.aurora.app.utils.Constants.IMAGE_DIRECTORY
 import org.json.JSONObject
 import timber.log.Timber
 
@@ -33,6 +34,8 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
     override fun loadTarotCards(packName: String): List<TarotCard> {
         try {
             val json = context.assets.open(CONTENT_FILE).bufferedReader().use { it.readText() }
+            val imagesJson = context.assets.open("data/$packName.json").bufferedReader().use { it.readText() }
+            val imageData = JSONObject(imagesJson)
             val extraDetails = JSONObject(json).getJSONObject("meditations")
             val cardsObject = JSONObject(json).getJSONObject("tarot").getJSONObject(packName)
             val cardList = mutableListOf<TarotCard>()
@@ -52,7 +55,8 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
                         List(array.length()) { i -> array.getString(i) }
                     } ?: emptyList(),
                     type = type,
-                    affirmation = affirmation
+                    affirmation = affirmation,
+                    image = "images/$packName/${imageData.optString(id)}"
                 )
                 cardList.add(card)
             }

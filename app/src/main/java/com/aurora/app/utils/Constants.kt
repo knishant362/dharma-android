@@ -7,5 +7,6 @@ object Constants {
     const val PACK_NAME = "LST"
 
     const val CONTENT_FILE = "data/main.json"
+    const val IMAGE_DIRECTORY = "data/images"
 
 }

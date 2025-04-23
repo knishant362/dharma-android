@@ -12,5 +12,6 @@ data class TarotCard(
     val affirmation: String,
     val description: String,
 //    val imageRes: String,
-    val keywords: List<String>?
+    val keywords: List<String>?,
+    val image: String
 ) : Parcelable
