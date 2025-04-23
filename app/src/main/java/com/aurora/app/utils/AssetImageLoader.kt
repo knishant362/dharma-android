@@ -8,10 +8,10 @@ import com.aurora.app.domain.model.TarotCard
 import timber.log.Timber
 
 object AssetImageLoader {
-    fun loadBitmapFromAsset(context: Context, card: TarotCard): ImageBitmap? {
+    fun loadBitmapFromAsset(context: Context, imagePath: String): ImageBitmap? {
         return try {
-            Timber.e("AssetImageLoader: ${card.image}")
-            context.assets.open(card.image).use {
+            Timber.e("AssetImageLoader: ${imagePath}")
+            context.assets.open(imagePath).use {
                 BitmapFactory.decodeStream(it)?.asImageBitmap()
             }
         } catch (e: Exception) {

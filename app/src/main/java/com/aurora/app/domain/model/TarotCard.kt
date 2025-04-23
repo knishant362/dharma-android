@@ -8,10 +8,8 @@ data class TarotCard(
     val id: String,
     val name: String,
     val type: String,
-//    val suit: String?,
     val affirmation: String,
     val description: String,
-//    val imageRes: String,
     val keywords: List<String>?,
-    val image: String
+    val imagePath: String
 ) : Parcelable

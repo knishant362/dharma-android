@@ -25,12 +25,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -38,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.domain.model.TarotCard
 import com.aurora.app.domain.model.spread.Property
+import com.aurora.app.utils.AssetImageLoader
 import com.ramcosta.composedestinations.annotation.Destination
 
 @Destination
@@ -51,7 +55,6 @@ fun CardDetailScreen(
     }
 
     val state = viewModel.uiState.value
-
     Scaffold(
         topBar = { CardDetailTopBar(title = state.title) },
         containerColor = MaterialTheme.colorScheme.background
@@ -64,7 +67,7 @@ fun CardDetailScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CardDetailImage(imageRes = state.imageRes, title = state.title)
+            CardDetailImage(imagePath = state.imagePath, title = state.title)
             Spacer(modifier = Modifier.height(16.dp))
             CardTagRow(tags = state.tags)
             Spacer(modifier = Modifier.height(16.dp))
@@ -93,15 +96,22 @@ fun CardDetailTopBar(title: String) {
 }
 
 @Composable
-fun CardDetailImage(imageRes: Int, title: String) {
-    Image(
-        painter = painterResource(id = imageRes),
-        contentDescription = "$title Tarot Card",
-        modifier = Modifier
-            .height(260.dp)
-            .clip(RoundedCornerShape(12.dp)),
-        contentScale = ContentScale.Crop
-    )
+fun CardDetailImage(imagePath: String, title: String) {
+    val context = LocalContext.current
+    val bitmap by remember(imagePath) {
+        mutableStateOf(AssetImageLoader.loadBitmapFromAsset(context, imagePath))
+    }
+
+    bitmap?.let {
+        Image(
+            bitmap = it,
+            contentDescription = "$title Tarot Card",
+            modifier = Modifier
+                .height(260.dp)
+                .clip(RoundedCornerShape(12.dp)),
+            contentScale = ContentScale.Crop
+        )
+    }
 }
 
 @Composable
@@ -178,7 +188,7 @@ fun PropertyCard(modifier: Modifier = Modifier, title: String, value: String) {
             .fillMaxWidth()
             .padding(4.dp)
             .border(1.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
-//            .padding(12.dp)
+            .padding(12.dp)
     ) {
         Text(text = title, fontSize = 12.sp, color = MaterialTheme.colorScheme.primary)
         Text(text = value, fontWeight = FontWeight.Bold, fontSize = 14.sp)

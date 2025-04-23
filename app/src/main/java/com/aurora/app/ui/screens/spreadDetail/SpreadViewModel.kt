@@ -21,22 +21,6 @@ class SpreadViewModel @Inject constructor(
     private val _spreadUiState = mutableStateOf<SpreadDetailUiState>(SpreadDetailUiState.Loading)
     val spreadUiState: State<SpreadDetailUiState> = _spreadUiState
 
-    init {
-        loadSpreadDetails()
-    }
-
-    private fun loadSpreadDetails() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-//                val spreads = repository.loadSpreadDetails().filter { it.title in listOf("Daily Reading", "Single Card", "Past, Present, Future") }.distinct()
-                _spreadUiState.value = SpreadDetailUiState.Success(spreadList)
-            } catch (e: Exception) {
-                _spreadUiState.value =
-                    SpreadDetailUiState.Error(e.message ?: "Error loading spreads")
-            }
-        }
-    }
-
     val spreadList = listOf(
         SpreadDetail(
             id = "0",
@@ -90,5 +74,21 @@ class SpreadViewModel @Inject constructor(
             icon = R.drawable.ic_one_card
         ),
     )
+
+    init {
+        loadSpreadDetails()
+    }
+
+    private fun loadSpreadDetails() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+//                val spreads = repository.loadSpreadDetails().filter { it.title in listOf("Daily Reading", "Single Card", "Past, Present, Future") }.distinct()
+                _spreadUiState.value = SpreadDetailUiState.Success(spreadList)
+            } catch (e: Exception) {
+                _spreadUiState.value =
+                    SpreadDetailUiState.Error(e.message ?: "Error loading spreads")
+            }
+        }
+    }
 
 }

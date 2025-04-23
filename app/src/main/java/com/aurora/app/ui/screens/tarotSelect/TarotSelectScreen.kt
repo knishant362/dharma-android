@@ -23,7 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.ui.components.cards.BottomCardCardDeck
 import com.aurora.app.ui.components.cards.TopSelectedCardsRow
-import com.aurora.app.ui.screens.destinations.SpreadDetailScreenDestination
+import com.aurora.app.ui.screens.destinations.CardDetailScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import timber.log.Timber
@@ -59,7 +59,10 @@ fun TarotSelectScreen(
                     isRevealed = isRevealed.value,
                     onClick = { card ->
                         if (isRevealed.value){
-                            navigator.navigate(SpreadDetailScreenDestination())
+                            val tarotCard = uiState.cards.find { it.id == card.cardId }
+                            tarotCard?.let {
+                                navigator.navigate(CardDetailScreenDestination(it))
+                            }
                         } else {
                             Timber.e("Reveal is pending")
                         }

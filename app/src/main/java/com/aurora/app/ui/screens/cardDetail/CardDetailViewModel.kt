@@ -18,9 +18,9 @@ class CardDetailViewModel @Inject constructor(
 
         _uiState.value = CardDetailUIState(
             title = tarotCard.name,
-            imageRes = R.drawable.ic_one_card,
+            imagePath = tarotCard.imagePath,
             tags = tarotCard.keywords ?: emptyList(),
-            affirmation = tarotCard.affirmation, //Todo : use real value here
+            affirmation = tarotCard.affirmation,
             description = tarotCard.description,
             properties = listOf(  //Todo : use real value here
                 Property("Suit", "Major"),

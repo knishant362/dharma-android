@@ -177,7 +177,7 @@ fun TarotFilterChips(
 fun TarotCardItem(card: TarotCard, onClick: (TarotCard) -> Unit = {}) {
     val context = LocalContext.current
     val bitmap by remember(card.id) {
-        mutableStateOf(AssetImageLoader.loadBitmapFromAsset(context, card))
+        mutableStateOf(AssetImageLoader.loadBitmapFromAsset(context, card.imagePath))
     }
 
     Box(

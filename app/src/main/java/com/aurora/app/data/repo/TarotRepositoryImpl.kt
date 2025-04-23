@@ -8,7 +8,6 @@ import com.aurora.app.domain.model.spread.Property
 import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.domain.repo.TarotRepository
 import com.aurora.app.utils.Constants.CONTENT_FILE
-import com.aurora.app.utils.Constants.IMAGE_DIRECTORY
 import org.json.JSONObject
 import timber.log.Timber
 
@@ -56,7 +55,7 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
                     } ?: emptyList(),
                     type = type,
                     affirmation = affirmation,
-                    image = "images/$packName/${imageData.optString(id)}"
+                    imagePath = "images/$packName/${imageData.optString(id)}"
                 )
                 cardList.add(card)
             }
