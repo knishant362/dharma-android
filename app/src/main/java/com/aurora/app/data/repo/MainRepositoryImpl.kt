@@ -1,5 +1,7 @@
 package com.aurora.app.data.repo
 
+import com.aurora.app.data.local.SpreadStorageManager
+import com.aurora.app.data.model.SpreadResult
 import com.aurora.app.data.remote.api.ApiService
 import com.aurora.app.data.remote.request.ImageUploadRequest
 import com.aurora.app.domain.repo.MainRepository
@@ -9,6 +11,7 @@ import javax.inject.Inject
 
 class MainRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
+    private val spreadStorageManager: SpreadStorageManager
 ) : MainRepository {
 
     override suspend fun getHomepageData(): ResponseState<String> =
@@ -35,5 +38,18 @@ class MainRepositoryImpl @Inject constructor(
             },
             success = { it }
         )
+
+
+    override suspend fun saveSpread(spreadDetailId: String, selectedCardIds: List<String>) {
+        spreadStorageManager.saveSpread(spreadDetailId, selectedCardIds)
+    }
+
+    override suspend fun getSavedSpreads(): List<SpreadResult> {
+        return spreadStorageManager.getSavedSpreads()
+    }
+
+    override suspend fun getSpreadsBySpreadId(spreadId: String): List<SpreadResult> {
+        return spreadStorageManager.getSpreadsBySpreadId(spreadId)
+    }
 
 }

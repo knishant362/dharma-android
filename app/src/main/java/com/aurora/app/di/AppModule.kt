@@ -1,7 +1,10 @@
 package com.aurora.app.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.aurora.app.BuildConfig
+import com.aurora.app.data.local.SpreadStorageManager
 import com.aurora.app.data.remote.api.ApiService
 import com.aurora.app.data.repo.MainRepositoryImpl
 import com.aurora.app.data.repo.TarotRepositoryImpl
@@ -82,14 +85,20 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMainRepository(apiService: ApiService): MainRepository {
-        return MainRepositoryImpl(apiService)
+    fun provideMainRepository(apiService: ApiService, spreadStorageManager: SpreadStorageManager): MainRepository {
+        return MainRepositoryImpl(apiService, spreadStorageManager)
     }
 
     @Provides
     @Singleton
     fun provideTarotRepository(@ApplicationContext context: Context): TarotRepository {
         return TarotRepositoryImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSpreadStorageManager(dataStore: DataStore<Preferences>): SpreadStorageManager {
+        return SpreadStorageManager(dataStore)
     }
 
 }

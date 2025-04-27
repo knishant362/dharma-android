@@ -50,11 +50,9 @@ import com.aurora.app.ui.screens.destinations.CardDetailScreenDestination
 import com.aurora.app.ui.screens.destinations.TarotCardListScreenDestination
 import com.aurora.app.utils.AssetImageLoader
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@RootNavGraph(start = true)
 @Destination
 @Composable
 fun TarotCardListScreen(

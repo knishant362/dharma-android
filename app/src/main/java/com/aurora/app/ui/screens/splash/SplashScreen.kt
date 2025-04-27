@@ -26,6 +26,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 
+@RootNavGraph(true)
 @Destination
 @Composable
 fun SplashScreen(modifier: Modifier = Modifier, navigator: DestinationsNavigator) {

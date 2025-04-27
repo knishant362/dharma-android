@@ -13,9 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -31,7 +28,6 @@ import timber.log.Timber
 @Destination
 @Composable
 fun TarotSelectScreen(
-    modifier: Modifier = Modifier,
     navigator: DestinationsNavigator,
     spreadDetail: SpreadDetail,
     viewModel: TarotSelectViewModel = hiltViewModel()
@@ -42,10 +38,11 @@ fun TarotSelectScreen(
     }
 
     val uiState by viewModel.uiState.collectAsState()
-    val selectedCards = remember { mutableStateListOf<SelectableTarotCard>() }
-    val isRevealed = remember { mutableStateOf(false) }
 
-    Timber.e("TarotSelectScreen: ${uiState.selectableCards}")
+    val selectedCards = uiState.selectedCards
+    val isRevealed = uiState.isRevealed
+
+    Timber.e("TarotSelectScreen: ${uiState.selectableCards.size}")
 
     Scaffold(
         topBar = {},
@@ -56,9 +53,9 @@ fun TarotSelectScreen(
                 TopSelectedCardsRow(
                     spreadCount = uiState.maxSelectedCards,
                     selectedCards = selectedCards,
-                    isRevealed = isRevealed.value,
+                    isRevealed = isRevealed,
                     onClick = { card ->
-                        if (isRevealed.value){
+                        if (isRevealed){
                             val tarotCard = uiState.cards.find { it.id == card.cardId }
                             tarotCard?.let {
                                 navigator.navigate(CardDetailScreenDestination(it))
@@ -79,7 +76,7 @@ fun TarotSelectScreen(
                         selectedCards = selectedCards,
                         onCardSelected = { selected ->
                             if (selectedCards.size < uiState.maxSelectedCards && !selectedCards.contains(selected)) {
-                                selectedCards.add(selected)
+                                viewModel.addSelectedCard(selected)
                             }
                         },
                         modifier = Modifier.align(Alignment.BottomCenter),
@@ -95,14 +92,13 @@ fun TarotSelectScreen(
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Button(onClick = {
-                        selectedCards.clear()
-                        isRevealed.value = false
+                        viewModel.clearSelectedCards()
                     }) {
                         Text("Reset Deck")
                     }
 
                     Button(
-                        onClick = { isRevealed.value = true },
+                        onClick = { viewModel.setRevealed(true) },
                         enabled = selectedCards.size == uiState.maxSelectedCards
                     ) {
                         Text("Reveal Cards")

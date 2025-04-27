@@ -1,5 +1,6 @@
 package com.aurora.app.domain.repo
 
+import com.aurora.app.data.model.SpreadResult
 import com.aurora.app.data.remote.request.ImageUploadRequest
 import com.aurora.app.utils.ResponseState
 
@@ -11,5 +12,9 @@ interface MainRepository {
 
     suspend fun uploadWallpaper(request: ImageUploadRequest): ResponseState<String>
 
+    suspend fun saveSpread(spreadDetailId: String, selectedCardIds: List<String>)
 
+    suspend fun getSavedSpreads(): List<SpreadResult>
+
+    suspend fun getSpreadsBySpreadId(spreadId: String): List<SpreadResult>
 }

@@ -9,5 +9,7 @@ data class TarotSelectUIState(
     val spreadDetail: SpreadDetail? = null,
     val cards: List<TarotCard> = emptyList(),
     val selectableCards: List<SelectableTarotCard> = emptyList(),
-    val maxSelectedCards: Int = 1
+    val maxSelectedCards: Int = 1,
+    val selectedCards: List<SelectableTarotCard> = emptyList(),
+    val isRevealed: Boolean = false
 )
