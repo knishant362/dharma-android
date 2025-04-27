@@ -8,6 +8,8 @@ interface TarotRepository {
 
     fun getAllCardTypes(packName: String): Set<String>
 
+    fun getAllSpreads(): List<SpreadDetail>
+
     fun loadFullSpreadDetail(packName: String, cardName: String): FullSpreadDetail?
 
     fun loadSpreadDetails(): List<SpreadDetail>

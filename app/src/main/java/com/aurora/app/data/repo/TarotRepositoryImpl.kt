@@ -1,6 +1,7 @@
 package com.aurora.app.data.repo
 
 import android.content.Context
+import com.aurora.app.R
 import com.aurora.app.domain.model.TarotCard
 import com.aurora.app.domain.model.spread.CardInfo
 import com.aurora.app.domain.model.spread.FullSpreadDetail
@@ -28,6 +29,65 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
             e.printStackTrace()
             emptySet()
         }
+    }
+
+    override fun getAllSpreads(): List<SpreadDetail> {
+
+        val spreadList = listOf(
+            SpreadDetail(
+                id = "0",
+                title = "Classic Spread",
+                description = "These three cards will provide a general overview of your day including health.",
+                cards = listOf(
+                    CardInfo("Past", "Reveals the influence of past events on your current situation."),
+                    CardInfo("Present", "Describes your current emotional, physical, or mental state."),
+                    CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
+                ),
+                icon = R.drawable.ic_three_card
+            ),
+            SpreadDetail(
+                id = "1",
+                title = "The Daily Path",
+                description = "Through this path you will find answers for today about work, money, love and more.",
+                cards = listOf(
+                    CardInfo("Work", "Insight into your career or professional tasks today."),
+                    CardInfo("Money", "What to expect financially or materially."),
+                    CardInfo("Love", "An overview of your emotional or romantic life today."),
+                    CardInfo("Spiritual", "A message to guide your inner path today.")
+                ),
+                icon = R.drawable.ic_four_card
+            ),
+            SpreadDetail(
+                id = "2",
+                title = "Couple's Tarot",
+                description = "Discover the Tarot forecast for you and your partner.",
+                cards = listOf(
+                    CardInfo("You", "Represents your feelings and role in the relationship."),
+                    CardInfo("Partner", "Reveals your partner’s perspective or emotions.")
+                ),
+                icon = R.drawable.ic_two_card
+            ),
+            SpreadDetail(
+                id = "3",
+                title = "Card of the Day",
+                description = "Pick a card to discover what you're destined to experience today.",
+                cards = listOf(
+                    CardInfo("Daily Guidance", "A card to guide your choices and mindset today.")
+                ),
+                icon = R.drawable.ic_one_card
+            ),
+            SpreadDetail(
+                id = "4",
+                title = "Yes or No",
+                description = "Take a deep breath and think of a yes or no question. Pick a card—it will reveal the answer.",
+                cards = listOf(
+                    CardInfo("Answer", "This card will indicate a yes, no, or maybe based on your energy.")
+                ),
+                icon = R.drawable.ic_one_card
+            ),
+        )
+
+        return spreadList
     }
 
     override fun loadTarotCards(packName: String): List<TarotCard> {

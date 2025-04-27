@@ -59,3 +59,49 @@ fun AuroraTopBar(
         modifier = modifier,
     )
 }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AuroraTopBar(
+    modifier: Modifier = Modifier,
+    text: String,
+    navigationIcon: ImageVector? = null,
+    navigationIconContentDescription: String = "",
+    actionIcon: ImageVector? = null,
+    actionIconContentDescription: String = "",
+    colors: TopAppBarColors = TopAppBarDefaults.centerAlignedTopAppBarColors(),
+    onNavigationClick: () -> Unit = {},
+    onActionClick: () -> Unit = {},
+) {
+    val calistoga = calistogaFontFamily()
+    CenterAlignedTopAppBar(
+        title = { Text(text = text, fontFamily = calistoga) },
+        navigationIcon = {
+            if (navigationIcon != null) {
+                IconButton(onClick = onNavigationClick) {
+                    Icon(
+                        imageVector = navigationIcon,
+                        contentDescription = navigationIconContentDescription,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+
+        },
+        actions = {
+            if (actionIcon != null) {
+                IconButton(onClick = onActionClick) {
+                    Icon(
+                        imageVector = actionIcon,
+                        contentDescription = actionIconContentDescription,
+                        tint = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+
+        },
+        colors = colors,
+        modifier = modifier,
+    )
+}

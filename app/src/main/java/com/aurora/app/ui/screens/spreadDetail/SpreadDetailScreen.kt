@@ -31,14 +31,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import com.aurora.app.R
 import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.BottomBar
+import com.aurora.app.ui.components.OnLifecycleEvent
 import com.aurora.app.ui.screens.destinations.SpreadDetailScreenDestination
+import com.aurora.app.ui.screens.destinations.SpreadResultScreenDestination
 import com.aurora.app.ui.screens.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
@@ -47,6 +51,11 @@ fun SpreadDetailScreen(
     navigator: DestinationsNavigator,
     viewModel: SpreadViewModel = hiltViewModel()
 ) {
+
+    OnLifecycleEvent(Lifecycle.Event.ON_CREATE) {
+        Timber.e("SpreadDetailScreen : ON_CREATE")
+        viewModel.loadSpreadDetails()
+    }
 
     val uiState by viewModel.spreadUiState
 
@@ -83,9 +92,16 @@ fun SpreadDetailScreen(
                         val spreads = (uiState as SpreadDetailUiState.Success).spreads
                         LazyColumn(modifier = Modifier.fillMaxSize()) {
                             items(spreads) { spread ->
-                                SpreadCardItem(spread = spread, onClick = { navigator.navigate(
-                                    TarotSelectScreenDestination(spread)
-                                )})
+                                SpreadCardItem(spread = spread, onClick = {
+                                    val result =
+                                        (uiState as SpreadDetailUiState.Success).spreadResults.find { it.spreadDetailId == spread.id }
+                                    if (result == null) {
+                                        navigator.navigate(TarotSelectScreenDestination(spread))
+                                    } else {
+                                        navigator.navigate(SpreadResultScreenDestination(result.spreadDetailId))
+                                    }
+                                }
+                                )
                             }
                         }
                     }
@@ -101,7 +117,11 @@ fun SpreadDetailScreen(
 }
 
 @Composable
-fun SpreadCardItem( modifier: Modifier = Modifier, spread: SpreadDetail, onClick: (SpreadDetail) -> Unit) {
+fun SpreadCardItem(
+    modifier: Modifier = Modifier,
+    spread: SpreadDetail,
+    onClick: (SpreadDetail) -> Unit
+) {
     Card(
         modifier = modifier
             .padding(12.dp)
@@ -115,7 +135,7 @@ fun SpreadCardItem( modifier: Modifier = Modifier, spread: SpreadDetail, onClick
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(8.dp)
     ) {
-        Row (
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(4.dp),

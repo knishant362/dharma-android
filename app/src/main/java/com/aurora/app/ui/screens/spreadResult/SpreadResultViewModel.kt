@@ -1,40 +1,39 @@
 package com.aurora.app.ui.screens.spreadResult
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aurora.app.R
-import com.aurora.app.domain.model.spread.SpreadDetail
+import com.aurora.app.domain.repo.MainRepository
 import com.aurora.app.domain.repo.TarotRepository
+import com.aurora.app.utils.Constants
+import com.aurora.app.utils.TimeUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SpreadResultViewModel @Inject constructor(
-    private val repository: TarotRepository
+    private val repository: MainRepository,
+    private val tarotRepository: TarotRepository
 ) : ViewModel() {
 
-    private val _uiState = mutableStateOf<SpreadResultUIState>(SpreadResultUIState.Loading)
-    val uiState: State<SpreadResultUIState> = _uiState
+    private val _uiState = MutableStateFlow(SpreadResultUIState())
+    val uiState: StateFlow<SpreadResultUIState> = _uiState.asStateFlow()
 
-    fun setupResult(){
+    fun setupResult(spreadDetailId: String) = viewModelScope.launch {
+        val spreadResult = repository.getSpreadsBySpreadId(spreadDetailId).firstOrNull()
+        val tarotCards = tarotRepository.loadTarotCards(Constants.PACK_NAME)
+            .filter { spreadResult?.selectedCardIds?.contains(it.id) == true }
+        val time = TimeUtil.formatTimestampToMonthDay(
+            spreadResult?.createdAt ?: System.currentTimeMillis()
+        )
 
+        _uiState.value = _uiState.value.copy(
+            time = time,
+            result = spreadResult,
+            tarotCards = tarotCards
+        )
     }
-
-    private fun loadSpreadDetails() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-//                val spreads = repository.loadSpreadDetails().filter { it.title in listOf("Daily Reading", "Single Card", "Past, Present, Future") }.distinct()
-//                _uiState.value = SpreadResultUIState.Success()
-            } catch (e: Exception) {
-                _uiState.value =
-                    SpreadResultUIState.Error(e.message ?: "Error loading spreads")
-            }
-        }
-    }
-
-
 }

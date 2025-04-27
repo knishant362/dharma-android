@@ -1,9 +1,12 @@
 package com.aurora.app.ui.screens.spreadResult
 
-import com.aurora.app.domain.model.spread.SpreadDetail
+import com.aurora.app.data.model.SpreadResult
+import com.aurora.app.domain.model.TarotCard
 
-sealed class SpreadResultUIState {
-    data object Loading : SpreadResultUIState()
-    data class Success(val spreads: List<SpreadDetail>) : SpreadResultUIState()
-    data class Error(val message: String) : SpreadResultUIState()
-}
+data class SpreadResultUIState(
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+    val time: String = "",
+    val result: SpreadResult? = null,
+    val tarotCards: List<TarotCard> = emptyList()
+)

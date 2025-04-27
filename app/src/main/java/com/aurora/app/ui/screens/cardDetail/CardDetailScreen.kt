@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -41,13 +43,17 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.domain.model.TarotCard
 import com.aurora.app.domain.model.spread.Property
+import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.utils.AssetImageLoader
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
 fun CardDetailScreen(
     tarotCard: TarotCard,
+    navigator: DestinationsNavigator,
     viewModel: CardDetailViewModel = hiltViewModel()) {
 
     LaunchedEffect(Unit) {
@@ -56,7 +62,12 @@ fun CardDetailScreen(
 
     val state = viewModel.uiState.value
     Scaffold(
-        topBar = { CardDetailTopBar(title = state.title) },
+        topBar = {
+            AuroraTopBar(
+                text = state.title,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationClick = { navigator.navigateUp() })
+        },
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         Column(
@@ -67,7 +78,7 @@ fun CardDetailScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CardDetailImage(imagePath = state.imagePath, title = state.title)
+            CardDetailImage(imagePath = state.imagePath, title = state.title, modifier = Modifier.height(260.dp))
             Spacer(modifier = Modifier.height(16.dp))
             CardTagRow(tags = state.tags)
             Spacer(modifier = Modifier.height(16.dp))
@@ -81,7 +92,7 @@ fun CardDetailScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CardDetailTopBar(title: String) {
+fun CardDetailTopBar(title: String, onBackClick: () -> Unit = {}) {
     TopAppBar(
         title = {
             Text(
@@ -91,12 +102,14 @@ fun CardDetailTopBar(title: String) {
                 textAlign = TextAlign.Center
             )
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
+        navigationIcon = { Icons.AutoMirrored.Filled.ArrowBack },
+        actions = { onBackClick()}
     )
 }
 
 @Composable
-fun CardDetailImage(imagePath: String, title: String) {
+fun CardDetailImage(modifier: Modifier, imagePath: String, title: String) {
     val context = LocalContext.current
     val bitmap by remember(imagePath) {
         mutableStateOf(AssetImageLoader.loadBitmapFromAsset(context, imagePath))
@@ -106,8 +119,7 @@ fun CardDetailImage(imagePath: String, title: String) {
         Image(
             bitmap = it,
             contentDescription = "$title Tarot Card",
-            modifier = Modifier
-                .height(260.dp)
+            modifier = modifier
                 .clip(RoundedCornerShape(12.dp)),
             contentScale = ContentScale.Crop
         )
