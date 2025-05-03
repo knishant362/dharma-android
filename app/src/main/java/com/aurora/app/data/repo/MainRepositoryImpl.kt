@@ -48,8 +48,12 @@ class MainRepositoryImpl @Inject constructor(
         return spreadStorageManager.getSavedSpreads()
     }
 
-    override suspend fun getSpreadsBySpreadId(spreadId: String): List<SpreadResult> {
+    override suspend fun getSpreadResultBySpreadId(spreadId: String): List<SpreadResult> {
         return spreadStorageManager.getSpreadsBySpreadId(spreadId)
+    }
+
+    override suspend fun deleteResult(result: SpreadResult): Boolean {
+        return spreadStorageManager.deleteResult(result)
     }
 
 }

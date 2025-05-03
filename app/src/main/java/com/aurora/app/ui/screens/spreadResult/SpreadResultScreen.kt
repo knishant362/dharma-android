@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -36,32 +37,54 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import com.aurora.app.domain.model.TarotCard
+import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.OnLifecycleEvent
+import com.aurora.app.ui.components.button.AuroraButton
 import com.aurora.app.ui.screens.cardDetail.CardDetailImage
 import com.aurora.app.ui.screens.destinations.CardDetailScreenDestination
+import com.aurora.app.ui.screens.destinations.TarotSelectScreenDestination
+import com.aurora.app.utils.showToast
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
 fun SpreadResultScreen(
-    spreadDetailId: String,
+    spreadDetail: SpreadDetail,
     navigator: DestinationsNavigator,
     viewModel: SpreadResultViewModel = hiltViewModel()
 ) {
 
     OnLifecycleEvent(Lifecycle.Event.ON_CREATE) {
         Timber.e("SpreadResultScreen : ON_CREATE")
-        viewModel.setupResult(spreadDetailId)
+        viewModel.setupResult(spreadDetail.id)
+    }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is SpreadResultUiEvent.NavigateToDrawScreen -> {
+                    navigator.popBackStack()
+                    navigator.navigate(TarotSelectScreenDestination(spreadDetail))
+                }
+                is SpreadResultUiEvent.ShowError -> {
+                    context.showToast(event.message)
+                }
+            }
+        }
     }
 
     val uiState by viewModel.uiState.collectAsState()
@@ -82,23 +105,34 @@ fun SpreadResultScreen(
                 var currentCardIndex by remember { mutableIntStateOf(0) }
 
                 if (cards.isNotEmpty()) {
-                    DailySpreadScreen(
-                        tarotCards = cards,
-                        currentCardIndex = currentCardIndex,
-                        onPrevCard = {
-                            if (currentCardIndex > 0) {
-                                currentCardIndex--
-                            }
-                        },
-                        onNextCard = {
-                            if (currentCardIndex < cards.size - 1) {
-                                currentCardIndex++
-                            }
-                        },
-                        onCardClick = { card ->
-                            navigator.navigate(CardDetailScreenDestination(card))
-                        }
-                    )
+                    Box {
+                        DailySpreadScreen(
+                            tarotCards = cards,
+                            currentCardIndex = currentCardIndex,
+                            onPrevCard = {
+                                if (currentCardIndex > 0) {
+                                    currentCardIndex--
+                                }
+                            },
+                            onNextCard = {
+                                if (currentCardIndex < cards.size - 1) {
+                                    currentCardIndex++
+                                }
+                            },
+                            onCardClick = { card ->
+                                navigator.navigate(CardDetailScreenDestination(card))
+                            },
+                            modifier = Modifier
+                        )
+                        AuroraButton(
+                            text = "Draw Again!",
+                            onClick = { viewModel.onDrawAgainPressed() },
+                            modifier = Modifier
+                                .background(color = MaterialTheme.colorScheme.background)
+                                .align(alignment = Alignment.BottomCenter)
+                                .padding(horizontal = 16.dp),
+                        )
+                    }
                 } else {
                     Box(modifier = Modifier.fillMaxWidth()) {
                         CircularProgressIndicator()
@@ -125,60 +159,62 @@ fun SpreadResultScreen(
 
 @Composable
 fun DailySpreadScreen(
+    modifier: Modifier = Modifier,
     tarotCards: List<TarotCard>,
     currentCardIndex: Int,
     onPrevCard: () -> Unit,
     onNextCard: () -> Unit,
     onCardClick: (TarotCard) -> Unit = {}
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
+    LazyColumn(
+        modifier = modifier
+
     ) {
-        Text(
-            text = "♥ Tap the card for its meaning.",
-            style = MaterialTheme.typography.bodyMedium.copy(
-                color = Color.White,
-                textAlign = TextAlign.Center
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
-        )
+        item {
+            Text(
+                text = "♥ Tap the card for its meaning.",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            )
 
-        Text(
-            text = tarotCards[currentCardIndex].name,
-            style = MaterialTheme.typography.titleLarge.copy(
-                color = MaterialTheme.colorScheme.primary,
-                textAlign = TextAlign.Center
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp)
-        )
+            Text(
+                text = tarotCards[currentCardIndex].name,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    color = MaterialTheme.colorScheme.primary,
+                    textAlign = TextAlign.Center
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
+            )
 
-        CardCarousel(
-            cardImages = tarotCards,
-            currentIndex = currentCardIndex,
-            onPrev = onPrevCard,
-            onNext = onNextCard,
-            card = { card ->
-                CardDetailImage(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onCardClick(card) },
-                    card.imagePath,
-                    card.name
-                )
-            }
-        )
-//
-        Spacer(modifier = Modifier.height(24.dp))
-        QuoteBox(
-            title = "✦ SHIFT YOUR THINKING ✦",
-            subTitle = tarotCards[currentCardIndex].description
-        )
-        Spacer(modifier = Modifier.height(24.dp))
+            CardCarousel(
+                cardImages = tarotCards,
+                currentIndex = currentCardIndex,
+                onPrev = onPrevCard,
+                onNext = onNextCard,
+                card = { card ->
+                    CardDetailImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onCardClick(card) },
+                        card.imagePath,
+                        card.name
+                    )
+                }
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            QuoteBox(
+                title = "✦ SHIFT YOUR THINKING ✦",
+                subTitle = tarotCards[currentCardIndex].description
+            )
+            Spacer(modifier = Modifier.height(48.dp))
+        }
     }
 }
 

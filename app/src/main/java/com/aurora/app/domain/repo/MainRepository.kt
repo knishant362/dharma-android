@@ -16,5 +16,7 @@ interface MainRepository {
 
     suspend fun getSavedSpreads(): List<SpreadResult>
 
-    suspend fun getSpreadsBySpreadId(spreadId: String): List<SpreadResult>
+    suspend fun getSpreadResultBySpreadId(spreadId: String): List<SpreadResult>
+
+    suspend fun deleteResult(result: SpreadResult) : Boolean
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aurora.app.domain.repo.MainRepository
 import com.aurora.app.domain.repo.TarotRepository
+import com.aurora.app.utils.TimeUtil.isToday
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,9 +24,13 @@ class SpreadViewModel @Inject constructor(
     fun loadSpreadDetails() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-//                val spreads = repository.loadSpreadDetails().filter { it.title in listOf("Daily Reading", "Single Card", "Past, Present, Future") }.distinct()
                 val results = mainRepository.getSavedSpreads()
-                _spreadUiState.value = SpreadDetailUiState.Success(spreadResults = results, spreads = repository.getAllSpreads())
+                val todaySpreadResults = results.filter { isToday(it.createdAt) }
+                _spreadUiState.value = SpreadDetailUiState.Success(
+                    todayResults = todaySpreadResults,
+                    spreadResults = results,
+                    spreads = repository.getAllSpreads()
+                )
             } catch (e: Exception) {
                 _spreadUiState.value =
                     SpreadDetailUiState.Error(e.message ?: "Error loading spreads")

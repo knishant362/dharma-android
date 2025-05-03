@@ -52,7 +52,31 @@ class SpreadStorageManager @Inject constructor(
         }
     }
 
+    suspend fun deleteResult(result: SpreadResult): Boolean {
+        var deleted = false
+        dataStore.edit { preferences ->
+            val existingJson = preferences[spreadsKey]
+            val currentList = if (existingJson != null) {
+                gson.fromJson<List<SpreadResult>>(existingJson)
+            } else {
+                emptyList()
+            }
+
+            val updatedList = currentList.filterNot {
+                val match = it.createdAt == result.createdAt
+                if (match) deleted = true
+                match
+            }
+
+            preferences[spreadsKey] = gson.toJson(updatedList)
+        }
+        return deleted
+    }
+
+
+
     private inline fun <reified T> Gson.fromJson(json: String): T {
         return this.fromJson(json, object : TypeToken<T>() {}.type)
     }
+
 }

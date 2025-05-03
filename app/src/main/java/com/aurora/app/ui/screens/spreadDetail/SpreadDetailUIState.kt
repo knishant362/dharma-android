@@ -7,6 +7,7 @@ sealed class SpreadDetailUiState {
     object Loading : SpreadDetailUiState()
     data class Success(
         val spreadResults: List<SpreadResult> = emptyList(),
+        val todayResults: List<SpreadResult> = emptyList(),
         val spreads: List<SpreadDetail> = emptyList()
     ) : SpreadDetailUiState()
 

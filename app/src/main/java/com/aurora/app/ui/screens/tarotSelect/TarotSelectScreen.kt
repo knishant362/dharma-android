@@ -130,7 +130,7 @@ fun TarotSelectScreen(
                                 text = "Get Result",
                                 onClick = {
                                     navigator.popBackStack()
-                                    navigator.navigate(SpreadResultScreenDestination(spreadDetail.id))
+                                    navigator.navigate(SpreadResultScreenDestination(spreadDetail))
                                 }
                             )
                         } else {

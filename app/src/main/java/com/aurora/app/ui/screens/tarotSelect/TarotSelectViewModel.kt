@@ -54,7 +54,7 @@ class TarotSelectViewModel @Inject constructor(
 
     private fun loadPreviousResult() = viewModelScope.launch {
         with(uiState.value){
-            val spreadResults = spreadDetail?.let { mainRepository.getSpreadsBySpreadId(it.id) }
+            val spreadResults = spreadDetail?.let { mainRepository.getSpreadResultBySpreadId(it.id) }
             val lastResult = spreadResults?.firstOrNull()
             if (lastResult == null){
                 Timber.e("loadPreviousResult: spreadId: ${spreadDetail?.id} No previous result found")
