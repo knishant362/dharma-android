@@ -22,12 +22,12 @@ class CardDetailViewModel @Inject constructor(
             tags = tarotCard.keywords ?: emptyList(),
             affirmation = tarotCard.affirmation,
             description = tarotCard.description,
-            properties = listOf(  //Todo : use real value here
-                Property("Suit", "Major"),
-                Property("Astrology", "Moon"),
-                Property("Element", "Water"),
-                Property("Yes or No", "Maybe")
-            )
+//            properties = listOf(  //Todo : use real value here
+//                Property("Suit", "Major"),
+//                Property("Astrology", "Moon"),
+//                Property("Element", "Water"),
+//                Property("Yes or No", "Maybe")
+//            )
         )
 
     }

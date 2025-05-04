@@ -152,11 +152,20 @@ fun CardAffirmation(affirmation: String) {
 
 @Composable
 fun CardDescription(description: String) {
-    Text(
-        text = description,
-        style = MaterialTheme.typography.bodyMedium,
-        modifier = Modifier.padding(top = 16.dp)
-    )
+    Box(
+        modifier = Modifier
+            .padding(16.dp)
+            .background(color = MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(16.dp))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = description,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier
+
+        )
+    }
+
 }
 
 @Composable
