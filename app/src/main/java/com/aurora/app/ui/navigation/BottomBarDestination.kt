@@ -2,16 +2,12 @@ package com.aurora.app.ui.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Face
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.AppSettingsAlt
+import androidx.compose.material.icons.filled.Attractions
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.aurora.app.ui.screens.destinations.DashboardScreenDestination
 import com.aurora.app.ui.screens.destinations.SettingsScreenDestination
 import com.aurora.app.ui.screens.destinations.SpreadDetailScreenDestination
 import com.aurora.app.ui.screens.destinations.TarotCardListScreenDestination
-import com.aurora.app.ui.screens.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 
 enum class BottomBarDestination(
@@ -19,6 +15,7 @@ enum class BottomBarDestination(
     val icon: ImageVector,
     val label: String
 ) {
-    SpreadDetail(SpreadDetailScreenDestination, Icons.Default.Face, "Tarot"),
-    CardsList(TarotCardListScreenDestination, Icons.AutoMirrored.Filled.List, label = "Cards")
+    SpreadDetail(SpreadDetailScreenDestination, Icons.Default.Attractions, "Tarot"),
+    CardsList(TarotCardListScreenDestination, Icons.AutoMirrored.Filled.List, label = "Cards"),
+    Settings(SettingsScreenDestination, Icons.Default.AppSettingsAlt, label = "Settings")
 }

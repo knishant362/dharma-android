@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">Tarot</string>
+    <string name="app_name">Daily Tarot</string>
+    <string name="apply">Apply</string>
+    <string name="back_to_home">Back to Home</string>
+    <string name="rate_us">Rate Us</string>
+    <string name="share">Share</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="support">Support</string>
+    <string name="empty_message">Nothing here, check out a different category!</string>
 </resources>

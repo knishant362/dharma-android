@@ -40,7 +40,7 @@ class AppNavigationHelper(private val context: Context) {
     }
 
     fun openPrivacyPolicy() {
-        val url = "https://www.freeprivacypolicy.com"
+        val url = "https://www.freeprivacypolicy.com/live/4c94cac5-1392-4b33-8825-d016826690b7"
         val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
@@ -48,7 +48,7 @@ class AppNavigationHelper(private val context: Context) {
     }
 
     fun openSupportEmail() {
-        val email = arrayOf("sample@gmail.com") // Email should be in array format
+        val email = arrayOf("spubg362@gmail.com")
         val subject = "Support Request"
 
         val androidVersion = "Android Version: ${Build.VERSION.RELEASE}"

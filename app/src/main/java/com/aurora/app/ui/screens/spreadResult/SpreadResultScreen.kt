@@ -213,7 +213,7 @@ fun DailySpreadScreen(
                 title = "✦ SHIFT YOUR THINKING ✦",
                 subTitle = tarotCards[currentCardIndex].description
             )
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(68.dp))
         }
     }
 }
