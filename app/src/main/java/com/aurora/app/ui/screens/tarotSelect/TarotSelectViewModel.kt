@@ -44,7 +44,6 @@ class TarotSelectViewModel @Inject constructor(
                     cards = cards,
                     selectableCards = selectableCards
                 )
-                loadPreviousResult()
             } catch (e: Exception) {
                 _uiState.value =
                     _uiState.value.copy(isLoading = false, error = e.message ?: "Unknown Error")
