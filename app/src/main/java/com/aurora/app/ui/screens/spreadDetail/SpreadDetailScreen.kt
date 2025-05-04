@@ -107,7 +107,7 @@ fun SpreadDetailScreen(
                             items(spreads) { spread ->
                                 SpreadCardItem(spread = spread, onClick = {
                                     val result =
-                                        (uiState as SpreadDetailUiState.Success).spreadResults.find { it.spreadDetailId == spread.id }
+                                        (uiState as SpreadDetailUiState.Success).todayResults.find { it.spreadDetailId == spread.id }
                                     if (result == null) {
                                         navigator.navigate(TarotSelectScreenDestination(spread))
                                     } else {
