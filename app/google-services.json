@@ -1,40 +1,21 @@
 {
   "project_info": {
-    "project_number": "656402639886",
-    "project_id": "aurorastudio-362",
-    "storage_bucket": "aurorastudio-362.firebasestorage.app"
+    "project_number": "8355006022",
+    "project_id": "tarot-362",
+    "storage_bucket": "tarot-362.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:656402639886:android:8d1c0e0dc189df0a1ae05f",
+        "mobilesdk_app_id": "1:8355006022:android:539e985e451ee2030f6c47",
         "android_client_info": {
-          "package_name": "com.aurora.app"
+          "package_name": "com.aurora.tarot.daily.free"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCLCeGOQfJr4acWP6pM3yquunhcO_bu2Fk"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:656402639886:android:c32a68c5265a53841ae05f",
-        "android_client_info": {
-          "package_name": "com.aurora.studio"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCLCeGOQfJr4acWP6pM3yquunhcO_bu2Fk"
+          "current_key": "AIzaSyASdcqBMIZ56R6WY6nIi6TKlBJCCdPnpNI"
         }
       ],
       "services": {
