@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.aurora.app.ui.screens.tarotSelect.SelectableTarotCard
 
 @Composable
-fun TarotCardItem(
+fun TarotCardItemAnimate(
     card: SelectableTarotCard,
     angle: Float,
     translationX: Float,

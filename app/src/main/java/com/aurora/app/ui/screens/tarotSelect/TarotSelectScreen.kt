@@ -1,5 +1,6 @@
 package com.aurora.app.ui.screens.tarotSelect
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,16 +9,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.domain.model.spread.SpreadDetail
@@ -66,82 +65,73 @@ fun TarotSelectScreen(
                     .padding(paddingValues)
                     .fillMaxSize()
             ) {
-
-                TopSelectedCardsRow(
-                    spreadCount = uiState.maxSelectedCards,
-                    selectedCards = selectedCards,
-                    isRevealed = isRevealed,
-                    onClick = { card ->
-                        if (isRevealed) {
-                            val tarotCard = uiState.cards.find { it.id == card.cardId }
-                            tarotCard?.let {
-                                navigator.navigate(CardDetailScreenDestination(it))
-                            }
-                        } else {
-                            Timber.e("Reveal is pending")
-                        }
-                    }
-                )
-
-                Box(
+                Column (
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.BottomCenter)
                 ) {
 
-                    if (selectedCards.size != uiState.maxSelectedCards) {
-                        Text(
-                            text = "<--- Select the card ---->",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                fontWeight = FontWeight.Bold
-                            ),
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(48.dp)
-                        )
-                    }
-
-                    BottomCardCardDeck(
-                        cards = uiState.selectableCards,
+                    TopSelectedCardsRow(
+                        modifier = Modifier,
+                        spreadCount = uiState.maxSelectedCards,
                         selectedCards = selectedCards,
-                        onCardSelected = { selected ->
-                            if (selectedCards.size < uiState.maxSelectedCards && !selectedCards.contains(
-                                    selected
-                                )
-                            ) {
-                                viewModel.addSelectedCard(selected)
-                            }
-                        },
-                        modifier = Modifier.align(Alignment.BottomCenter),
-                        maxSelectedCards = uiState.maxSelectedCards
-                    )
-                }
-
-                if (selectedCards.size == uiState.maxSelectedCards) {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        if (uiState.isRevealed) {
-                            AuroraButton(
-                                text = "Get Result",
-                                onClick = {
-                                    navigator.popBackStack()
-                                    navigator.navigate(SpreadResultScreenDestination(spreadDetail))
+                        isRevealed = isRevealed,
+                        onClick = { card ->
+                            if (isRevealed) {
+                                val tarotCard = uiState.cards.find { it.id == card.cardId }
+                                tarotCard?.let {
+                                    navigator.navigate(CardDetailScreenDestination(it))
                                 }
-                            )
-                        } else {
-                            AuroraButton(
-                                text = "Reveal Cards",
-                                onClick = { viewModel.setRevealed(true) },
+                            } else {
+                                Timber.e("Reveal is pending")
+                            }
+                        }
+                    )
+
+                    Column(modifier = Modifier.fillMaxSize().background(color = Color.Gray)) {
+
+                        if (selectedCards.size != uiState.maxSelectedCards) {
+                            BottomCardCardDeck(
+                                cards = uiState.selectableCards,
+                                selectedCards = selectedCards,
+                                onCardSelected = { selected ->
+                                    if (selectedCards.size < uiState.maxSelectedCards && !selectedCards.contains(
+                                            selected
+                                        )
+                                    ) {
+                                        viewModel.addSelectedCard(selected)
+                                    }
+                                },
+                                modifier = Modifier.fillMaxSize(),
+                                maxSelectedCards = uiState.maxSelectedCards
                             )
                         }
-                    }
-                }
 
+                        if (selectedCards.size == uiState.maxSelectedCards) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                if (uiState.isRevealed) {
+                                    AuroraButton(
+                                        text = "Get Result",
+                                        onClick = {
+                                            navigator.popBackStack()
+                                            navigator.navigate(SpreadResultScreenDestination(spreadDetail))
+                                        }
+                                    )
+                                } else {
+                                    AuroraButton(
+                                        text = "Reveal Cards",
+                                        onClick = { viewModel.setRevealed(true) },
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                }
             }
 
         }
