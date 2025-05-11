@@ -1,6 +1,11 @@
 package com.aurora.app.ui.screens.tarotSelect
 
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,14 +21,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.button.AuroraButton
 import com.aurora.app.ui.components.cards.BottomCardCardDeck
-import com.aurora.app.ui.components.cards.TopSelectedCardsRow
+import com.aurora.app.ui.components.cards.cardselection.TopSelectedCardsView
 import com.aurora.app.ui.screens.destinations.CardDetailScreenDestination
 import com.aurora.app.ui.screens.destinations.SpreadResultScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
@@ -65,39 +69,49 @@ fun TarotSelectScreen(
                     .padding(paddingValues)
                     .fillMaxSize()
             ) {
-                Column (
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-
-                    TopSelectedCardsRow(
-                        modifier = Modifier,
-                        spreadCount = uiState.maxSelectedCards,
-                        selectedCards = selectedCards,
-                        isRevealed = isRevealed,
-                        onClick = { card ->
-                            if (isRevealed) {
-                                val tarotCard = uiState.cards.find { it.id == card.cardId }
-                                tarotCard?.let {
-                                    navigator.navigate(CardDetailScreenDestination(it))
+                    AnimatedVisibility(
+                        visible = uiState.maxSelectedCards != 0, // or your own condition
+                        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut()
+                    ) {
+                        TopSelectedCardsView(
+                            modifier = Modifier,
+                            spreadCount = uiState.maxSelectedCards,
+                            selectedCards = selectedCards,
+                            isRevealed = isRevealed,
+                            onClick = { card ->
+                                if (isRevealed) {
+                                    val tarotCard = uiState.cards.find { it.id == card.cardId }
+                                    tarotCard?.let {
+                                        navigator.navigate(CardDetailScreenDestination(it))
+                                    }
+                                } else {
+                                    Timber.e("Reveal is pending")
                                 }
-                            } else {
-                                Timber.e("Reveal is pending")
                             }
-                        }
-                    )
+                        )
+                    }
 
-                    Column(modifier = Modifier.fillMaxSize().background(color = Color.Gray)) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalArrangement = Arrangement.Bottom
+                    ) {
 
-                        if (selectedCards.size != uiState.maxSelectedCards) {
+                        AnimatedVisibility(
+                            visible = selectedCards.size != uiState.maxSelectedCards,
+                            enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+                        ) {
                             BottomCardCardDeck(
                                 cards = uiState.selectableCards,
                                 selectedCards = selectedCards,
                                 onCardSelected = { selected ->
-                                    if (selectedCards.size < uiState.maxSelectedCards && !selectedCards.contains(
-                                            selected
-                                        )
-                                    ) {
+                                    if (selectedCards.size < uiState.maxSelectedCards && !selectedCards.contains(selected)) {
                                         viewModel.addSelectedCard(selected)
                                     }
                                 },
@@ -106,7 +120,11 @@ fun TarotSelectScreen(
                             )
                         }
 
-                        if (selectedCards.size == uiState.maxSelectedCards) {
+                        AnimatedVisibility(
+                            visible = selectedCards.size == uiState.maxSelectedCards,
+                            enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+                        ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -118,7 +136,9 @@ fun TarotSelectScreen(
                                         text = "Get Result",
                                         onClick = {
                                             navigator.popBackStack()
-                                            navigator.navigate(SpreadResultScreenDestination(spreadDetail))
+                                            navigator.navigate(
+                                                SpreadResultScreenDestination(spreadDetail)
+                                            )
                                         }
                                     )
                                 } else {
@@ -130,7 +150,6 @@ fun TarotSelectScreen(
                             }
                         }
                     }
-
                 }
             }
 
