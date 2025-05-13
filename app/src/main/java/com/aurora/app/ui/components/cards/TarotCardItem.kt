@@ -26,6 +26,7 @@ import com.aurora.app.ui.screens.tarotSelect.SelectableTarotCard
 
 @Composable
 fun TarotCardItem(
+    modifier: Modifier = Modifier,
     card: SelectableTarotCard,
     isSelected: Boolean,
     onClick: () -> Unit
@@ -39,7 +40,7 @@ fun TarotCardItem(
     val density = LocalDensity.current
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(100.dp, 150.dp)
             .graphicsLayer {
                 translationY = animatedOffset

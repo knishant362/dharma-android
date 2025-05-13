@@ -115,13 +115,13 @@ fun TarotSelectScreen(
                                         viewModel.addSelectedCard(selected)
                                     }
                                 },
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier.fillMaxWidth(),
                                 maxSelectedCards = uiState.maxSelectedCards
                             )
                         }
 
                         AnimatedVisibility(
-                            visible = selectedCards.size == uiState.maxSelectedCards,
+                            visible = selectedCards.size == uiState.maxSelectedCards && !uiState.isLoading,
                             enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
                             exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
                         ) {

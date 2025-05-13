@@ -1,26 +1,28 @@
 package com.aurora.app.ui.components.cards
 
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.TransformOrigin
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aurora.app.ui.screens.tarotSelect.SelectableTarotCard
-import kotlin.math.cos
-import kotlin.math.sin
 
 @Composable
 fun BottomCardCardDeck(
@@ -30,33 +32,20 @@ fun BottomCardCardDeck(
     selectedCards: List<SelectableTarotCard>,
     onCardSelected: (SelectableTarotCard) -> Unit
 ) {
-    val rotationOffset = remember { mutableFloatStateOf(0f) }
-    val draggableState = rememberDraggableState { delta -> rotationOffset.floatValue += delta / 6f }
-    val isDraggable = selectedCards.size < maxSelectedCards
+    val scrollState = rememberLazyListState()
+    val dragOffset = remember { mutableFloatStateOf(0f) }
 
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
-//            .background(Color.Gray) // Size Debugging
-            .draggable(
-                state = draggableState,
-                orientation = Orientation.Horizontal,
-                enabled = isDraggable,
-                onDragStarted = { startOffset ->
-                    // Optional: Handle drag start (e.g., log or reset state)
-                    println("Drag started at offset: $startOffset")
-                },
-                onDragStopped = { velocity ->
-                    // Optional: Handle drag stop (e.g., apply fling or reset)
-                    println("Drag stopped with velocity: $velocity")
-                }
-            ),
-        contentAlignment = Alignment.TopCenter
+            .padding(vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        FanLayout(
-            modifier = Modifier,
+        HorizontalCardLayout(
+            modifier = Modifier.fillMaxWidth(),
             cards = cards,
-            rotationOffset = rotationOffset.floatValue,
+            scrollState = scrollState,
+            dragOffset = dragOffset.floatValue,
             selectedCards = selectedCards,
             onCardSelected = onCardSelected
         )
@@ -64,59 +53,43 @@ fun BottomCardCardDeck(
         Text(
             text = "<--- Select the card ---->",
             style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
             ),
-            modifier = Modifier.align(Alignment.BottomCenter)
+            modifier = Modifier
                 .padding(16.dp)
         )
     }
 }
 
 @Composable
-fun FanLayout(
+fun HorizontalCardLayout(
     modifier: Modifier = Modifier,
     cards: List<SelectableTarotCard>,
-    rotationOffset: Float,
+    scrollState: LazyListState,
+    dragOffset: Float,
     selectedCards: List<SelectableTarotCard>,
     onCardSelected: (SelectableTarotCard) -> Unit
 ) {
-    val arcAngle = 180f
-    val cardAngle = if (cards.size > 1) arcAngle / (cards.size - 1) else 0f
-    val radius = 1800f
-
-    Layout(
-        modifier = modifier.offset(y = (radius/3).dp),
-        content = {
-            cards.forEach { card ->
-                val isSelected = selectedCards.any { it.id == card.id }
-                TarotCardItem(
-                    card = card,
-                    isSelected = isSelected,
-                    onClick = { onCardSelected(card) }
-                )
-            }
-        }
-    ) { measurables, constraints ->
-        val placeables = measurables.map { it.measure(constraints) }
-        val width = constraints.maxWidth
-        val height = constraints.maxHeight
-
-        layout(width, height) {
-            placeables.forEachIndexed { index, placeable ->
-                val angle = -45f + index * cardAngle + rotationOffset
-                val rad = Math.toRadians(angle.toDouble())
-                val x = (width / 2) + sin(rad) * radius - placeable.width / 2
-                val y = height - cos(rad) * radius - placeable.height
-
-                placeable.placeWithLayer(
-                    x = x.toInt(),
-                    y = y.toInt(),
-                    layerBlock = {
-                        rotationZ = angle
-                        transformOrigin = TransformOrigin(0.5f, 1f)
-                    }
-                )
-            }
+    LazyRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .offset(x = (-dragOffset).dp),
+        state = scrollState,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        flingBehavior = rememberSnapFlingBehavior(lazyListState = scrollState)
+    ) {
+        items(
+            items = cards,
+            key = { card -> card.id } // Stable keys for efficient recomposition
+        ) { card ->
+            val isSelected by rememberUpdatedState(selectedCards.any { it.id == card.id })
+            TarotCardItem(
+                card = card,
+                isSelected = isSelected,
+                onClick = { onCardSelected(card) }
+            )
         }
     }
 }
