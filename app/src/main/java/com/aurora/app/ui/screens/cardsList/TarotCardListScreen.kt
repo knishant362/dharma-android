@@ -13,21 +13,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,12 +41,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter.Companion.tint
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil3.compose.rememberAsyncImagePainter
 import com.aurora.app.R
 import com.aurora.app.domain.model.TarotCard
+import com.aurora.app.domain.model.spread.FilterItem
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.BottomBar
 import com.aurora.app.ui.screens.destinations.CardDetailScreenDestination
@@ -51,6 +59,7 @@ import com.aurora.app.ui.screens.destinations.TarotCardListScreenDestination
 import com.aurora.app.utils.AssetImageLoader
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
@@ -61,8 +70,16 @@ fun TarotCardListScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
     val filters by viewModel.filters.collectAsState()
-    var selectedFilter by remember { mutableStateOf("All") }
-    var isGrid by remember { mutableStateOf(true) }
+    var selectedFilter by remember { mutableStateOf<FilterItem?>(null) }
+
+    LaunchedEffect(filters) {
+        if (filters.isNotEmpty() && selectedFilter == null) {
+            selectedFilter = filters.firstOrNull()
+        }
+    }
+
+    Timber.e("selected: filters: ${filters.size} ,selected: $selectedFilter")
+
 
     Scaffold(
         modifier = Modifier.background(color = Color.Transparent),
@@ -70,73 +87,66 @@ fun TarotCardListScreen(
             AuroraTopBar(titleRes = R.string.app_name)
         },
         content = { paddingValues ->
-
-            Box(
+            Column (
                 modifier = Modifier
-                    .padding(paddingValues)
-            ) {
+                    .padding(paddingValues),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
 
-                Column{
+                TarotFilterChips(
+                    filters = filters,
+                    selected = selectedFilter,
+                    onFilterSelected = { selectedFilter = it }
+                )
 
-                    TarotFilterChips(
-                        filters = filters,
-                        selected = selectedFilter,
-                        onFilterSelected = { selectedFilter = it }
-                    )
-
-                    Button(
-                        onClick = { isGrid = !isGrid },
-                        modifier = Modifier.align(Alignment.End)
+                when (state) {
+                    is TarotUiState.Loading -> Box(
+                        Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text(if (isGrid) "Switch to List" else "Switch to Grid")
+                        CircularProgressIndicator()
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    is TarotUiState.Error -> Box(
+                        Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("Error: ${(state as TarotUiState.Error).message}")
+                    }
 
-                    when (state) {
-                        is TarotUiState.Loading -> Box(
-                            Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
+                    is TarotUiState.Success -> {
+                        val allCards = (state as TarotUiState.Success).cards
+                        val filteredCards = when {
+                            filters.indexOf(selectedFilter) == 0 -> allCards
+                            else -> allCards.filter { it.type == selectedFilter?.title }
                         }
 
-                        is TarotUiState.Error -> Box(
-                            Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(3),
+                            contentPadding = PaddingValues(4.dp),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp)
                         ) {
-                            Text("Error: ${(state as TarotUiState.Error).message}")
-                        }
 
-                        is TarotUiState.Success -> {
-                            val allCards = (state as TarotUiState.Success).cards
-                            val filteredCards = when (selectedFilter) {
-                                "All" -> allCards
-                                in allCards.map { it.type } -> allCards.filter { it.type == selectedFilter }
-                                else -> allCards
-                            }
-
-                            if (isGrid) {
-                                LazyVerticalGrid(
-                                    columns = GridCells.Fixed(2),
-                                    contentPadding = PaddingValues(4.dp),
-                                    modifier = Modifier.fillMaxSize()
-                                ) {
-                                    items(filteredCards.size) { index ->
-                                        TarotCardItem(card = filteredCards[index], onClick = { card -> navigator.navigate(CardDetailScreenDestination(card)) })
-                                    }
-                                }
-                            } else {
-                                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                                    items(filteredCards.size) { index ->
-                                        TarotCardItem(card = filteredCards[index], onClick = { card -> navigator.navigate(CardDetailScreenDestination(card)) })
-                                    }
+                            selectedFilter?.let { filter ->
+                                item(span = { GridItemSpan(maxLineSpan) }) {
+                                    FilterDescription(filter = filter)
                                 }
                             }
+
+                            items(filteredCards.size) { index ->
+                                TarotCardItem(
+                                    card = filteredCards[index],
+                                    onClick = { card -> navigator.navigate(CardDetailScreenDestination(card)) }
+                                )
+                            }
                         }
+
                     }
                 }
             }
+
         },
         bottomBar = {
             BottomBar(navigator, TarotCardListScreenDestination.route)
@@ -146,30 +156,78 @@ fun TarotCardListScreen(
 
 @Composable
 fun TarotFilterChips(
-    filters: List<String>,
-    selected: String,
-    onFilterSelected: (String) -> Unit
+    modifier: Modifier = Modifier,
+    filters: List<FilterItem>,
+    selected: FilterItem?,
+    onFilterSelected: (FilterItem) -> Unit
 ) {
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = modifier
+            .padding(horizontal = 8.dp, vertical = 16.dp)
     ) {
         items(filters) { filter ->
-            val isSelected = selected == filter
-            FilterChip(
-                selected = isSelected,
-                onClick = { onFilterSelected(filter) },
-                label = { Text(filter) },
-                colors = FilterChipDefaults.filterChipColors(
-                    selectedContainerColor = MaterialTheme.colorScheme.onBackground,
-                    selectedLabelColor = MaterialTheme.colorScheme.background
-                )
-            )
+
+            val context = LocalContext.current
+            val bitmap by remember(filter.id) {
+                mutableStateOf(AssetImageLoader.loadBitmapFromAsset(context, filter.imagePath))
+            }
+
+            val isSelected = selected?.title == filter.title
+            val borderColor = MaterialTheme.colorScheme.primary
+            val backgroundColor = if (isSelected) borderColor else Color.Transparent
+            val iconTint = if (isSelected) MaterialTheme.colorScheme.onPrimary else borderColor
+
+            Box(
+                modifier = Modifier
+                    .size(42.dp)
+                    .clip(CircleShape)
+                    .background(backgroundColor)
+                    .border(
+                        width = if (isSelected) 0.dp else 1.dp,
+                        color = borderColor,
+                        shape = CircleShape
+                    )
+                    .clickable { onFilterSelected(filter) },
+                contentAlignment = Alignment.Center
+            ) {
+                bitmap?.let {
+                    Image(
+                        bitmap = it,
+                        contentDescription = filter.title,
+                        modifier = Modifier.size(38.dp),
+                        contentScale = ContentScale.FillWidth,
+                        colorFilter = tint(iconTint)
+                    )
+                }
+            }
         }
     }
 }
+
+@Composable
+fun FilterDescription(filter: FilterItem, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier
+            .padding(horizontal = 8.dp)
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            modifier = Modifier.padding(12.dp),
+            text = filter.title.uppercase(),
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center
+        )
+        Text(
+            modifier = Modifier.padding(12.dp),
+            text = stringResource(if(filter.description == 0) R.string.tap_to_detail else filter.description),
+            style = MaterialTheme.typography.bodyMedium,
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
 
 @Composable
 fun TarotCardItem(card: TarotCard, onClick: (TarotCard) -> Unit = {}) {
@@ -182,13 +240,12 @@ fun TarotCardItem(card: TarotCard, onClick: (TarotCard) -> Unit = {}) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clip(RoundedCornerShape(4.dp))
             .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f),
-                shape = RoundedCornerShape(4.dp)
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(12.dp)
             )
-            .shadow(elevation = 6.dp, shape = RoundedCornerShape(1.dp))
+            .clip(RoundedCornerShape(14.dp))
             .clickable { onClick.invoke(card) }
     ) {
         bitmap?.let {

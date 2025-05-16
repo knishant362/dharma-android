@@ -7,4 +7,13 @@
     <string name="privacy_policy">Privacy Policy</string>
     <string name="support">Support</string>
     <string name="empty_message">Nothing here, check out a different category!</string>
+
+    <string name="all">All</string>
+    <string name="tap_to_detail">Tap a card to find out the meaning</string>
+    <string name="major_description">Regarded as the basis of the deck, the Major Arcana cards are packed with archetypal meaning and wisdom. They tell stories of the spiritual journey, helping us gain a deeper understanding of ourselves.</string>
+    <string name="minor_description">The heart of day-to-day life, the Minor Arcana reveals the emotions, challenges, and experiences we face regularly. These cards reflect the energy of the moment, guiding us through choices, struggles, and triumphs in the material world.</string>
+    <string name="wands_description">The suit of passion and purpose, Wands ignite our creative spark and inner drive. These cards speak of action, ambition, and growth, helping us harness our potential and follow our true path with courage.</string>
+    <string name="cups_description">The suit of emotion and intuition, Cups flow through the realm of the heart. They reveal relationships, dreams, and inner feelings, inviting us to connect deeply—with ourselves and others—with compassion and sensitivity.</string>
+    <string name="swords_description">The suit of thought and truth, Swords cut through illusion and bring clarity. They represent the mind, communication, and conflict, guiding us to make wise decisions, confront challenges, and speak our truth with integrity.</string>
+    <string name="pentacles_description">The suit of stability and manifestation, Pentacles root us in the physical world. They deal with career, health, home, and wealth, encouraging us to build a secure foundation and nurture what truly sustains us.</string>
 </resources>

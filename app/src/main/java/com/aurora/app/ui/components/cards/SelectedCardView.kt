@@ -1,22 +1,20 @@
 package com.aurora.app.ui.components.cards
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+import com.aurora.app.ui.components.GradientBorderBox
 import com.aurora.app.ui.screens.tarotSelect.SelectableTarotCard
 import com.aurora.app.utils.AssetImageLoader
 
@@ -27,44 +25,51 @@ fun SelectedCardView(
     isRevealed: Boolean,
     onClick: (SelectableTarotCard) -> Unit
 ) {
+    val context = LocalContext.current
 
-    Box(
+    if (card == null) {
+        GradientBorderBox(modifier = modifier) { /* App Logo here */ }
+        return
+    }
+
+    val rotationY by animateFloatAsState(
+        targetValue = if (isRevealed) 180f else 0f,
+        animationSpec = tween(durationMillis = 600),
+        label = "card_flip"
+    )
+
+    val isFrontVisible = rotationY > 90f
+
+    val frontBitmap by remember(card.id) {
+        mutableStateOf(AssetImageLoader.loadBitmapFromAsset(context, card.frontImage))
+    }
+
+    GradientBorderBox(
         modifier = modifier
-            .clip(RoundedCornerShape(8.dp))
-            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp))
+            .graphicsLayer {
+                this.rotationY = rotationY
+                cameraDistance = 8 * density
+            }
+            .clickable { onClick(card) }
     ) {
-
-        card?.let {
-            if (isRevealed) {
-
-                val context = LocalContext.current
-                val bitmap by remember(card.id) {
-                    mutableStateOf(AssetImageLoader.loadBitmapFromAsset(context, card.frontImage))
-                }
-                bitmap?.let { it1 ->
-                    Image(
-                        bitmap = it1,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .clip(RoundedCornerShape(8.dp))
-                            .clickable { onClick(card) },
-                        contentScale = ContentScale.Crop
-                    )
-                }
-            } else {
-                val imageRes = card.backImageRes
+        if (isFrontVisible) {
+            frontBitmap?.let { bitmap ->
                 Image(
-                    painter = painterResource(id = imageRes),
+                    bitmap = bitmap,
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable { onClick(card) },
+                        .graphicsLayer { this.rotationY = 180f },
                     contentScale = ContentScale.Crop
                 )
             }
-
+        } else {
+            Image(
+                painter = painterResource(id = card.backImageRes),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
         }
     }
 }

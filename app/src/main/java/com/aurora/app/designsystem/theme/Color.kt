@@ -3,6 +3,6 @@ package com.aurora.app.designsystem.theme
 import androidx.compose.ui.graphics.Color
 
 val Golden = Color(0xFFC9A281)
-val DarkBlue = Color(0xFF080925)
+val DarkBlue = Color(0xFF1F1F1F)
 val White = Color(0xFFFFFFFF)
-val DarkSurface = Color(0xFF121212)
+val DarkSurface = Color(0xFF181717)

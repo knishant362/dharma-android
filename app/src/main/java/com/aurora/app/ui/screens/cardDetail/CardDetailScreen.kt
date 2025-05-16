@@ -120,7 +120,18 @@ fun CardDetailImage(modifier: Modifier, imagePath: String, title: String) {
             bitmap = it,
             contentDescription = "$title Tarot Card",
             modifier = modifier
-                .clip(RoundedCornerShape(12.dp)),
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .clip(RoundedCornerShape(14.dp))
+                .border(
+                    width = 2.dp,
+                    color = Color.Black,
+                    shape = RoundedCornerShape(16.dp)
+                )
+            ,
             contentScale = ContentScale.Crop
         )
     }
