@@ -49,7 +49,7 @@ fun SplashScreen(modifier: Modifier = Modifier, navigator: DestinationsNavigator
     LaunchedEffect(Unit) {
         coroutineScope {
             delay(1000)
-            navigator.navigate(SpreadDetailScreenDestination) {
+            navigator.navigate(DashboardScreenDestination) {
                 popUpTo(NavGraphs.root) {
                     saveState = true
                 }
