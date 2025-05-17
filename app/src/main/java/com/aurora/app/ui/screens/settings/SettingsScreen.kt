@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
@@ -38,8 +39,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.aurora.app.R
 import com.aurora.app.ui.components.AuroraTopBar
-import com.aurora.app.ui.components.BottomBar
-import com.aurora.app.ui.screens.destinations.SettingsScreenDestination
 import com.aurora.app.utils.AppNavigationHelper
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -50,7 +49,13 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 fun SettingsScreen(navigator: DestinationsNavigator) {
     Scaffold(
         topBar = {
-            AuroraTopBar(titleRes = R.string.app_name)
+            AuroraTopBar(
+                titleRes = R.string.app_name,
+                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationClick = {
+                    navigator.navigateUp()
+                }
+            )
         },
         content = { paddingValues ->
             Box(
@@ -59,9 +64,6 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
             ) {
                 OptionSection()
             }
-        },
-        bottomBar = {
-            BottomBar(navigator, SettingsScreenDestination.route)
         }
     )
 }
@@ -122,6 +124,7 @@ fun OptionItem(
         )
     }
 }
+
 @Composable
 fun AppPanel(
     modifier: Modifier = Modifier

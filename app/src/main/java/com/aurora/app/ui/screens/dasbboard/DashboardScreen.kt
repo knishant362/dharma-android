@@ -18,11 +18,12 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,7 +42,9 @@ import com.aurora.app.domain.model.dashboard.Featured
 import com.aurora.app.domain.model.dashboard.TarotOption
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.BottomBar
+import com.aurora.app.ui.components.button.AuroraOutlinedButton
 import com.aurora.app.ui.screens.destinations.DashboardScreenDestination
+import com.aurora.app.ui.screens.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -57,7 +60,13 @@ fun DashboardScreen(
 
     Scaffold(
         topBar = {
-            AuroraTopBar(titleRes = R.string.app_name)
+            AuroraTopBar(
+                titleRes = R.string.app_name,
+                actionIcon = Icons.Rounded.AccountCircle,
+                onActionClick = {
+                    navigator.navigate(SettingsScreenDestination)
+                }
+            )
         },
         content = { paddingValues ->
             LazyColumn(
@@ -154,7 +163,7 @@ fun TarotFeaturedSection(
                         .padding(4.dp)
                         .size(if (selected) 10.dp else 8.dp)
                         .background(
-                            color = if (selected) Color.Blue else Color.LightGray,
+                            color = if (selected) MaterialTheme.colorScheme.primary else Color.LightGray,
                             shape = RoundedCornerShape(50)
                         )
                 )
@@ -196,9 +205,10 @@ fun TarotCarouselCard(
                 style = MaterialTheme.typography.titleLarge
             )
             Spacer(Modifier.height(16.dp))
-            OutlinedButton(onClick = onDrawCardsClick) {
-                Text(featured.buttonText)
-            }
+            AuroraOutlinedButton(
+                text = featured.buttonText,
+                onClick = onDrawCardsClick
+            )
         }
     }
 }

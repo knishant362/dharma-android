@@ -40,7 +40,7 @@ class DashboardViewModel @Inject constructor(
         val featuredData = listOf(
             Featured(0, "YOUR TAROT READING\nFOR THE TODAY", "DRAW CARDS"),
             Featured(1, "CARD OF THE DAY", "DRAW NOW"),
-            Featured(2, "HOW ARE YOU FEELING TODAY", "FIND OUT"),
+            Featured(2, "WHAT'S YOUR ENERGY\nTODAY?", "FIND OUT"),
         )
         return featuredData
     }

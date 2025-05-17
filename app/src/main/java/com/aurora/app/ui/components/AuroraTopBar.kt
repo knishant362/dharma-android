@@ -1,6 +1,7 @@
 package com.aurora.app.ui.components
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.aurora.app.designsystem.theme.calistogaFontFamily
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,7 +32,7 @@ fun AuroraTopBar(
 ) {
     val calistoga = calistogaFontFamily()
     CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(id = titleRes), fontFamily = calistoga) },
+        title = { Text(modifier = Modifier.padding(8.dp), text = stringResource(id = titleRes), fontFamily = calistoga) },
         navigationIcon = {
             if (navigationIcon != null) {
                 IconButton(onClick = onNavigationClick) {
