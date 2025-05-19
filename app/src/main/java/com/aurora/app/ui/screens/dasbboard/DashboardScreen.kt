@@ -44,6 +44,7 @@ import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.BottomBar
 import com.aurora.app.ui.components.button.AuroraOutlinedButton
 import com.aurora.app.ui.screens.destinations.DashboardScreenDestination
+import com.aurora.app.ui.screens.destinations.ExploreScreenDestination
 import com.aurora.app.ui.screens.destinations.SettingsScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -78,7 +79,9 @@ fun DashboardScreen(
                 item {
                     TarotFeaturedSection(
                         featuredItems = uiState.featuredItems,
-                        onDrawCardsClick = { }
+                        onClick = {
+                            navigator.navigate(ExploreScreenDestination())
+                        }
                     )
                 }
 
@@ -121,16 +124,14 @@ fun GreetingSection(
             color = Color.White.copy(alpha = 0.8f),
             style = MaterialTheme.typography.bodyLarge
         )
-
     }
-
 }
 
 @Composable
 fun TarotFeaturedSection(
     modifier: Modifier = Modifier,
     featuredItems: List<Featured>,
-    onDrawCardsClick: () -> Unit
+    onClick: (Featured) -> Unit
 ) {
     if (featuredItems.isEmpty()) return
 
@@ -148,7 +149,7 @@ fun TarotFeaturedSection(
         ) { page ->
             TarotCarouselCard(
                 featured = featuredItems[page],
-                onDrawCardsClick = onDrawCardsClick,
+                onDrawCardsClick = { onClick(it) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -176,7 +177,7 @@ fun TarotFeaturedSection(
 @Composable
 fun TarotCarouselCard(
     featured: Featured,
-    onDrawCardsClick: () -> Unit,
+    onDrawCardsClick: (Featured) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -207,7 +208,7 @@ fun TarotCarouselCard(
             Spacer(Modifier.height(16.dp))
             AuroraOutlinedButton(
                 text = featured.buttonText,
-                onClick = onDrawCardsClick
+                onClick = { onDrawCardsClick(featured) }
             )
         }
     }

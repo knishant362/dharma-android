@@ -17,6 +17,6 @@ enum class BottomBarDestination(
     val label: String
 ) {
     Dashboard(DashboardScreenDestination, Icons.Default.Attractions, "Dashboard"),
-    SpreadDetail(SpreadDetailScreenDestination, Icons.Default.Attractions, "Meanings"),
-    CardsList(TarotCardListScreenDestination, Icons.AutoMirrored.Filled.List, label = "Cards"),
+    SpreadDetail(SpreadDetailScreenDestination, Icons.Default.Attractions, "Explore"),
+    CardsList(TarotCardListScreenDestination, Icons.AutoMirrored.Filled.List, label = "Meanings"),
 }
