@@ -10,6 +10,8 @@ interface TarotRepository {
 
     fun getAllSpreads(): List<SpreadDetail>
 
+    fun getExploreSpreads(): List<SpreadDetail>
+
     fun loadFullSpreadDetail(packName: String, cardName: String): FullSpreadDetail?
 
     fun loadSpreadDetails(): List<SpreadDetail>

@@ -85,6 +85,79 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
                 ),
                 icon = R.drawable.ic_one_card
             ),
+            SpreadDetail(
+                id = "5",
+                title = "My Love Life Developments",
+                description = "These three cards will provide a general overview of your day including health.",
+                cards = listOf(
+                    CardInfo("Past", "Reveals the influence of past events on your current situation."),
+                    CardInfo("Present", "Describes your current emotional, physical, or mental state."),
+                    CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
+                ),
+                icon = R.drawable.ic_three_card
+            ),
+            SpreadDetail(
+                id = "6",
+                title = "My Prosperity and Wellbeing",
+                description = "These three cards will provide a general overview of your day including health.",
+                cards = listOf(
+                    CardInfo("Past", "Reveals the influence of past events on your current situation."),
+                    CardInfo("Present", "Describes your current emotional, physical, or mental state."),
+                    CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
+                ),
+                icon = R.drawable.ic_three_card
+            ),
+            SpreadDetail(
+                id = "7",
+                title = "What Awaits Me Soon",
+                description = "These three cards will provide a general overview of your day including health.",
+                cards = listOf(
+                    CardInfo("Past", "Reveals the influence of past events on your current situation."),
+                    CardInfo("Present", "Describes your current emotional, physical, or mental state."),
+                    CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
+                ),
+                icon = R.drawable.ic_three_card
+            ),
+        )
+
+        return spreadList
+    }
+
+    override fun getExploreSpreads(): List<SpreadDetail> {
+        val spreadList = listOf(
+            SpreadDetail(
+                id = "5",
+                title = "My Love Life Developments",
+                description = "These three cards will provide a general overview of your day including health.",
+                cards = listOf(
+                    CardInfo("Past", "Reveals the influence of past events on your current situation."),
+                    CardInfo("Present", "Describes your current emotional, physical, or mental state."),
+                    CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
+                ),
+                icon = R.drawable.ic_three_card
+            ),
+            SpreadDetail(
+                id = "6",
+                title = "My Prosperity and Wellbeing",
+                description = "These three cards will provide a general overview of your day including health.",
+                cards = listOf(
+                    CardInfo("Past", "Reveals the influence of past events on your current situation."),
+                    CardInfo("Present", "Describes your current emotional, physical, or mental state."),
+                    CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
+                ),
+                icon = R.drawable.ic_three_card
+            ),
+            SpreadDetail(
+                id = "7",
+                title = "What Awaits Me Soon",
+                description = "These three cards will provide a general overview of your day including health.",
+                cards = listOf(
+                    CardInfo("Past", "Reveals the influence of past events on your current situation."),
+                    CardInfo("Present", "Describes your current emotional, physical, or mental state."),
+                    CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
+                ),
+                icon = R.drawable.ic_three_card
+            )
         )
 
         return spreadList
