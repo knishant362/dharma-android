@@ -40,12 +40,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aurora.app.R
 import com.aurora.app.domain.model.dashboard.Featured
 import com.aurora.app.domain.model.dashboard.TarotOption
+import com.aurora.app.domain.model.spread.SpreadDetailDTO
+import com.aurora.app.domain.model.spread.toSpreadDetail
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.BottomBar
 import com.aurora.app.ui.components.button.AuroraOutlinedButton
 import com.aurora.app.ui.screens.destinations.DashboardScreenDestination
 import com.aurora.app.ui.screens.destinations.ExploreScreenDestination
 import com.aurora.app.ui.screens.destinations.SettingsScreenDestination
+import com.aurora.app.ui.screens.destinations.SpreadResultScreenDestination
+import com.aurora.app.ui.screens.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -88,8 +92,14 @@ fun DashboardScreen(
                 item {
                     GreetingSection("Nishant")
                     TarotOptionsGrid(
-                        uiState.tarotOptions,
-                        onClick = {}
+                        uiState.spreads,
+                        onClick = {
+                            if (it.spreadResult == null) {
+                                navigator.navigate(TarotSelectScreenDestination(it.toSpreadDetail()))
+                            } else {
+                                navigator.navigate(SpreadResultScreenDestination(it.toSpreadDetail()))
+                            }
+                        }
                     )
                 }
             }
@@ -254,8 +264,8 @@ fun TarotOptionCard(
 
 @Composable
 fun TarotOptionsGrid(
-    tarotOptions: List<TarotOption>,
-    onClick: (TarotOption) -> Unit
+    tarotOptions: List<SpreadDetailDTO>,
+    onClick: (SpreadDetailDTO) -> Unit
 ) {
     val rows = tarotOptions.chunked(2)
 
@@ -271,12 +281,11 @@ fun TarotOptionsGrid(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 rowItems.forEach { tarotOption ->
-                    val backgroundColor =
-                        if (tarotOption.id % 2 == 0L) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
+                    val backgroundColor = if (tarotOption.index == 1 || tarotOption.index == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
                     TarotOptionCard(
                         title = tarotOption.title,
                         backgroundColor = backgroundColor,
-                        iconRes = tarotOption.iconRes,
+                        iconRes = tarotOption.icon,
                         onClick = { onClick.invoke(tarotOption) },
                         modifier = Modifier
                             .weight(1f)

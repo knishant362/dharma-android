@@ -28,8 +28,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.data.model.SpreadResult
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.screens.destinations.SpreadHistoryScreenDestination
-import com.aurora.app.ui.screens.spreadDetail.SpreadDetailUiState
-import com.aurora.app.ui.screens.spreadDetail.SpreadViewModel
+import com.aurora.app.ui.screens.spreadList.SpreadDetailUiState
+import com.aurora.app.ui.screens.spreadList.SpreadListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import java.text.SimpleDateFormat
@@ -41,7 +41,7 @@ import java.util.Locale
 @Composable
 fun SpreadHistoryScreen(
     navigator: DestinationsNavigator,
-    viewModel: SpreadViewModel = hiltViewModel()
+    viewModel: SpreadListViewModel = hiltViewModel()
 ) {
     val state by viewModel.spreadUiState
     var showToday by remember { mutableStateOf(false) }

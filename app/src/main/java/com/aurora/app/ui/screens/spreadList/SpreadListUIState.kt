@@ -1,4 +1,4 @@
-package com.aurora.app.ui.screens.spreadDetail
+package com.aurora.app.ui.screens.spreadList
 
 import com.aurora.app.data.model.SpreadResult
 import com.aurora.app.domain.model.spread.SpreadDetail

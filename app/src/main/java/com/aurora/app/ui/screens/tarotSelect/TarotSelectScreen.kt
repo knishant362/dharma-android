@@ -5,6 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,17 +15,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.aurora.app.R
 import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.ui.components.AuroraTopBar
+import com.aurora.app.ui.components.ResultWaitingView
 import com.aurora.app.ui.components.button.AuroraButton
 import com.aurora.app.ui.components.cards.BottomCardCardDeck
 import com.aurora.app.ui.components.cards.cardselection.TopSelectedCardsView
@@ -69,15 +78,31 @@ fun TarotSelectScreen(
                     .padding(paddingValues)
                     .fillMaxSize()
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                Image(
+                    modifier = Modifier.fillMaxSize(),
+                    painter = painterResource(R.drawable.bg_main),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+
+                AnimatedVisibility(
+                    visible = uiState.maxSelectedCards != 0,
+                    enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
+                    exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut()
                 ) {
-                    AnimatedVisibility(
-                        visible = uiState.maxSelectedCards != 0, // or your own condition
-                        enter = slideInVertically(initialOffsetY = { -it }) + fadeIn(),
-                        exit = slideOutVertically(targetOffsetY = { -it }) + fadeOut()
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        Text(
+                            "Let the Cards Guide You",
+                            color = Color.White,
+                            style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center),
+                            modifier = Modifier
+                                .padding(16.dp)
+                        )
+
                         TopSelectedCardsView(
                             modifier = Modifier,
                             spreadCount = uiState.maxSelectedCards,
@@ -96,57 +121,65 @@ fun TarotSelectScreen(
                         )
                     }
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        verticalArrangement = Arrangement.Bottom
+
+                }
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+
+                    AnimatedVisibility(
+                        visible = selectedCards.size != uiState.maxSelectedCards,
+                        enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
                     ) {
-
-                        AnimatedVisibility(
-                            visible = selectedCards.size != uiState.maxSelectedCards,
-                            enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
-                        ) {
-                            BottomCardCardDeck(
-                                cards = uiState.selectableCards,
-                                selectedCards = selectedCards,
-                                onCardSelected = { selected ->
-                                    if (selectedCards.size < uiState.maxSelectedCards && !selectedCards.contains(selected)) {
-                                        viewModel.addSelectedCard(selected)
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                maxSelectedCards = uiState.maxSelectedCards
-                            )
-                        }
-
-                        AnimatedVisibility(
-                            visible = selectedCards.size == uiState.maxSelectedCards && !uiState.isLoading,
-                            enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
-                            exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                if (uiState.isRevealed) {
-                                    AuroraButton(
-                                        text = "Get Result",
-                                        onClick = {
-                                            navigator.popBackStack()
-                                            navigator.navigate(
-                                                SpreadResultScreenDestination(spreadDetail)
-                                            )
-                                        }
+                        BottomCardCardDeck(
+                            cards = uiState.selectableCards,
+                            selectedCards = selectedCards,
+                            onCardSelected = { selected ->
+                                if (selectedCards.size < uiState.maxSelectedCards && !selectedCards.contains(
+                                        selected
                                     )
-                                } else {
-                                    AuroraButton(
-                                        text = "Reveal Cards",
-                                        onClick = { viewModel.setRevealed(true) },
-                                    )
+                                ) {
+                                    viewModel.addSelectedCard(selected)
                                 }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            maxSelectedCards = uiState.maxSelectedCards
+                        )
+                    }
+
+                    AnimatedVisibility(
+                        visible = selectedCards.size == uiState.maxSelectedCards && !uiState.isLoading,
+                        enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                        exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            if (uiState.isRevealed) {
+                                AuroraButton(
+                                    text = "Get Result",
+                                    onClick = {
+                                        navigator.popBackStack()
+                                        navigator.navigate(
+                                            SpreadResultScreenDestination(spreadDetail)
+                                        )
+                                    }
+                                )
+                            } else {
+
+                                ResultWaitingView{}
+
+                                AuroraButton(
+                                    text = "Reveal Cards",
+                                    onClick = { viewModel.setRevealed(true) },
+                                )
                             }
                         }
                     }

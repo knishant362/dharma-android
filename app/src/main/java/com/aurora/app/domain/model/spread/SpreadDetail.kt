@@ -10,6 +10,7 @@ data class SpreadDetail(
     val title: String,
     val description: String,
     val icon: Int = R.drawable.ic_four_card,
+    val cardIcon: Int = R.drawable.ic_one_card,
     val cards: List<CardInfo> = emptyList()
 ): Parcelable
 

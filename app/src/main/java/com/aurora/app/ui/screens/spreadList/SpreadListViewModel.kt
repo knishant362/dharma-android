@@ -1,4 +1,4 @@
-package com.aurora.app.ui.screens.spreadDetail
+package com.aurora.app.ui.screens.spreadList
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SpreadViewModel @Inject constructor(
+class SpreadListViewModel @Inject constructor(
     private val mainRepository: MainRepository,
     private val repository: TarotRepository
 ) : ViewModel() {

@@ -32,7 +32,7 @@ class ExploreViewModel @Inject constructor(
                 val results = mainRepository.getSavedSpreads()
                 val todaySpreadResults = results.filter { isToday(it.createdAt) }
                 val todaySpreadResultsMap = todaySpreadResults.associateBy { it.spreadDetailId }
-                val spreads = repository.getExploreSpreads().map { it.toSpreadDetailDTO(todaySpreadResultsMap[it.id] )}
+                val spreads = repository.getExploreSpreads().mapIndexed { index, spread -> spread.toSpreadDetailDTO(index, todaySpreadResultsMap[spread.id] )}
                 _uiState.value = ExploreUiState(
                     isLoading = false,
                     title = "Choose what you would\nlike to explore",

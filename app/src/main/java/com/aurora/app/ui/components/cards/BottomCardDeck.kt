@@ -51,10 +51,10 @@ fun BottomCardCardDeck(
         )
 
         Text(
-            text = "<--- Select the card ---->",
-            style = MaterialTheme.typography.titleMedium.copy(
+            text = "<--- Select your cards ---->",
+            style = MaterialTheme.typography.titleLarge.copy(
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onSurface
             ),
             modifier = Modifier
                 .padding(16.dp)

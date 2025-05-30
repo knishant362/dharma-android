@@ -3,6 +3,7 @@ package com.aurora.app.data.repo
 import android.content.Context
 import com.aurora.app.R
 import com.aurora.app.domain.model.TarotCard
+import com.aurora.app.domain.model.dashboard.TarotOption
 import com.aurora.app.domain.model.spread.CardInfo
 import com.aurora.app.domain.model.spread.FullSpreadDetail
 import com.aurora.app.domain.model.spread.Property
@@ -43,7 +44,8 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
                     CardInfo("Present", "Describes your current emotional, physical, or mental state."),
                     CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
                 ),
-                icon = R.drawable.ic_three_card
+                icon = R.drawable.ic_three_card,
+                cardIcon = R.drawable.ic_one_card
             ),
             SpreadDetail(
                 id = "1",
@@ -55,7 +57,8 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
                     CardInfo("Love", "An overview of your emotional or romantic life today."),
                     CardInfo("Spiritual", "A message to guide your inner path today.")
                 ),
-                icon = R.drawable.ic_four_card
+                icon = R.drawable.ic_tarot_three,
+                cardIcon = R.drawable.ic_four_card
             ),
             SpreadDetail(
                 id = "2",
@@ -65,7 +68,8 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
                     CardInfo("You", "Represents your feelings and role in the relationship."),
                     CardInfo("Partner", "Reveals your partner’s perspective or emotions.")
                 ),
-                icon = R.drawable.ic_two_card
+                icon = R.drawable.ic_two_card,
+                cardIcon = R.drawable.ic_two_card
             ),
             SpreadDetail(
                 id = "3",
@@ -74,7 +78,8 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
                 cards = listOf(
                     CardInfo("Daily Guidance", "A card to guide your choices and mindset today.")
                 ),
-                icon = R.drawable.ic_one_card
+                icon = R.drawable.ic_tarot_card_one,
+                cardIcon = R.drawable.ic_one_card
             ),
             SpreadDetail(
                 id = "4",
@@ -83,7 +88,8 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
                 cards = listOf(
                     CardInfo("Answer", "This card will indicate a yes, no, or maybe based on your energy.")
                 ),
-                icon = R.drawable.ic_one_card
+                icon = R.drawable.ic_tarot_icon,
+                cardIcon = R.drawable.ic_one_card
             ),
             SpreadDetail(
                 id = "5",
@@ -94,7 +100,8 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
                     CardInfo("Present", "Describes your current emotional, physical, or mental state."),
                     CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
                 ),
-                icon = R.drawable.ic_three_card
+                icon = R.drawable.ic_three_card,
+                cardIcon = R.drawable.ic_three_card
             ),
             SpreadDetail(
                 id = "6",
@@ -105,7 +112,8 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
                     CardInfo("Present", "Describes your current emotional, physical, or mental state."),
                     CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
                 ),
-                icon = R.drawable.ic_three_card
+                icon = R.drawable.ic_three_card,
+                cardIcon = R.drawable.ic_three_card
             ),
             SpreadDetail(
                 id = "7",
@@ -116,51 +124,38 @@ class TarotRepositoryImpl(private val context: Context): TarotRepository {
                     CardInfo("Present", "Describes your current emotional, physical, or mental state."),
                     CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
                 ),
-                icon = R.drawable.ic_three_card
+                icon = R.drawable.ic_three_card,
+                cardIcon = R.drawable.ic_three_card
             ),
+            SpreadDetail(
+                id = "8",
+                title = "Relationship",
+                description = "These nine cards will provide a deeper insight into your love life by exploring past, present, and future influences.",
+                cards = listOf(
+                    CardInfo("Past 1", "Reveals the emotional influences from the past affecting your current love life."),
+                    CardInfo("Past 2", "Reveals the mental patterns or beliefs from the past in your love life."),
+                    CardInfo("Past 3", "Reveals the external events or conditions that shaped your past love life."),
+                    CardInfo("Present 1", "Shows your current emotional state in your romantic life."),
+                    CardInfo("Present 2", "Shows your current mindset or thoughts about your relationship."),
+                    CardInfo("Present 3", "Highlights current circumstances or actions affecting your love life."),
+                    CardInfo("Future 1", "Predicts how your emotions may evolve in your love journey."),
+                    CardInfo("Future 2", "Predicts upcoming shifts in mindset regarding relationships."),
+                    CardInfo("Future 3", "Foretells future events or outcomes in your love life.")
+                ),
+                icon = R.drawable.ic_tarot_love,
+                cardIcon = R.drawable.ic_nine_card
+            )
         )
 
         return spreadList
     }
 
     override fun getExploreSpreads(): List<SpreadDetail> {
-        val spreadList = listOf(
-            SpreadDetail(
-                id = "5",
-                title = "My Love Life Developments",
-                description = "These three cards will provide a general overview of your day including health.",
-                cards = listOf(
-                    CardInfo("Past", "Reveals the influence of past events on your current situation."),
-                    CardInfo("Present", "Describes your current emotional, physical, or mental state."),
-                    CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
-                ),
-                icon = R.drawable.ic_three_card
-            ),
-            SpreadDetail(
-                id = "6",
-                title = "My Prosperity and Wellbeing",
-                description = "These three cards will provide a general overview of your day including health.",
-                cards = listOf(
-                    CardInfo("Past", "Reveals the influence of past events on your current situation."),
-                    CardInfo("Present", "Describes your current emotional, physical, or mental state."),
-                    CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
-                ),
-                icon = R.drawable.ic_three_card
-            ),
-            SpreadDetail(
-                id = "7",
-                title = "What Awaits Me Soon",
-                description = "These three cards will provide a general overview of your day including health.",
-                cards = listOf(
-                    CardInfo("Past", "Reveals the influence of past events on your current situation."),
-                    CardInfo("Present", "Describes your current emotional, physical, or mental state."),
-                    CardInfo("Future", "Suggests what you may encounter or need to be prepared for.")
-                ),
-                icon = R.drawable.ic_three_card
-            )
-        )
+        return getAllSpreads().filter { it.id in setOf("5","6","7") }
+    }
 
-        return spreadList
+    override fun getDashboardSpreads(): List<SpreadDetail> {
+        return getAllSpreads().filter { it.id in setOf("1", "3","4","8") }
     }
 
     override fun loadTarotCards(packName: String): List<TarotCard> {

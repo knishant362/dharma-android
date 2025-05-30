@@ -1,4 +1,4 @@
-package com.aurora.app.ui.screens.spreadDetail
+package com.aurora.app.ui.screens.spreadList
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -41,8 +41,8 @@ import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.BottomBar
 import com.aurora.app.ui.components.OnLifecycleEvent
-import com.aurora.app.ui.screens.destinations.SpreadDetailScreenDestination
 import com.aurora.app.ui.screens.destinations.SpreadHistoryScreenDestination
+import com.aurora.app.ui.screens.destinations.SpreadListScreenDestination
 import com.aurora.app.ui.screens.destinations.SpreadResultScreenDestination
 import com.aurora.app.ui.screens.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
@@ -52,9 +52,9 @@ import timber.log.Timber
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination
 @Composable
-fun SpreadDetailScreen(
+fun SpreadListScreen(
     navigator: DestinationsNavigator,
-    viewModel: SpreadViewModel = hiltViewModel()
+    viewModel: SpreadListViewModel = hiltViewModel()
 ) {
 
     OnLifecycleEvent(Lifecycle.Event.ON_CREATE) {
@@ -127,7 +127,7 @@ fun SpreadDetailScreen(
             }
         },
         bottomBar = {
-            BottomBar(navigator, SpreadDetailScreenDestination.route)
+            BottomBar(navigator, SpreadListScreenDestination.route)
         }
     )
 
@@ -160,7 +160,7 @@ fun SpreadCardItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(spread.icon),
+                painter = painterResource(spread.cardIcon),
                 contentDescription = null,
                 modifier = Modifier
                     .size(120.dp),

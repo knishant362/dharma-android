@@ -5,17 +5,21 @@ import androidx.lifecycle.viewModelScope
 import com.aurora.app.R
 import com.aurora.app.domain.model.dashboard.Featured
 import com.aurora.app.domain.model.dashboard.TarotOption
+import com.aurora.app.domain.model.spread.toSpreadDetailDTO
 import com.aurora.app.domain.repo.MainRepository
+import com.aurora.app.domain.repo.TarotRepository
+import com.aurora.app.utils.TimeUtil.isToday
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val mainRepository: MainRepository
+    private val mainRepository: MainRepository,
+    private val tarotRepository: TarotRepository
 ) : ViewModel() {
 
 
@@ -23,17 +27,7 @@ class DashboardViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
-        fetchHomepageData()
-    }
-
-    private fun fetchHomepageData() = viewModelScope.launch {
-        _uiState.update {
-            it.copy(
-                isLoading = false,
-                featuredItems = getFeaturedData(),
-                tarotOptions = getTarotSections()
-            )
-        }
+        setupDashboard()
     }
 
     private fun getFeaturedData(): List<Featured> {
@@ -53,6 +47,29 @@ class DashboardViewModel @Inject constructor(
             TarotOption(4, "RELATIONSHIP", R.drawable.ic_tarot_three)
         )
         return tarotOptions
+    }
+
+
+    fun setupDashboard() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val results = mainRepository.getSavedSpreads()
+                val todaySpreadResults = results.filter { isToday(it.createdAt) }
+                val todaySpreadResultsMap = todaySpreadResults.associateBy { it.spreadDetailId }
+                val spreads = tarotRepository.getDashboardSpreads().mapIndexed { index, spread ->
+                    spread.toSpreadDetailDTO(index, todaySpreadResultsMap[spread.id])
+                }
+                _uiState.value = DashboardUiState(
+                    isLoading = false,
+                    featuredItems = getFeaturedData(),
+                    todayResults = todaySpreadResults,
+                    spreadResults = results,
+                    spreads = spreads
+                )
+            } catch (e: Exception) {
+                _uiState.value = DashboardUiState(errorMessages = e.message ?: "Error loading spreads")
+            }
+        }
     }
 
 }
