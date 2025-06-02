@@ -1,5 +1,6 @@
 package com.aurora.app.ui.screens.splash
 
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -15,21 +16,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.R
-import com.aurora.app.ui.screens.NavGraphs
-import com.aurora.app.ui.screens.destinations.DashboardScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.DashboardScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.OnboardingScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 
-@RootNavGraph(true)
-@Destination
+@Destination<RootGraph>(start = true)
 @Composable
-fun SplashScreen(modifier: Modifier = Modifier, navigator: DestinationsNavigator) {
+fun SplashScreen(
+    navigator: DestinationsNavigator,
+    viewModel: SplashViewModel = hiltViewModel()
+) {
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.surface),
         contentAlignment = Alignment.Center
@@ -45,11 +48,15 @@ fun SplashScreen(modifier: Modifier = Modifier, navigator: DestinationsNavigator
     }
 
     LaunchedEffect(Unit) {
-        coroutineScope {
-            delay(1000)
-            navigator.navigate(DashboardScreenDestination) {
-                popUpTo(NavGraphs.root) {
-                    saveState = true
+        viewModel.navigationEvent.collectLatest { event ->
+            when (event) {
+                is SplashNavigationEvent.NavigateToDashboard -> {
+                    navigator.popBackStack()
+                    navigator.navigate(DashboardScreenDestination)
+                }
+                is SplashNavigationEvent.NavigateToOnboarding -> {
+                    navigator.popBackStack()
+                    navigator.navigate(OnboardingScreenDestination)
                 }
             }
         }

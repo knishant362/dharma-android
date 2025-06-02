@@ -41,10 +41,11 @@ import com.aurora.app.R
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.utils.AppNavigationHelper
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination<RootGraph>
 @Composable
 fun SettingsScreen(navigator: DestinationsNavigator) {
     Scaffold(

@@ -33,7 +33,7 @@ android {
 
     defaultConfig {
         applicationId = "com.aurora.tarot.daily.free"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -147,8 +147,8 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.6")
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
 
-    implementation("io.github.raamcosta.compose-destinations:core:1.11.7")
-    ksp("io.github.raamcosta.compose-destinations:ksp:1.11.7")
+    implementation("io.github.raamcosta.compose-destinations:core:2.2.0")
+    ksp("io.github.raamcosta.compose-destinations:ksp:2.2.0")
 
     // datastore
     implementation ("androidx.datastore:datastore-preferences:1.1.1")
@@ -165,6 +165,7 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     implementation("com.valentinilk.shimmer:compose-shimmer:1.3.1")
+    implementation("com.github.commandiron:WheelPickerCompose:1.1.11")
 
 
 }

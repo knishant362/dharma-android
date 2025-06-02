@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.aurora.app.BuildConfig
-import com.aurora.app.data.local.SpreadStorageManager
+import com.aurora.app.data.local.StorageManagerImpl
 import com.aurora.app.data.remote.api.ApiService
 import com.aurora.app.data.repo.MainRepositoryImpl
 import com.aurora.app.data.repo.TarotRepositoryImpl
@@ -85,8 +85,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMainRepository(apiService: ApiService, spreadStorageManager: SpreadStorageManager): MainRepository {
-        return MainRepositoryImpl(apiService, spreadStorageManager)
+    fun provideMainRepository(apiService: ApiService, storageManagerImpl: StorageManagerImpl): MainRepository {
+        return MainRepositoryImpl(apiService, storageManagerImpl)
     }
 
     @Provides
@@ -97,8 +97,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSpreadStorageManager(dataStore: DataStore<Preferences>): SpreadStorageManager {
-        return SpreadStorageManager(dataStore)
+    fun provideSpreadStorageManager(dataStore: DataStore<Preferences>): StorageManagerImpl {
+        return StorageManagerImpl(dataStore)
     }
 
 }

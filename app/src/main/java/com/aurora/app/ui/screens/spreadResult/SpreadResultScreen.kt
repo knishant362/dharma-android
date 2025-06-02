@@ -17,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,16 +48,17 @@ import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.OnLifecycleEvent
 import com.aurora.app.ui.components.button.AuroraButton
 import com.aurora.app.ui.screens.cardDetail.CardDetailImage
-import com.aurora.app.ui.screens.destinations.CardDetailScreenDestination
-import com.aurora.app.ui.screens.destinations.TarotSelectScreenDestination
 import com.aurora.app.utils.showToast
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.CardDetailScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination<RootGraph>
 @Composable
 fun SpreadResultScreen(
     spreadDetail: SpreadDetail,
@@ -234,7 +234,7 @@ fun CardCarousel(
             horizontalArrangement = Arrangement.Center
         ) {
             IconButton(onClick = { onPrev() }) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Previous")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Previous")
             }
 
             Spacer(modifier = Modifier.width(8.dp))

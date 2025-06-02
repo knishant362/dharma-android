@@ -1,5 +1,6 @@
 package com.aurora.app.ui.screens.cardDetail
 
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,12 +47,13 @@ import com.aurora.app.domain.model.spread.Property
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.utils.AssetImageLoader
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination<RootGraph>
 @Composable
-fun CardDetailScreen(
+fun AnimatedVisibilityScope.CardDetailScreen(
     tarotCard: TarotCard,
     navigator: DestinationsNavigator,
     viewModel: CardDetailViewModel = hiltViewModel()) {

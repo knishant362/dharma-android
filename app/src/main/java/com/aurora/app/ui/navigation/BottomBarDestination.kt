@@ -4,9 +4,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Attractions
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.aurora.app.ui.screens.destinations.DashboardScreenDestination
-import com.aurora.app.ui.screens.destinations.SpreadListScreenDestination
-import com.aurora.app.ui.screens.destinations.TarotCardListScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.DashboardScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SpreadListScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.TarotCardListScreenDestination
 import com.ramcosta.composedestinations.spec.DirectionDestinationSpec
 
 enum class BottomBarDestination(

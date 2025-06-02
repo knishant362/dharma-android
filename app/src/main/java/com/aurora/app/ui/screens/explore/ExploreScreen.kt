@@ -38,14 +38,15 @@ import com.aurora.app.domain.model.spread.toSpreadDetail
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.OnLifecycleEvent
 import com.aurora.app.ui.components.modifierExtensions.radialGradientBackground
-import com.aurora.app.ui.screens.destinations.SpreadResultScreenDestination
-import com.aurora.app.ui.screens.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.SpreadResultScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination<RootGraph>
 @Composable
 fun ExploreScreen(
     navigator: DestinationsNavigator,

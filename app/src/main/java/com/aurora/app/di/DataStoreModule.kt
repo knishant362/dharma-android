@@ -8,6 +8,9 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
+import com.aurora.app.data.local.StorageManager
+import com.aurora.app.data.local.StorageManagerImpl
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,4 +40,16 @@ object DataStoreModule {
         )
     }
 
+}
+
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class StorageModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindStorageManager(
+        storageManager: StorageManagerImpl
+    ): StorageManager
 }

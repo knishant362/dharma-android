@@ -39,22 +39,22 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aurora.app.R
 import com.aurora.app.domain.model.dashboard.Featured
-import com.aurora.app.domain.model.dashboard.TarotOption
 import com.aurora.app.domain.model.spread.SpreadDetailDTO
 import com.aurora.app.domain.model.spread.toSpreadDetail
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.BottomBar
 import com.aurora.app.ui.components.button.AuroraOutlinedButton
-import com.aurora.app.ui.screens.destinations.DashboardScreenDestination
-import com.aurora.app.ui.screens.destinations.ExploreScreenDestination
-import com.aurora.app.ui.screens.destinations.SettingsScreenDestination
-import com.aurora.app.ui.screens.destinations.SpreadResultScreenDestination
-import com.aurora.app.ui.screens.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.DashboardScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ExploreScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SpreadResultScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination<RootGraph>
 @Composable
 fun DashboardScreen(
     navigator: DestinationsNavigator,
@@ -217,7 +217,9 @@ fun TarotCarouselCard(
             )
             Spacer(Modifier.height(16.dp))
             AuroraOutlinedButton(
+                modifier = Modifier,
                 text = featured.buttonText,
+                textColor = Color.White,
                 onClick = { onDrawCardsClick(featured) }
             )
         }

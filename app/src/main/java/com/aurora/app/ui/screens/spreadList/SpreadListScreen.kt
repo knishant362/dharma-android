@@ -41,16 +41,17 @@ import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.BottomBar
 import com.aurora.app.ui.components.OnLifecycleEvent
-import com.aurora.app.ui.screens.destinations.SpreadHistoryScreenDestination
-import com.aurora.app.ui.screens.destinations.SpreadListScreenDestination
-import com.aurora.app.ui.screens.destinations.SpreadResultScreenDestination
-import com.aurora.app.ui.screens.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.SpreadHistoryScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SpreadListScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.SpreadResultScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination
+@Destination<RootGraph>
 @Composable
 fun SpreadListScreen(
     navigator: DestinationsNavigator,

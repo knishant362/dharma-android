@@ -1,31 +1,46 @@
 package com.aurora.app.ui.components.button
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-
 @Composable
 fun AuroraButton(
     text: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    loading: Boolean = false,
+    icon: ImageVector? = null,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
+    cornerRadius: Dp = 50.dp,
+    textColor: Color = MaterialTheme.colorScheme.onSurface
 ) {
     Button(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .padding(8.dp),
-        enabled = enabled,
-        shape = RoundedCornerShape(12.dp),
+            .padding(vertical = 12.dp),
+        enabled = enabled && !loading,
+        shape = RoundedCornerShape(cornerRadius),
+        contentPadding = contentPadding,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -33,11 +48,37 @@ fun AuroraButton(
             disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
         )
     ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(4.dp)
-        )
+        if (loading) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .size(20.dp),
+                color = MaterialTheme.colorScheme.primary,
+                strokeWidth = 2.dp
+            )
+        } else {
+            if (icon != null) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(20.dp)
+                        .padding(end = 8.dp)
+                )
+            }
+
+            Text(text = text, color = textColor)
+        }
     }
 }
+
+@Preview
+@Composable
+fun AuroraButtonPreview() {
+    AuroraButton(
+        text = "SUBMIT",
+        onClick = {  },
+        modifier = Modifier,
+    )
+}
+
 
