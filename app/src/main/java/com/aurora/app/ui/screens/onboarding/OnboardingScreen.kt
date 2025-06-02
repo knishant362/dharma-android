@@ -42,6 +42,7 @@ import com.aurora.app.ui.components.button.AuroraButton
 import com.aurora.app.ui.components.button.AuroraOutlinedButton
 import com.aurora.app.ui.components.textField.AuroraTextField
 import com.aurora.app.ui.components.utils.rememberNotificationPermissionRequester
+import com.aurora.app.ui.navigation.ScreenTransition
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DashboardScreenDestination
@@ -50,7 +51,7 @@ import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 import java.time.LocalDate
 
-@Destination<RootGraph>
+@Destination<RootGraph>(style = ScreenTransition::class)
 @Composable
 fun OnboardingScreen(
     navigator: DestinationsNavigator,

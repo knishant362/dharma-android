@@ -45,15 +45,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.domain.model.TarotCard
 import com.aurora.app.domain.model.spread.Property
 import com.aurora.app.ui.components.AuroraTopBar
+import com.aurora.app.ui.navigation.ScreenTransition
 import com.aurora.app.utils.AssetImageLoader
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
+@Destination<RootGraph>(style = ScreenTransition::class)
 @Composable
-fun AnimatedVisibilityScope.CardDetailScreen(
+fun CardDetailScreen(
     tarotCard: TarotCard,
     navigator: DestinationsNavigator,
     viewModel: CardDetailViewModel = hiltViewModel()) {

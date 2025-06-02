@@ -37,6 +37,7 @@ import com.aurora.app.ui.components.ResultWaitingView
 import com.aurora.app.ui.components.button.AuroraButton
 import com.aurora.app.ui.components.cards.BottomCardCardDeck
 import com.aurora.app.ui.components.cards.cardselection.TopSelectedCardsView
+import com.aurora.app.ui.navigation.ScreenTransition
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.CardDetailScreenDestination
@@ -45,7 +46,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
+@Destination<RootGraph>(style = ScreenTransition::class)
 @Composable
 fun TarotSelectScreen(
     navigator: DestinationsNavigator,

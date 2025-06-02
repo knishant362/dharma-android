@@ -17,7 +17,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,6 +47,7 @@ import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.OnLifecycleEvent
 import com.aurora.app.ui.components.button.AuroraButton
+import com.aurora.app.ui.navigation.ScreenTransition
 import com.aurora.app.ui.screens.cardDetail.CardDetailImage
 import com.aurora.app.utils.showToast
 import com.ramcosta.composedestinations.annotation.Destination
@@ -58,7 +59,7 @@ import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
+@Destination<RootGraph>(style = ScreenTransition::class)
 @Composable
 fun SpreadResultScreen(
     spreadDetail: SpreadDetail,
@@ -253,7 +254,7 @@ fun CardCarousel(
             Spacer(modifier = Modifier.width(8.dp))
 
             IconButton(onClick = { onNext() }) {
-                Icon(Icons.Default.ArrowForward, contentDescription = "Next")
+                Icon(Icons.AutoMirrored.Filled.ArrowForward, contentDescription = "Next")
             }
         }
 

@@ -148,6 +148,7 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.8.6")
 
     implementation("io.github.raamcosta.compose-destinations:core:2.2.0")
+    implementation("io.github.raamcosta.compose-destinations:animations-core:1.11.9")
     ksp("io.github.raamcosta.compose-destinations:ksp:2.2.0")
 
     // datastore

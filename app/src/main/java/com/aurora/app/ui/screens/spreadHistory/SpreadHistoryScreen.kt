@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.data.model.SpreadResult
 import com.aurora.app.ui.components.AuroraTopBar
+import com.aurora.app.ui.navigation.ScreenTransition
 import com.aurora.app.ui.screens.spreadList.SpreadDetailUiState
 import com.aurora.app.ui.screens.spreadList.SpreadListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -38,7 +39,7 @@ import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
+@Destination<RootGraph>(style = ScreenTransition::class)
 @Composable
 fun SpreadHistoryScreen(
     navigator: DestinationsNavigator,

@@ -38,6 +38,7 @@ import com.aurora.app.domain.model.spread.toSpreadDetail
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.components.OnLifecycleEvent
 import com.aurora.app.ui.components.modifierExtensions.radialGradientBackground
+import com.aurora.app.ui.navigation.ScreenTransition
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.SpreadResultScreenDestination
@@ -46,7 +47,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
+@Destination<RootGraph>(style = ScreenTransition::class)
 @Composable
 fun ExploreScreen(
     navigator: DestinationsNavigator,

@@ -39,13 +39,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.aurora.app.R
 import com.aurora.app.ui.components.AuroraTopBar
+import com.aurora.app.ui.navigation.ScreenTransition
 import com.aurora.app.utils.AppNavigationHelper
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Destination<RootGraph>
+@Destination<RootGraph>(style = ScreenTransition::class)
 @Composable
 fun SettingsScreen(navigator: DestinationsNavigator) {
     Scaffold(

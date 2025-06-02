@@ -7,16 +7,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.aurora.app.designsystem.theme.AuroraTemplateTheme
 import com.aurora.app.utils.InAppUpdate
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.messaging.FirebaseMessaging
 import com.ramcosta.composedestinations.DestinationsNavHost
-import com.ramcosta.composedestinations.annotation.NavGraph
 import com.ramcosta.composedestinations.generated.NavGraphs
-import com.ramcosta.composedestinations.utils.startDestination
+import com.ramcosta.composedestinations.rememberNavHostEngine
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -67,11 +64,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AuroraApp() {
 
-    val navController: NavHostController = rememberNavController()
+    val navHostEngine =  rememberNavHostEngine()
+    val navController = navHostEngine.rememberNavController()
 
     DestinationsNavHost(
-        navController = navController,
         navGraph = NavGraphs.root,
+        engine = navHostEngine,
+        navController = navController
     )
 
 }
