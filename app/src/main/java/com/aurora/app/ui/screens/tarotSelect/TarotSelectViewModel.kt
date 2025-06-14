@@ -2,13 +2,17 @@ package com.aurora.app.ui.screens.tarotSelect
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.aurora.app.domain.model.spread.SpreadDetail
 import com.aurora.app.domain.repo.MainRepository
 import com.aurora.app.domain.repo.TarotRepository
+import com.aurora.app.ui.components.dialog.DialogUiState
 import com.aurora.app.utils.Constants.PACK_NAME
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -22,6 +26,10 @@ class TarotSelectViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(TarotSelectUIState())
     val uiState: StateFlow<TarotSelectUIState> = _uiState
+
+    private val _dialogUiState = MutableStateFlow(DialogUiState())
+    val dialogUiState: StateFlow<DialogUiState> = _dialogUiState.asStateFlow()
+
 
     fun setupSpread(spreadDetail: SpreadDetail) {
         _uiState.value = _uiState.value.copy(
@@ -42,8 +50,9 @@ class TarotSelectViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     cards = cards,
-                    selectableCards = selectableCards
+                    selectableCards = selectableCards,
                 )
+//                setupDialog()
             } catch (e: Exception) {
                 _uiState.value =
                     _uiState.value.copy(isLoading = false, error = e.message ?: "Unknown Error")
@@ -94,6 +103,41 @@ class TarotSelectViewModel @Inject constructor(
             val selectedIds = uiState.value.selectedCards.map { it.cardId }
             mainRepository.saveSpread(spreadDetail.id, selectedIds)
             Timber.e("saveCompletedSpread: $selectedIds, ${spreadDetail.id}")
+        }
+    }
+
+    /** Dialog Section */
+
+
+    private fun setupDialog() = viewModelScope.launch {
+        delay(400)
+        _dialogUiState.update {
+            DialogUiState(
+                isVisible = true,
+                title = "Where are you career wise?",
+                subtitle = "Choose from the options below",
+                dropdownOptions = listOf(
+                    "unemployed",
+                    "employed",
+                    "student",
+                    "self-employed",
+                    "retired"
+                ),
+                positiveButtonText = "Save And Continue",
+                negativeButtonText = null
+            )
+        }
+    }
+
+
+    fun dismissDialog() {
+        _dialogUiState.update { it.copy(isVisible = false) }
+    }
+
+    fun onOptionSelected(selectedOption: String) {
+        viewModelScope.launch {
+            //userRepository.saveUserSelection(selectedOption)
+            dismissDialog()
         }
     }
 }

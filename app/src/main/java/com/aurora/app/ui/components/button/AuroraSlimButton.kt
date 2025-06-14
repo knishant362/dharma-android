@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AuroraButton(
+fun AuroraSlimButton(
     text: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
@@ -35,7 +35,7 @@ fun AuroraButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .padding(vertical = 4.dp),
         enabled = enabled && !loading,
         shape = RoundedCornerShape(cornerRadius),
         contentPadding = contentPadding,
@@ -71,8 +71,8 @@ fun AuroraButton(
 
 @Preview
 @Composable
-fun AuroraButtonPreview() {
-    AuroraButton(
+fun AuroraSlimButtonPreview() {
+    AuroraSlimButton(
         text = "SUBMIT",
         onClick = {  },
         modifier = Modifier,

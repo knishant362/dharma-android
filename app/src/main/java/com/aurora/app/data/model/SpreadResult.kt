@@ -7,5 +7,6 @@ import kotlinx.parcelize.Parcelize
 data class SpreadResult(
     val spreadDetailId: String,
     val selectedCardIds: List<String>,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val adWatched: Boolean = false
 ) : Parcelable

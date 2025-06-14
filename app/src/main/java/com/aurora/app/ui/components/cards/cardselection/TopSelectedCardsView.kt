@@ -15,6 +15,7 @@ fun TopSelectedCardsView(
     when (spreadCount) {
         4 -> FourSelectedCardsView(modifier, selectedCards, isRevealed, onClick)
         5 -> FiveSelectedCardsView(modifier, selectedCards, isRevealed, onClick)
+        9 -> NineCardsView(modifier, selectedCards, isRevealed, onClick)
         else -> HorizontalSelectedCardsView(modifier, spreadCount, selectedCards, isRevealed, onClick)
     }
 }

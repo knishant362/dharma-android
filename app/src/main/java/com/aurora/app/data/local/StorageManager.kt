@@ -4,6 +4,8 @@ import com.aurora.app.data.model.SpreadResult
 
 interface StorageManager {
     suspend fun saveSpread(spreadDetailId: String, selectedCardIds: List<String>)
+    suspend fun updateAdWatched(spreadDetailId: String)
+
     suspend fun getSavedSpreads(): List<SpreadResult>
     suspend fun getSpreadsBySpreadId(spreadId: String): List<SpreadResult>
     suspend fun clearSavedSpreads()
@@ -17,5 +19,11 @@ interface StorageManager {
 
     suspend fun setGender(gender: String)
     suspend fun getGender(): String
+
+    suspend fun setRelationshipStatus(relationshipStatus: String)
+    suspend fun getRelationshipStatus(): String
+
+    suspend fun setOccupation(occupation: String)
+    suspend fun getOccupation(): String
 
 }

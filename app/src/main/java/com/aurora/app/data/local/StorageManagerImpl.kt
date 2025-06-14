@@ -35,6 +35,27 @@ class StorageManagerImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateAdWatched(spreadDetailId: String) {
+        dataStore.edit { preferences ->
+            val existingJson = preferences[PreferenceKeys.Spreads]
+            val spreadList = if (existingJson != null) {
+                gson.fromJson<List<SpreadResult>>(existingJson)
+            } else {
+                emptyList()
+            }
+
+            val updatedList = spreadList.map {
+                if (it.spreadDetailId == spreadDetailId) {
+                    it.copy(adWatched = true)
+                } else {
+                    it
+                }
+            }
+
+            preferences[PreferenceKeys.Spreads] = gson.toJson(updatedList)
+        }
+    }
+
     override suspend fun getSavedSpreads(): List<SpreadResult> {
         val json = dataStore.data.first()[PreferenceKeys.Spreads] ?: return emptyList()
         return gson.fromJson(json)
@@ -90,6 +111,22 @@ class StorageManagerImpl @Inject constructor(
         return dataStore.data.first()[PreferenceKeys.Gender] ?: ""
     }
 
+    override suspend fun setRelationshipStatus(relationshipStatus: String) {
+        dataStore.edit { it[PreferenceKeys.RelationshipStatus] = relationshipStatus }
+    }
+
+    override suspend fun getRelationshipStatus(): String {
+        return dataStore.data.first()[PreferenceKeys.RelationshipStatus] ?: ""
+    }
+
+    override suspend fun setOccupation(occupation: String) {
+        dataStore.edit { it[PreferenceKeys.Occupation] = occupation }
+    }
+
+    override suspend fun getOccupation(): String {
+        return dataStore.data.first()[PreferenceKeys.Occupation] ?: ""
+    }
+
     // Gson helper extension
     private inline fun <reified T> Gson.fromJson(json: String): T {
         return this.fromJson(json, object : TypeToken<T>() {}.type)
@@ -101,4 +138,6 @@ private object PreferenceKeys {
     val Name = stringPreferencesKey("user_name")
     val DOB = stringPreferencesKey("user_dob")
     val Gender = stringPreferencesKey("user_gender")
+    val RelationshipStatus = stringPreferencesKey("user_relationship_status")
+    val Occupation = stringPreferencesKey("user_occupation")
 }

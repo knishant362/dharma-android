@@ -2,16 +2,10 @@ package com.aurora.app.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,13 +18,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.aurora.app.ui.components.button.AuroraButton
 import kotlinx.coroutines.delay
 
 @Composable
 fun ResultWaitingView(
     modifier: Modifier = Modifier,
-    waitTimeInSeconds: Int = 10,
-    onReadNowClick: () -> Unit
+    waitTimeInSeconds: Int,
+    loadingTimeThreshold: Int,
+    onReadNow: () -> Unit,
+    onReadResult: () -> Unit
 ) {
     var timeLeft by remember { mutableStateOf(waitTimeInSeconds) }
     val progress = (waitTimeInSeconds - timeLeft).toFloat() / waitTimeInSeconds
@@ -65,19 +62,26 @@ fun ResultWaitingView(
             )
         }
 
-        Button(
-            onClick = onReadNowClick,
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-            shape = RoundedCornerShape(12.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.PlayArrow,
-                contentDescription = "Play"
+        if (isCompleted) {
+            AuroraButton(
+                text = "Reveal Cards",
+                onClick = onReadResult,
+                icon = Icons.Default.PlayArrow
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = if (isCompleted) "Read Interpretation" else "Read Now (Watch Ad)"
+        } else if (timeLeft < loadingTimeThreshold) {
+            AuroraButton(
+                text = "Loading",
+                onClick = onReadNow,
+                icon = Icons.Default.PlayArrow,
+                enabled = false
+            )
+        } else {
+            AuroraButton(
+                text = "Read Now (Ads)",
+                onClick = onReadNow,
+                icon = Icons.Default.PlayArrow,
             )
         }
+
     }
 }

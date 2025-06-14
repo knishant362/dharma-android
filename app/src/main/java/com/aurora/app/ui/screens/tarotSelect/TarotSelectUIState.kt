@@ -11,5 +11,7 @@ data class TarotSelectUIState(
     val selectableCards: List<SelectableTarotCard> = emptyList(),
     val maxSelectedCards: Int = 0,
     val selectedCards: List<SelectableTarotCard> = emptyList(),
-    val isRevealed: Boolean = false
+    val isRevealed: Boolean = false,
+    val waitTimeInSeconds: Int = 0,
+    val loadingTimeThreshold: Int = 100
 )

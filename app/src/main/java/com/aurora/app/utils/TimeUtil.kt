@@ -1,6 +1,8 @@
 package com.aurora.app.utils
 
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -26,5 +28,10 @@ object TimeUtil {
 
         return now.get(Calendar.YEAR) == target.get(Calendar.YEAR) &&
                 now.get(Calendar.DAY_OF_YEAR) == target.get(Calendar.DAY_OF_YEAR)
+    }
+
+    fun getTodayFormatted(): String {
+        val formatter = DateTimeFormatter.ofPattern("MMMM d, yyyy", Locale.getDefault())
+        return LocalDate.now().format(formatter)
     }
 }

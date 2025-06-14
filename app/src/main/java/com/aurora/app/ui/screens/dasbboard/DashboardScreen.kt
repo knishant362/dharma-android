@@ -48,7 +48,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DashboardScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ExploreScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.SettingsScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SpreadResultScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -69,8 +69,8 @@ fun DashboardScreen(
                 titleRes = R.string.app_name,
                 actionIcon = Icons.Rounded.AccountCircle,
                 onActionClick = {
-                    navigator.navigate(SettingsScreenDestination)
-                }
+                    navigator.navigate(ProfileScreenDestination)
+                },
             )
         },
         content = { paddingValues ->
@@ -90,17 +90,19 @@ fun DashboardScreen(
                 }
 
                 item {
-                    GreetingSection("Nishant")
-                    TarotOptionsGrid(
-                        uiState.spreads,
-                        onClick = {
-                            if (it.spreadResult == null) {
-                                navigator.navigate(TarotSelectScreenDestination(it.toSpreadDetail()))
-                            } else {
-                                navigator.navigate(SpreadResultScreenDestination(it.toSpreadDetail()))
+                    if (!uiState.isLoading) {
+                        GreetingSection(uiState.user?.name ?: "")
+                        TarotOptionsGrid(
+                            uiState.spreads,
+                            onClick = {
+                                if (it.spreadResult == null) {
+                                    navigator.navigate(TarotSelectScreenDestination(it.toSpreadDetail()))
+                                } else {
+                                    navigator.navigate(SpreadResultScreenDestination(it.toSpreadDetail()))
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
             }
         },
@@ -192,22 +194,26 @@ fun TarotCarouselCard(
 ) {
     Box(
         modifier = modifier
-            .height(200.dp)
+            .height(220.dp)
             .background(color = Color(0xFF40315D)),
         contentAlignment = Alignment.Center
     ) {
         Image(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.matchParentSize(),
             painter = painterResource(R.drawable.bg_gradient),
             contentDescription = "",
-            contentScale = ContentScale.FillWidth
+            contentScale = ContentScale.Crop
         )
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("May 17", color = Color.White, style = MaterialTheme.typography.bodyMedium)
+            Text(
+                text = featured.date,
+                color = Color.White,
+                style = MaterialTheme.typography.bodyMedium
+            )
             Spacer(Modifier.height(8.dp))
             Text(
                 featured.title,
@@ -215,7 +221,7 @@ fun TarotCarouselCard(
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge
             )
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(8.dp))
             AuroraOutlinedButton(
                 modifier = Modifier,
                 text = featured.buttonText,
@@ -283,7 +289,7 @@ fun TarotOptionsGrid(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 rowItems.forEach { tarotOption ->
-                    val backgroundColor = if (tarotOption.index == 1 || tarotOption.index == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.background
+                    val backgroundColor =MaterialTheme.colorScheme.primary
                     TarotOptionCard(
                         title = tarotOption.title,
                         backgroundColor = backgroundColor,

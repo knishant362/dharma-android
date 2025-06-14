@@ -1,7 +1,8 @@
 package com.aurora.app.data.repo
 
-import com.aurora.app.data.local.StorageManagerImpl
+import com.aurora.app.data.local.StorageManager
 import com.aurora.app.data.model.SpreadResult
+import com.aurora.app.data.model.User
 import com.aurora.app.data.remote.api.ApiService
 import com.aurora.app.data.remote.request.ImageUploadRequest
 import com.aurora.app.domain.repo.MainRepository
@@ -11,8 +12,32 @@ import javax.inject.Inject
 
 class MainRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
-    private val storageManagerImpl: StorageManagerImpl
+    private val storageManager: StorageManager,
 ) : MainRepository {
+
+    override suspend fun getUserProfile(): User {
+        return User(
+            name = storageManager.getName(),
+            gender = storageManager.getGender(),
+            dateOfBirth = storageManager.getDateOfBirth(),
+            relationshipStatus = storageManager.getRelationshipStatus(),
+            occupation = storageManager.getOccupation()
+        )
+    }
+
+    override suspend fun saveUserProfile(
+        name: String,
+        gender: String,
+        dateOfBirth: String,
+        relationshipStatus: String,
+        occupation: String
+    ) {
+        storageManager.setName(name)
+        storageManager.setGender(gender)
+        storageManager.setDateOfBirth(dateOfBirth)
+        storageManager.setRelationshipStatus(relationshipStatus)
+        storageManager.setOccupation(occupation)
+    }
 
     override suspend fun getHomepageData(): ResponseState<String> =
         safeApiCall(
@@ -41,19 +66,19 @@ class MainRepositoryImpl @Inject constructor(
 
 
     override suspend fun saveSpread(spreadDetailId: String, selectedCardIds: List<String>) {
-        storageManagerImpl.saveSpread(spreadDetailId, selectedCardIds)
+        storageManager.saveSpread(spreadDetailId, selectedCardIds)
     }
 
     override suspend fun getSavedSpreads(): List<SpreadResult> {
-        return storageManagerImpl.getSavedSpreads()
+        return storageManager.getSavedSpreads()
     }
 
     override suspend fun getSpreadResultBySpreadId(spreadId: String): List<SpreadResult> {
-        return storageManagerImpl.getSpreadsBySpreadId(spreadId)
+        return storageManager.getSpreadsBySpreadId(spreadId)
     }
 
     override suspend fun deleteResult(result: SpreadResult): Boolean {
-        return storageManagerImpl.deleteResult(result)
+        return storageManager.deleteResult(result)
     }
 
 }

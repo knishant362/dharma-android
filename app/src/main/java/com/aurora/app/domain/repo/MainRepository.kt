@@ -1,10 +1,13 @@
 package com.aurora.app.domain.repo
 
 import com.aurora.app.data.model.SpreadResult
+import com.aurora.app.data.model.User
 import com.aurora.app.data.remote.request.ImageUploadRequest
 import com.aurora.app.utils.ResponseState
 
 interface MainRepository {
+
+    suspend fun getUserProfile(): User
 
     suspend fun getHomepageData(): ResponseState<String>
 
@@ -19,4 +22,12 @@ interface MainRepository {
     suspend fun getSpreadResultBySpreadId(spreadId: String): List<SpreadResult>
 
     suspend fun deleteResult(result: SpreadResult) : Boolean
+
+    suspend fun saveUserProfile(
+        name: String,
+        gender: String,
+        dateOfBirth: String,
+        relationshipStatus: String,
+        occupation: String
+    )
 }

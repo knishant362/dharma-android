@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -22,10 +23,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,12 +40,16 @@ import com.aurora.app.ui.components.ResultWaitingView
 import com.aurora.app.ui.components.button.AuroraButton
 import com.aurora.app.ui.components.cards.BottomCardCardDeck
 import com.aurora.app.ui.components.cards.cardselection.TopSelectedCardsView
+import com.aurora.app.ui.components.dialog.OptionPickerDialog
 import com.aurora.app.ui.navigation.ScreenTransition
+import com.aurora.app.utils.showToast
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.CardDetailScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SpreadResultScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,10 +65,13 @@ fun TarotSelectScreen(
         viewModel.setupSpread(spreadDetail)
     }
 
+    val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsState()
 
     val selectedCards = uiState.selectedCards
     val isRevealed = uiState.isRevealed
+
+    val context = LocalContext.current
 
     Timber.e("TarotSelectScreen: ${uiState.selectableCards.size}")
 
@@ -74,6 +84,21 @@ fun TarotSelectScreen(
             )
         },
         content = { paddingValues ->
+
+            val dialogState by viewModel.dialogUiState.collectAsState()
+
+            if (dialogState.isVisible) {
+                OptionPickerDialog(
+                    title = dialogState.title,
+                    subtitle = dialogState.subtitle,
+                    dropdownOptions = dialogState.dropdownOptions,
+                    positiveButtonText = dialogState.positiveButtonText,
+                    negativeButtonText = dialogState.negativeButtonText,
+                    onDismissRequest = { viewModel.dismissDialog() },
+                    onPositiveClick = { selected -> viewModel.onOptionSelected(selected) },
+                    onNegativeClick = { viewModel.dismissDialog() }
+                )
+            }
 
             Box(
                 modifier = Modifier
@@ -106,7 +131,7 @@ fun TarotSelectScreen(
                         )
 
                         TopSelectedCardsView(
-                            modifier = Modifier,
+                            modifier = Modifier.fillMaxHeight(0.6f),
                             spreadCount = uiState.maxSelectedCards,
                             selectedCards = selectedCards,
                             isRevealed = isRevealed,
@@ -122,8 +147,6 @@ fun TarotSelectScreen(
                             }
                         )
                     }
-
-
                 }
 
                 Column(
@@ -175,13 +198,24 @@ fun TarotSelectScreen(
                                     }
                                 )
                             } else {
-
-                                ResultWaitingView{}
-
-                                AuroraButton(
-                                    text = "Reveal Cards",
-                                    onClick = { viewModel.setRevealed(true) },
+                                ResultWaitingView(
+                                    waitTimeInSeconds = uiState.waitTimeInSeconds,
+                                    loadingTimeThreshold = uiState.loadingTimeThreshold,
+                                    onReadNow = {
+                                        scope.launch {
+                                            context.showToast("Loading Ads")
+                                            delay(3000)
+                                            viewModel.setRevealed(true)
+                                        }
+                                    },
+                                    onReadResult = { viewModel.setRevealed(true) }
                                 )
+
+                                /*RemoveAdsView(
+                                    price = "Rs. 50",
+                                    validity = "1 month",
+                                    onRemoveAdsClick = {}
+                                )*/
                             }
                         }
                     }
