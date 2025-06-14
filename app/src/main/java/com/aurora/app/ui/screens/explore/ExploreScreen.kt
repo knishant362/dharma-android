@@ -41,6 +41,7 @@ import com.aurora.app.ui.components.modifierExtensions.radialGradientBackground
 import com.aurora.app.ui.navigation.ScreenTransition
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.DashboardScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.SpreadResultScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.TarotSelectScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -69,7 +70,13 @@ fun ExploreScreen(
                 titleRes = R.string.app_name,
                 navigationIcon = Icons.AutoMirrored.Rounded.ArrowBack,
                 onNavigationClick = {
-                    navigator.navigateUp()
+                    val navController = navigator.getBackStackEntry(DashboardScreenDestination)
+                    if (navController!= null) {
+                        navigator.navigateUp()
+                    } else {
+                        navigator.popBackStack()
+                        navigator.navigate(DashboardScreenDestination)
+                    }
                 }
             )
         },

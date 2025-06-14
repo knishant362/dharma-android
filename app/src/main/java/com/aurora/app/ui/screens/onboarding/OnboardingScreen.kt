@@ -46,6 +46,7 @@ import com.aurora.app.ui.navigation.ScreenTransition
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.DashboardScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.ExploreScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
@@ -63,7 +64,8 @@ fun OnboardingScreen(
     LaunchedEffect(Unit) {
         viewModel.navigateToDashboard.collectLatest {
             navigator.popBackStack()
-            navigator.navigate(DashboardScreenDestination)
+            navigator.navigate(ExploreScreenDestination)
+//            navigator.navigate(DashboardScreenDestination)
         }
     }
 
