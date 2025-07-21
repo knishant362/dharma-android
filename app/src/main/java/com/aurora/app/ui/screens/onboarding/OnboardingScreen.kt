@@ -114,7 +114,7 @@ fun TopSection(
 
         Image(
             modifier = Modifier.matchParentSize(),
-            painter = painterResource(id = R.drawable.bg_gradient),
+            painter = painterResource(id = R.drawable.bg_land),
             contentDescription = null,
             contentScale = ContentScale.Crop
         )

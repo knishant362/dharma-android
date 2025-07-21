@@ -1,15 +1,25 @@
-package com.aurora.app.data.local
+package com.aurora.app.data.local.storage
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
 import com.aurora.app.data.model.SpreadResult
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
-import com.google.gson.reflect.TypeToken
 import javax.inject.Singleton
+
+import androidx.datastore.preferences.core.stringPreferencesKey
+
+object PreferenceKeys {
+    val Spreads = stringPreferencesKey("saved_spread_results")
+    val Name = stringPreferencesKey("user_name")
+    val DOB = stringPreferencesKey("user_dob")
+    val Gender = stringPreferencesKey("user_gender")
+    val RelationshipStatus = stringPreferencesKey("user_relationship_status")
+    val Occupation = stringPreferencesKey("user_occupation")
+}
 
 @Singleton
 class StorageManagerImpl @Inject constructor(
@@ -131,13 +141,4 @@ class StorageManagerImpl @Inject constructor(
     private inline fun <reified T> Gson.fromJson(json: String): T {
         return this.fromJson(json, object : TypeToken<T>() {}.type)
     }
-}
-
-private object PreferenceKeys {
-    val Spreads = stringPreferencesKey("saved_spread_results")
-    val Name = stringPreferencesKey("user_name")
-    val DOB = stringPreferencesKey("user_dob")
-    val Gender = stringPreferencesKey("user_gender")
-    val RelationshipStatus = stringPreferencesKey("user_relationship_status")
-    val Occupation = stringPreferencesKey("user_occupation")
 }

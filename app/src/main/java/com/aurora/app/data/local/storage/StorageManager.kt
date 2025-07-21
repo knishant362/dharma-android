@@ -1,4 +1,4 @@
-package com.aurora.app.data.local
+package com.aurora.app.data.local.storage
 
 import com.aurora.app.data.model.SpreadResult
 

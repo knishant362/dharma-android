@@ -2,7 +2,7 @@ package com.aurora.app.ui.screens.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aurora.app.data.local.StorageManager
+import com.aurora.app.data.local.storage.StorageManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,13 +29,15 @@ class SplashViewModel @Inject constructor(
 
 
         viewModelScope.launch {
-            val name = storageManager.getName()
-            delay(1000)
-            if (name.isBlank()) {
-                _navigationEvent.emit(SplashNavigationEvent.NavigateToOnboarding)
-            } else {
-                _navigationEvent.emit(SplashNavigationEvent.NavigateToDashboard)
-            }
+//            val name = storageManager.getName()
+//            delay(1000)
+//            if (name.isBlank()) {
+//                _navigationEvent.emit(SplashNavigationEvent.NavigateToOnboarding)
+//            } else {
+//                _navigationEvent.emit(SplashNavigationEvent.NavigateToDashboard)
+//            }
+            _navigationEvent.emit(SplashNavigationEvent.NavigateToDashboard)
+
         }
     }
 }

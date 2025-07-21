@@ -8,8 +8,8 @@ import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.preferencesDataStoreFile
-import com.aurora.app.data.local.StorageManager
-import com.aurora.app.data.local.StorageManagerImpl
+import com.aurora.app.data.local.storage.StorageManager
+import com.aurora.app.data.local.storage.StorageManagerImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides

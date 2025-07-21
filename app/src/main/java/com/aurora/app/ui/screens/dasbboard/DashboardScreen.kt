@@ -2,26 +2,29 @@ package com.aurora.app.ui.screens.dasbboard
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,6 +33,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -38,20 +43,20 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aurora.app.R
+import com.aurora.app.data.model.WorkDto
 import com.aurora.app.domain.model.dashboard.Featured
-import com.aurora.app.domain.model.spread.SpreadDetailDTO
-import com.aurora.app.domain.model.spread.toSpreadDetail
+import com.aurora.app.ui.components.AuroraImage
 import com.aurora.app.ui.components.AuroraTopBar
-import com.aurora.app.ui.components.BottomBar
 import com.aurora.app.ui.components.button.AuroraOutlinedButton
+import com.aurora.app.utils.toDownloadUrl
+import com.aurora.app.utils.toThumb
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.destinations.DashboardScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ExploreScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.SpreadResultScreenDestination
-import com.ramcosta.composedestinations.generated.destinations.TarotSelectScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.WorkReadingScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Destination<RootGraph>
@@ -74,41 +79,57 @@ fun DashboardScreen(
             )
         },
         content = { paddingValues ->
-            LazyColumn(
-                modifier = Modifier
-                    .padding(paddingValues)
-                    .background(Color(0xFF121017))
-            ) {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .padding(paddingValues)) {
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .alpha(0.7f),
+                    painter = painterResource(R.drawable.bg_main),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+                LazyColumn(
+                    modifier = Modifier
+                ) {
 
-                item {
-                    TarotFeaturedSection(
-                        featuredItems = uiState.featuredItems,
-                        onClick = {
-                            navigator.navigate(ExploreScreenDestination())
-                        }
-                    )
-                }
-
-                item {
-                    if (!uiState.isLoading) {
-                        GreetingSection(uiState.user?.name ?: "")
-                        TarotOptionsGrid(
-                            uiState.spreads,
+                    item {
+                        TarotFeaturedSection(
+                            featuredItems = uiState.featuredItems,
                             onClick = {
-                                if (it.spreadResult == null) {
-                                    navigator.navigate(TarotSelectScreenDestination(it.toSpreadDetail()))
-                                } else {
-                                    navigator.navigate(SpreadResultScreenDestination(it.toSpreadDetail()))
-                                }
+                                navigator.navigate(ExploreScreenDestination())
                             }
                         )
                     }
+                    if (!uiState.isLoading) {
+                        item {
+                            GreetingSection(uiState.user?.name ?: "")
+                        }
+                        items(uiState.workSections) { workSection ->
+                            WorkListView(
+                                categoryName = workSection.categoryName,
+                                works = workSection.works,
+                                onClick = { work ->
+                                    Timber.d("Clicked on work: ${work.title}")
+                                    navigator.navigate(WorkReadingScreenDestination(work))
+                                }
+                            )
+                        }
+                    } else {
+                        item {
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp)
+                                    .wrapContentWidth(Alignment.CenterHorizontally)
+                            )
+                        }
+                    }
+
                 }
             }
         },
-        bottomBar = {
-            BottomBar(navigator, DashboardScreenDestination.route)
-        }
     )
 }
 
@@ -127,13 +148,13 @@ fun GreetingSection(
 
         Text(
             "WHAT AWAITS YOU TODAY, $userName?",
-            color = Color.White,
+            color = Color.Black,
             style = MaterialTheme.typography.titleLarge.copy(textAlign = TextAlign.Center)
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             "Choose a reading:",
-            color = Color.White.copy(alpha = 0.8f),
+            color = Color.Black.copy(alpha = 0.8f),
             style = MaterialTheme.typography.bodyLarge
         )
     }
@@ -156,6 +177,7 @@ fun TarotFeaturedSection(
         HorizontalPager(
             state = pagerState,
             pageSize = PageSize.Fill,
+            contentPadding = PaddingValues(horizontal = 16.dp),
             modifier = Modifier
                 .fillMaxWidth(),
         ) { page ->
@@ -195,12 +217,18 @@ fun TarotCarouselCard(
     Box(
         modifier = modifier
             .height(220.dp)
-            .background(color = Color(0xFF40315D)),
+            .padding(horizontal = 8.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(16.dp)
+            ),
         contentAlignment = Alignment.Center
     ) {
         Image(
             modifier = Modifier.matchParentSize(),
-            painter = painterResource(R.drawable.bg_gradient),
+            painter = painterResource(R.drawable.bg_land),
             contentDescription = "",
             contentScale = ContentScale.Crop
         )
@@ -211,13 +239,13 @@ fun TarotCarouselCard(
         ) {
             Text(
                 text = featured.date,
-                color = Color.White,
+                color = Color.Black,
                 style = MaterialTheme.typography.bodyMedium
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 featured.title,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center,
                 style = MaterialTheme.typography.titleLarge
             )
@@ -225,45 +253,41 @@ fun TarotCarouselCard(
             AuroraOutlinedButton(
                 modifier = Modifier,
                 text = featured.buttonText,
-                textColor = Color.White,
+                textColor = Color.Black,
                 onClick = { onDrawCardsClick(featured) }
             )
         }
     }
 }
 
+
 @Composable
-fun TarotOptionCard(
-    title: String,
-    backgroundColor: Color,
-    iconRes: Int,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        onClick = onClick,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        modifier = modifier
-    ) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
+fun WorkListView(
+    modifier: Modifier = Modifier,
+    categoryName: String,
+    works: List<WorkDto>,
+    onClick: (WorkDto) -> Unit
+){
+    Column(modifier = modifier) {
+        Text(
+            text = categoryName.uppercase(),
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(
-                    painter = painterResource(id = iconRes),
-                    contentDescription = title,
+            items(works) { work ->
+                WallpaperItemView(
+                    imageUrl = work.coverImage?.toDownloadUrl()?.toThumb() ?: "",
                     modifier = Modifier
-                        .size(100.dp)
-                        .padding(8.dp),
-                    contentScale = ContentScale.FillWidth
-                )
-                Text(
-                    modifier = Modifier.padding(4.dp),
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.White
+                        .weight(1f)
+                        .aspectRatio(2 / 3.8f),
+                    onClick = { onClick(work) }
                 )
             }
         }
@@ -271,41 +295,17 @@ fun TarotOptionCard(
 }
 
 @Composable
-fun TarotOptionsGrid(
-    tarotOptions: List<SpreadDetailDTO>,
-    onClick: (SpreadDetailDTO) -> Unit
+fun WallpaperItemView(
+    imageUrl: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val rows = tarotOptions.chunked(2)
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        rows.forEach { rowItems ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                rowItems.forEach { tarotOption ->
-                    val backgroundColor =MaterialTheme.colorScheme.primary
-                    TarotOptionCard(
-                        title = tarotOption.title,
-                        backgroundColor = backgroundColor,
-                        iconRes = tarotOption.icon,
-                        onClick = { onClick.invoke(tarotOption) },
-                        modifier = Modifier
-                            .weight(1f)
-                            .aspectRatio(1f)
-                    )
-                }
-
-                // If odd item count, fill remaining space
-                if (rowItems.size < 2) {
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-            }
-        }
-    }
+    AuroraImage(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(4.dp),
+        image = imageUrl,
+        onClick = onClick
+    )
 }

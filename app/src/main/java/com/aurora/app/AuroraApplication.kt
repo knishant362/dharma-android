@@ -10,6 +10,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import timber.log.Timber
+import java.io.FileOutputStream
+import java.io.IOException
 
 @HiltAndroidApp
 class AuroraApplication: Application() {
@@ -20,6 +22,8 @@ class AuroraApplication: Application() {
 
         subscribeUserFirebase()
         initOneSignal()
+        checkAndCopyPrepopulatedDatabase()
+
     }
 
     private fun subscribeUserFirebase() {
@@ -35,5 +39,29 @@ class AuroraApplication: Application() {
     private fun initOneSignal() {
         OneSignal.initWithContext(this@AuroraApplication, ONESIGNAL_APP_ID)
     }
+
+    fun checkAndCopyPrepopulatedDatabase() {
+        val dbName = "dharma_database.db"
+        val assetPath = dbName
+        val dbPath = applicationContext.getDatabasePath(dbName)
+        if (!dbPath.exists()) {
+            try {
+                dbPath.parentFile?.mkdirs()
+
+                applicationContext.assets.open(assetPath).use { input ->
+                    FileOutputStream(dbPath).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+
+                Timber.d("DB_COPY Pre-populated DB copied to: ${dbPath.absolutePath}")
+            } catch (e: IOException) {
+                Timber.e("DB_COPY Error copying pre-populated DB: ${e.localizedMessage}", e)
+            }
+        } else {
+            Timber.d("DB_COPY Database already exists at: ${dbPath.absolutePath}")
+        }
+    }
+
 
 }

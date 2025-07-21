@@ -20,6 +20,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Tarot Card Reader"
+rootProject.name = "Dharma"
 include(":app")
  

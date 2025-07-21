@@ -3,6 +3,7 @@ package com.aurora.app.designsystem.theme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
 private val DarkColorScheme = darkColorScheme(
@@ -16,12 +17,16 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = White
 )
 
+private val lightColorScheme = lightColorScheme(
+    primary = Orange,
+)
+
 @Composable
 fun AuroraTemplateTheme(
     content: @Composable () -> Unit
 ) {
     MaterialTheme(
-        colorScheme = DarkColorScheme,
+        colorScheme = lightColorScheme,
         typography = appTypography
     ) {
         Surface(
