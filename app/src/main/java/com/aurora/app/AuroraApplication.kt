@@ -41,14 +41,13 @@ class AuroraApplication: Application() {
     }
 
     fun checkAndCopyPrepopulatedDatabase() {
-        val dbName = "dharma_database.db"
-        val assetPath = dbName
+        val dbName = "dharma.db"
         val dbPath = applicationContext.getDatabasePath(dbName)
         if (!dbPath.exists()) {
             try {
                 dbPath.parentFile?.mkdirs()
 
-                applicationContext.assets.open(assetPath).use { input ->
+                applicationContext.assets.open(dbName).use { input ->
                     FileOutputStream(dbPath).use { output ->
                         input.copyTo(output)
                     }
