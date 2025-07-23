@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.aurora.app.data.model.WorkDto
 import com.aurora.app.domain.model.dashboard.WorkType
 import com.aurora.app.domain.repo.MainRepository
+import com.aurora.app.utils.Decrypt
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -142,7 +143,7 @@ class WorkReadingViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(
                 selectedChapter = selectedChapter,
                 chapters = chapters,
-                chapter = chapter.toList().firstOrNull()?.second ?: ""
+                chapter = Decrypt.decryptBookText(chapter.toList().firstOrNull()?.second ?: "")
             )
 
         } else {
