@@ -32,7 +32,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.aurora.tarot.daily.free"
+        applicationId = "com.sanatan.daily.mandir"
         minSdk = 26
         targetSdk = 35
         versionCode = 2
