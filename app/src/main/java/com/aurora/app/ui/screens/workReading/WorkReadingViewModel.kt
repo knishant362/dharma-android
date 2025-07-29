@@ -42,10 +42,10 @@ class WorkReadingViewModel @Inject constructor(
                 val response = repository.getPosts(id = workDto.id)
                 val post = response.firstOrNull()
 
-                if (post != null){
-                    val volumes = post.extra.parseJsonToMap()
-//                val chapters = repository.getPosts(firstVolumeKey)
-//                    .firstOrNull()?.toString()?.let { extra -> getVolumesMap(extra) } ?: emptyMap()
+                if (post != null) {
+                    val volumes = post.extra.parseJsonToMap().map {
+                        Volume(id = it.key, title = it.value)
+                    }
 
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
@@ -59,11 +59,8 @@ class WorkReadingViewModel @Inject constructor(
                     )
                 }
 
-
             } else {
-
                 Timber.e("WorkReadingViewModel: ELSE, fetching details for id: ${workDto.id}")
-
                 _uiState.value = _uiState.value.copy(
                     errorMessage = "Details not found - Id: ${workDto.id}",
                     isLoading = false
@@ -78,132 +75,76 @@ class WorkReadingViewModel @Inject constructor(
         }
     }
 
-    private fun setupWorkDetails2(workDto: WorkDto) = viewModelScope.launch(Dispatchers.IO) {
-        Timber.e("WorkReadingViewModel: setupWorkDetails called with workDto: $workDto")
-        try {
-            if (workDto.mType == WorkType.BOOK.type) {
 
-                Timber.e("WorkReadingViewModel: Work type is BOOK, fetching details for id: ${workDto.id}")
-
-                val response = repository.getPosts(id = workDto.id)
-                Timber.e("Response from getPostsById: $response")
-                val volumes = (response.first().extra).parseJsonToMap()
-                val firstVolumeKey = volumes.keys.firstOrNull() ?: ""
-                val firstVolumeText = volumes[firstVolumeKey] ?: ""
-                val selectedVolume = Pair(firstVolumeKey, firstVolumeText)
-
-                val chapters = repository.getPosts(firstVolumeKey).firstOrNull()?.toString()?.parseJsonToMap() ?: emptyMap()
-
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    volumes = volumes,
-                    postModel = response.first(),
-                    selectedVolume = selectedVolume,
-                    chapters = chapters
-                )
-            } else {
-
-                Timber.e("WorkReadingViewModel: ELSE, fetching details for id: ${workDto.id}")
-
-                _uiState.value = _uiState.value.copy(
-                    errorMessage = "Details not found - Id: ${workDto.id}",
-                    isLoading = false
-                )
-            }
-        } catch (e: Exception) {
-            Timber.e(e)
-            _uiState.value = _uiState.value.copy(
-                errorMessage = "Failed to load work details",
-                isLoading = false
-            )
-        }
-    }
-
-    fun onVolumeSelected(selectedVolume: Pair<String, String>) = viewModelScope.launch(Dispatchers.IO) {
+    fun onVolumeSelected(selectedVolume: Volume) = viewModelScope.launch(Dispatchers.IO) {
         _uiState.value = _uiState.value.copy(
             isReadingMode = true,
             selectedVolume = selectedVolume,
         )
-
-        val volumeId = selectedVolume.first
+        val volumeId = selectedVolume.id
 
         val volume = repository.getPosts(id = volumeId).firstOrNull()
         if (volume != null) {
-            val chapters = volume.extra.parseJsonToMap()
-            val selectedChapter = chapters.toList().toList()[0]
-            _uiState.value = _uiState.value.copy(
-                selectedChapter = selectedChapter,
-                chapters = chapters
-            )
-
-            val chapterModel = repository.getPosts(selectedChapter.first).firstOrNull()
-            Timber.e("Chapter model: $chapterModel")
-            val chapter = chapterModel?.extra?.parseJsonToMap() ?: emptyMap()
-            Timber.e("Chapter content: $chapter")
-            _uiState.value = _uiState.value.copy(
-                selectedChapter = selectedChapter,
-                chapters = chapters,
-                chapter = Decrypt.decryptBookText(chapter.toList().firstOrNull()?.second ?: "")
-            )
-
+            val chapters =
+                volume.extra.parseJsonToMap().map { Chapter(id = it.key, title = it.value) }
+            _uiState.value = _uiState.value.copy(chapters = chapters)
+            onNextChapterClick()
         } else {
             Timber.e("Volume not found for id: $volumeId")
             _uiState.value = _uiState.value.copy(
                 errorMessage = "Volume not found for id: $volumeId"
             )
         }
-
-
-
         Timber.e("onVolumeSelected: $volume")
     }
 
-    fun onNextChapterClick() = viewModelScope.launch {
-//        val isReadingMode = _uiState.value.isReadingMode
-//        if (isReadingMode) {
-//            val currentVolume = _uiState.value.selectedVolume
-//            val chapters = _uiState.value.chapters
-//            val currentChapterId = _uiState.value.selectedChapter.first
-//
-//            // Get the next chapter ID
-//            val chapterIds = chapters.keys.toList()
-//            val currentIndex = chapterIds.indexOf(currentChapterId)
-//            if (currentIndex < chapterIds.size - 1) {
-//                val nextChapterId = chapterIds[currentIndex + 1]
-//                _uiState.value = _uiState.value.copy(
-//                    selectedChapter = Pair(nextChapterId, chapters[nextChapterId] ?: ""),
-//                )
-//            } else {
-//                val volumeIds = _uiState.value.volumes.keys.toList()
-//                val currentVolumeIndex = volumeIds.indexOf(currentVolume.first)
-//                if (currentVolumeIndex < volumeIds.size - 1) {
-//                    val nextVolumeId = volumeIds[currentVolumeIndex + 1]
-//                    val nextVolumeName = _uiState.value.volumes[nextVolumeId] ?: ""
-//                    _uiState.value = _uiState.value.copy(
-//                        selectedVolume = Pair(nextVolumeId, nextVolumeName),
-//                        selectedChapter = Pair("", "")
-//                    )
-//                } else {
-//                    // No more volumes available
-//                }
-//            }
-//        }
-    }
 
-//    fun getVolumesMap(jsonString: String): Map<String, String> {
-//        return try {
-//            val type = object : TypeToken<Map<String, String>>() {}.type
-//            val volumeMap: Map<String, String> = gson.fromJson(jsonString, type) ?: emptyMap()
-//            return volumeMap
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            emptyMap()
-//        }
-//    }
-
-    fun String.parseJsonToMap(): Map<String, String> {
+    private fun String.parseJsonToMap(): Map<String, String> {
         val type = object : TypeToken<Map<String, String>>() {}.type
         return Gson().fromJson(this, type)
+    }
+
+    fun onPreviousChapterClick() = viewModelScope.launch(Dispatchers.IO) {
+        // Get the next chapter ID
+        val chapters = _uiState.value.chapters // 77
+        val currentIndex = _uiState.value.chapterIndex // 5
+        if (currentIndex > 0) {
+            val newIndex = _uiState.value.chapterIndex - 1
+            _uiState.value = _uiState.value.copy(chapterIndex = newIndex)
+
+            val previousChapter = chapters[newIndex]
+            val chapterModel = repository.getPosts(previousChapter.id).firstOrNull()
+            val chapter = chapterModel?.extra?.parseJsonToMap()?.toList()?.firstOrNull()
+            _uiState.value = _uiState.value.copy(
+                selectedChapter = previousChapter,
+                chapterContent = Decrypt.decryptBookText(chapter?.second ?: ""),
+            )
+        } else {
+            // No next chapter available
+            Timber.e("No previous chapter available for index: $currentIndex")
+        }
+    }
+
+    fun onNextChapterClick() = viewModelScope.launch(Dispatchers.IO) {
+        val chapters = _uiState.value.chapters
+        val currentIndex = _uiState.value.chapterIndex
+        // Get the next chapter ID
+
+        if (currentIndex < chapters.size - 1) {
+            val newIndex = _uiState.value.chapterIndex + 1
+
+            _uiState.value = _uiState.value.copy(chapterIndex = newIndex)
+            val nextChapter = chapters[newIndex]
+            val chapterModel = repository.getPosts(nextChapter.id).firstOrNull()
+            val chapter = chapterModel?.extra?.parseJsonToMap()?.toList()?.firstOrNull()
+            _uiState.value = _uiState.value.copy(
+                selectedChapter = nextChapter,
+                chapterContent = Decrypt.decryptBookText(chapter?.second ?: ""),
+            )
+        } else {
+            // No next chapter available
+            Timber.e("No next chapter available for index: $currentIndex")
+        }
     }
 
 }

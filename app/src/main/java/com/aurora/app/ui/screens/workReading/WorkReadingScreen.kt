@@ -40,7 +40,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.data.model.WorkDto
 import com.aurora.app.ui.components.AuroraImage
 import com.aurora.app.ui.components.AuroraTopBar
-import com.aurora.app.ui.components.button.AuroraButton
 import com.aurora.app.ui.navigation.ScreenTransition
 import com.aurora.app.utils.toDownloadUrl
 import com.aurora.app.utils.toThumb
@@ -75,8 +74,7 @@ fun WorkReadingScreen(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .fillMaxSize()
-                .padding(16.dp),
+                .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (!state.isReadingMode) {
@@ -96,14 +94,34 @@ fun WorkReadingScreen(
                     )
                     return@Column
                 }
-                WorkContentView(
-                    volume = state.selectedVolume ?: Pair("", ""),
-                    selectedChapter = state.selectedChapter ?: Pair("", ""),
-                    chapterContent = state.chapter,
-                    onNextClick = {
-                        viewModel.onNextChapterClick()
-                    },
-                )
+                if (state.selectedVolume == null || state.selectedChapter == null) {
+                    Text(
+                        text = "Please select a volume and chapter to read.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = TextAlign.Center
+                    )
+                    return@Column
+                } else {
+
+                    WorkContentView(
+                        volume = state.selectedVolume,
+                        selectedChapter = state.selectedChapter,
+                        chapterContent = state.chapterContent,
+                        readerNavBarContent = {
+                            ReaderNavBarSection(
+                                currentPage = state.chapters.indexOf(state.selectedChapter) + 1,
+                                totalPages = state.chapters.size,
+                                onPrevious = { viewModel.onPreviousChapterClick() },
+                                onNext = { viewModel.onNextChapterClick() },
+                                onPageClick = {
+
+                                }
+                            )
+                        }
+                    )
+                }
             }
 
         }
@@ -115,9 +133,9 @@ fun WorkReadingScreen(
 fun ContentsView(
     modifier: Modifier = Modifier,
     uiState: WorkReadingUIState,
-    onClick: (selectedVolume: Pair<String, String>) -> Unit
+    onClick: (selectedVolume: Volume) -> Unit
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(modifier = modifier.padding(16.dp)) {
         item {
             val imageUrl = uiState.workDto?.coverImage?.toDownloadUrl()?.toThumb()
             if (imageUrl != null) {
@@ -126,14 +144,14 @@ fun ContentsView(
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        itemsIndexed(uiState.volumes.entries.toList()) { index, volumeModel ->
-            Timber.e("ContentView: Volume- ${volumeModel.value}")
+        itemsIndexed(uiState.volumes) { index, volumeModel ->
+            Timber.e("ContentView: Volume- ${volumeModel}")
             ContentItemView(
                 index = index,
-                title = volumeModel.value,
+                title = volumeModel.title,
                 subtitle = "10 अध्याय",
                 modifier = Modifier.padding(vertical = 8.dp),
-                onClick = { onClick(volumeModel.toPair()) }
+                onClick = { onClick(volumeModel) }
             )
         }
     }
@@ -143,27 +161,28 @@ fun ContentsView(
 @Composable
 fun WorkContentView(
     modifier: Modifier = Modifier,
-    volume: Pair<String, String>,
-    selectedChapter: Pair<String, String>,
+    volume: Volume,
+    selectedChapter: Chapter,
     chapterContent: String,
-    onNextClick: () -> Unit
+    readerNavBarContent: @Composable () -> Unit = { }
 ) {
     Column {
 
         LazyColumn(
-            modifier = modifier.weight(1f),
+            modifier = modifier
+                .weight(1f)
+                .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
                 Text(
-                    modifier = modifier.padding(12.dp),
-                    text = volume.second,
+                    text = volume.title,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = selectedChapter.second,
+                    text = selectedChapter.title,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -172,7 +191,7 @@ fun WorkContentView(
             }
             item {
                 Text(
-                    text = chapterContent ?: "No content available for this chapter",
+                    text = chapterContent,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontSize = 18.sp
@@ -180,16 +199,8 @@ fun WorkContentView(
             }
         }
 
-        ReaderNavBarSection(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            currentPage = 1,
-            totalPages = 10,
-            onPrevious = { Timber.e("Previous chapter clicked") },
-            onNext = { onNextClick() },
-            onPageClick = { Timber.e("Page clicked") }
-        )
+        readerNavBarContent()
+
     }
 }
 
@@ -287,10 +298,9 @@ fun ContentItemViewPreview(modifier: Modifier = Modifier) {
 fun WorkContentViewPreview(modifier: Modifier = Modifier) {
     WorkContentView(
         modifier = modifier.background(color = MaterialTheme.colorScheme.background),
-        volume = Pair("1", "Volume 1"),
-        selectedChapter = Pair("1", "Chapter 1"),
-        chapterContent = "This is the content of Chapter 1",
-        onNextClick = {}
+        volume = Volume("1", "Volume 1"),
+        selectedChapter = Chapter("1", "Chapter 1"),
+        chapterContent = "This is the content of Chapter 1"
     )
 }
 
