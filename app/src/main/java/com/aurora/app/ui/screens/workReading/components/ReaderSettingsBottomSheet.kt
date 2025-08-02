@@ -14,20 +14,66 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aurora.app.R
 import com.aurora.app.domain.model.ReaderStyle
+
+@Preview
+@Composable
+fun ReaderSettingsViewPreview() {
+    ReaderSettingsView(true, ReaderStyle.Default)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ReaderSettingsView(
+    isSheetVisible: Boolean,
+    currentStyle: ReaderStyle,
+    onDismissRequest: (ReaderStyle) -> Unit = {}
+) {
+    val sheetState = rememberModalBottomSheetState()
+
+    var readerStyle by remember { mutableStateOf(currentStyle) }
+
+    if (!isSheetVisible) return
+
+    ModalBottomSheet(
+        onDismissRequest = {
+            onDismissRequest(readerStyle)
+        },
+        sheetState = sheetState
+    ) {
+        ReaderSettingsBottomSheet(
+            currentFontSize = readerStyle.fontSize,
+            onFontSizeChange = { readerStyle = readerStyle.copy(fontSize = it) },
+            currentSpacing = readerStyle.lineHeight,
+            onSpacingChange = { readerStyle = readerStyle.copy(lineHeight = it) },
+            currentFontFamily = readerStyle.font,
+            onFontFamilyChange = { readerStyle = readerStyle.copy(font = it) },
+            isDarkTheme = readerStyle.darkTheme,
+            onThemeChange = { readerStyle = readerStyle.copy(darkTheme = it) }
+        )
+    }
+}
 
 @Composable
 fun ReaderSettingsBottomSheet(

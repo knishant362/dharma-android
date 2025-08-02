@@ -116,12 +116,12 @@ class WorkReadingViewModel @Inject constructor(
         val currentIndex = _uiState.value.chapterIndex // 5
         if (currentIndex > 0) {
             val newIndex = _uiState.value.chapterIndex - 1
-            _uiState.value = _uiState.value.copy(chapterIndex = newIndex)
 
             val previousChapter = chapters[newIndex]
             val chapterModel = repository.getPosts(previousChapter.id).firstOrNull()
             val chapter = chapterModel?.extra?.parseJsonToMap()?.toList()?.firstOrNull()
             _uiState.value = _uiState.value.copy(
+                chapterIndex = newIndex,
                 selectedChapter = previousChapter,
                 chapterContent = Decrypt.decryptBookText(chapter?.second ?: ""),
             )
@@ -134,16 +134,15 @@ class WorkReadingViewModel @Inject constructor(
     fun onNextChapterClick() = viewModelScope.launch(Dispatchers.IO) {
         val chapters = _uiState.value.chapters
         val currentIndex = _uiState.value.chapterIndex
-        // Get the next chapter ID
 
         if (currentIndex < chapters.size - 1) {
             val newIndex = _uiState.value.chapterIndex + 1
 
-            _uiState.value = _uiState.value.copy(chapterIndex = newIndex)
             val nextChapter = chapters[newIndex]
             val chapterModel = repository.getPosts(nextChapter.id).firstOrNull()
             val chapter = chapterModel?.extra?.parseJsonToMap()?.toList()?.firstOrNull()
             _uiState.value = _uiState.value.copy(
+                chapterIndex = newIndex,
                 selectedChapter = nextChapter,
                 chapterContent = Decrypt.decryptBookText(chapter?.second ?: ""),
             )
@@ -157,6 +156,27 @@ class WorkReadingViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.value = _uiState.value.copy(readerStyle = readerStyle)
             repository.setReaderStyle(readerStyle)
+        }
+    }
+
+    fun onChapterSelected(chapter: Chapter) = viewModelScope.launch(Dispatchers.IO) {
+        val chapters = _uiState.value.chapters
+        val currentIndex = _uiState.value.chapterIndex
+        // Get the next chapter ID
+
+        val newIndex = chapters.indexOf(chapter)
+        if (newIndex in chapters.indices) {
+            val nextChapter = chapters[newIndex]
+            val chapterModel = repository.getPosts(nextChapter.id).firstOrNull()
+            val chapterContent = chapterModel?.extra?.parseJsonToMap()?.toList()?.firstOrNull()
+            _uiState.value = _uiState.value.copy(
+                chapterIndex = newIndex,
+                selectedChapter = nextChapter,
+                chapterContent = Decrypt.decryptBookText(chapterContent?.second ?: ""),
+            )
+        } else {
+            // No next chapter available
+            Timber.e("No next chapter available for index: $currentIndex")
         }
     }
 

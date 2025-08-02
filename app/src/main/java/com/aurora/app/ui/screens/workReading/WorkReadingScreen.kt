@@ -23,16 +23,12 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,8 +47,9 @@ import com.aurora.app.domain.model.ReaderStyle
 import com.aurora.app.ui.components.AuroraImage
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.navigation.ScreenTransition
+import com.aurora.app.ui.screens.workReading.components.ChaptersListView
 import com.aurora.app.ui.screens.workReading.components.ReaderNavBarSection
-import com.aurora.app.ui.screens.workReading.components.ReaderSettingsBottomSheet
+import com.aurora.app.ui.screens.workReading.components.ReaderSettingsView
 import com.aurora.app.ui.screens.workReading.components.getFontFamilyFromAssets
 import com.aurora.app.utils.toDownloadUrl
 import com.aurora.app.utils.toThumb
@@ -75,6 +72,7 @@ fun WorkReadingScreen(
     }
 
     val isShowSettings = remember { mutableStateOf(false) }
+    val isChaptersListVisible = remember { mutableStateOf(false) }
 
     val state = viewModel.uiState.value
     Scaffold(
@@ -133,6 +131,19 @@ fun WorkReadingScreen(
                         }
                     )
 
+                    ChaptersListView(
+                        isSheetVisible = isChaptersListVisible.value,
+                        volume = state.selectedVolume,
+                        selectedChapter = state.selectedChapter,
+                        chapters = state.chapters,
+                        onDismissRequest = { isChaptersListVisible.value = false },
+                        onChapterClick = { chapter ->
+                            Timber.e("ChaptersListView: Chapter selected: ${chapter.title}")
+                            isChaptersListVisible.value = false
+                            viewModel.onChapterSelected(chapter)
+                        }
+                    )
+
                     WorkContentView(
                         readerStyle = state.readerStyle,
                         volume = state.selectedVolume,
@@ -144,9 +155,7 @@ fun WorkReadingScreen(
                                 totalPages = state.chapters.size,
                                 onPrevious = { viewModel.onPreviousChapterClick() },
                                 onNext = { viewModel.onNextChapterClick() },
-                                onPageClick = {
-
-                                }
+                                onPageClick = { isChaptersListVisible.value = true }
                             )
                         }
                     )
@@ -320,45 +329,6 @@ fun ContentItemView(
     }
 
 }
-
-@Preview
-@Composable
-fun ReaderSettingsViewPreview() {
-    ReaderSettingsView(true, ReaderStyle.Default)
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ReaderSettingsView(
-    isSheetVisible: Boolean,
-    currentStyle: ReaderStyle,
-    onDismissRequest: (ReaderStyle) -> Unit = {}
-) {
-    val sheetState = rememberModalBottomSheetState()
-
-    var readerStyle by remember { mutableStateOf(currentStyle) }
-
-    if (!isSheetVisible) return
-
-    ModalBottomSheet(
-        onDismissRequest = {
-            onDismissRequest(readerStyle)
-        },
-        sheetState = sheetState
-    ) {
-        ReaderSettingsBottomSheet(
-            currentFontSize = readerStyle.fontSize,
-            onFontSizeChange = { readerStyle = readerStyle.copy(fontSize = it) },
-            currentSpacing = readerStyle.lineHeight,
-            onSpacingChange = { readerStyle = readerStyle.copy(lineHeight = it) },
-            currentFontFamily = readerStyle.font,
-            onFontFamilyChange = { readerStyle = readerStyle.copy(font = it) },
-            isDarkTheme = readerStyle.darkTheme,
-            onThemeChange = { readerStyle = readerStyle.copy(darkTheme = it) }
-        )
-    }
-}
-
 
 @Preview
 @Composable
