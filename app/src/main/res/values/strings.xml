@@ -16,4 +16,10 @@
     <string name="cups_description">The suit of emotion and intuition, Cups flow through the realm of the heart. They reveal relationships, dreams, and inner feelings, inviting us to connect deeply—with ourselves and others—with compassion and sensitivity.</string>
     <string name="swords_description">The suit of thought and truth, Swords cut through illusion and bring clarity. They represent the mind, communication, and conflict, guiding us to make wise decisions, confront challenges, and speak our truth with integrity.</string>
     <string name="pentacles_description">The suit of stability and manifestation, Pentacles root us in the physical world. They deal with career, health, home, and wealth, encouraging us to build a secure foundation and nurture what truly sustains us.</string>
+
+    <string name="font_size">फ़ॉन्ट आकार</string>
+    <string name="spacing">अंतर</string>
+    <string name="font_family">फ़ॉन्ट परिवार</string>
+    <string name="theme">थीम</string>
+
 </resources>

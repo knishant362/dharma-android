@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aurora.app.data.model.WorkDto
+import com.aurora.app.domain.model.ReaderStyle
 import com.aurora.app.domain.model.dashboard.WorkType
 import com.aurora.app.domain.repo.MainRepository
 import com.aurora.app.utils.Decrypt
@@ -26,11 +27,16 @@ class WorkReadingViewModel @Inject constructor(
 
     fun initialSetup(workDto: WorkDto) {
         _uiState.value = WorkReadingUIState(workDto = workDto)
+        setupUI()
         setupWorkDetails(workDto)
     }
 
-    val gson = Gson()
+    private fun setupUI() = viewModelScope.launch(Dispatchers.IO) {
+        val style = repository.fetchReaderStyle()
+        _uiState.value = _uiState.value.copy(readerStyle = style)
+    }
 
+    val gson = Gson()
 
     private fun setupWorkDetails(workDto: WorkDto) = viewModelScope.launch(Dispatchers.IO) {
         Timber.e("WorkReadingViewModel: setupWorkDetails called with workDto: $workDto")
@@ -144,6 +150,13 @@ class WorkReadingViewModel @Inject constructor(
         } else {
             // No next chapter available
             Timber.e("No next chapter available for index: $currentIndex")
+        }
+    }
+
+    fun onReaderStyleChange(readerStyle: ReaderStyle) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.value = _uiState.value.copy(readerStyle = readerStyle)
+            repository.setReaderStyle(readerStyle)
         }
     }
 

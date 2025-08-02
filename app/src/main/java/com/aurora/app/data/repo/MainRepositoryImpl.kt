@@ -10,15 +10,17 @@ import com.aurora.app.data.model.User
 import com.aurora.app.data.model.WallpaperDataDto
 import com.aurora.app.data.model.WallpaperDto
 import com.aurora.app.data.model.WorkDto
+import com.aurora.app.data.model.toReaderStyleModel
 import com.aurora.app.data.model.toWorkDto
 import com.aurora.app.data.model.work.WorkModel
 import com.aurora.app.data.remote.api.ApiService
 import com.aurora.app.data.remote.request.ImageUploadRequest
+import com.aurora.app.domain.model.ReaderStyle
+import com.aurora.app.domain.model.toReaderStyle
 import com.aurora.app.domain.repo.MainRepository
 import com.aurora.app.utils.Constants
 import com.aurora.app.utils.ResponseState
 import com.aurora.app.utils.safeApiCall
-import com.aurora.app.utils.toDownloadUrl
 import com.google.gson.Gson
 import java.io.File
 import javax.inject.Inject
@@ -29,6 +31,14 @@ class MainRepositoryImpl @Inject constructor(
     private val storageManager: StorageManager,
     private val appDao: AppDao
 ) : MainRepository {
+
+    override suspend fun fetchReaderStyle(): ReaderStyle {
+        return storageManager.getReaderStyle()?.toReaderStyle() ?: ReaderStyle.Default
+    }
+
+    override suspend fun setReaderStyle(readerStyle: ReaderStyle) {
+        storageManager.setReaderStyle(readerStyle.toReaderStyleModel())
+    }
 
     override suspend fun getUserProfile(): User {
         return User(

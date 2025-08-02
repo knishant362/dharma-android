@@ -8,9 +8,14 @@ import com.aurora.app.data.model.WallpaperDto
 import com.aurora.app.data.model.WorkDto
 import com.aurora.app.data.model.work.WorkModel
 import com.aurora.app.data.remote.request.ImageUploadRequest
+import com.aurora.app.domain.model.ReaderStyle
 import com.aurora.app.utils.ResponseState
 
 interface MainRepository {
+
+    suspend fun fetchReaderStyle(): ReaderStyle
+
+    suspend fun setReaderStyle(readerStyle: ReaderStyle)
 
     suspend fun getUserProfile(): User
 

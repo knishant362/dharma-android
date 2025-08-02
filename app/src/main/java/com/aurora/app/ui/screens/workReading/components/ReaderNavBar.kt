@@ -1,4 +1,4 @@
-package com.aurora.app.ui.screens.workReading
+package com.aurora.app.ui.screens.workReading.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

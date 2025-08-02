@@ -1,8 +1,13 @@
 package com.aurora.app.data.local.storage
 
+import com.aurora.app.data.model.ReaderStyleModel
 import com.aurora.app.data.model.SpreadResult
 
 interface StorageManager {
+
+    suspend fun getReaderStyle(): ReaderStyleModel?
+    suspend fun setReaderStyle(readerStyle: ReaderStyleModel)
+
     suspend fun saveSpread(spreadDetailId: String, selectedCardIds: List<String>)
     suspend fun updateAdWatched(spreadDetailId: String)
 

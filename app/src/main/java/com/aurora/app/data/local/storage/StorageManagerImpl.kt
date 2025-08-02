@@ -9,8 +9,8 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 import javax.inject.Singleton
-
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.aurora.app.data.model.ReaderStyleModel
 
 object PreferenceKeys {
     val Spreads = stringPreferencesKey("saved_spread_results")
@@ -19,6 +19,7 @@ object PreferenceKeys {
     val Gender = stringPreferencesKey("user_gender")
     val RelationshipStatus = stringPreferencesKey("user_relationship_status")
     val Occupation = stringPreferencesKey("user_occupation")
+    val ReaderStyle = stringPreferencesKey("reader_style")
 }
 
 @Singleton
@@ -27,6 +28,18 @@ class StorageManagerImpl @Inject constructor(
 ) : StorageManager {
 
     private val gson = Gson()
+
+    override suspend fun getReaderStyle(): ReaderStyleModel? {
+        val data = dataStore.data.first()[PreferenceKeys.ReaderStyle]
+        if (data.isNullOrEmpty()) return null
+        return gson.fromJson<ReaderStyleModel>(data)
+    }
+
+    override suspend fun setReaderStyle(readerStyle: ReaderStyleModel) {
+        dataStore.edit { preferences ->
+            preferences[PreferenceKeys.ReaderStyle] = gson.toJson(readerStyle)
+        }
+    }
 
     override suspend fun saveSpread(spreadDetailId: String, selectedCardIds: List<String>) {
         dataStore.edit { preferences ->

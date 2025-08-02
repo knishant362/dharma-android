@@ -2,11 +2,13 @@ package com.aurora.app.ui.screens.workReading
 
 import com.aurora.app.data.local.database.entity.PostEntity
 import com.aurora.app.data.model.WorkDto
+import com.aurora.app.domain.model.ReaderStyle
 
 data class WorkReadingUIState(
     val isLoading: Boolean = true,
     val isReadingMode: Boolean = false,
     val errorMessage: String? = null,
+    val readerStyle: ReaderStyle = ReaderStyle.Default,
     val workDto: WorkDto? = null,
     val postModel: PostEntity? = null,
     val selectedVolume: Volume? = null,

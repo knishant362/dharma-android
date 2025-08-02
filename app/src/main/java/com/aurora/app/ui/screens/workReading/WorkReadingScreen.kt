@@ -23,24 +23,37 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.aurora.app.R
 import com.aurora.app.data.model.WorkDto
+import com.aurora.app.domain.model.ReaderStyle
 import com.aurora.app.ui.components.AuroraImage
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.navigation.ScreenTransition
+import com.aurora.app.ui.screens.workReading.components.ReaderNavBarSection
+import com.aurora.app.ui.screens.workReading.components.ReaderSettingsBottomSheet
+import com.aurora.app.ui.screens.workReading.components.getFontFamilyFromAssets
 import com.aurora.app.utils.toDownloadUrl
 import com.aurora.app.utils.toThumb
 import com.ramcosta.composedestinations.annotation.Destination
@@ -61,13 +74,18 @@ fun WorkReadingScreen(
         viewModel.initialSetup(workDto)
     }
 
+    val isShowSettings = remember { mutableStateOf(false) }
+
     val state = viewModel.uiState.value
     Scaffold(
         topBar = {
             AuroraTopBar(
                 text = state.workDto?.title?.hi ?: "Work Details Here",
                 navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationClick = { navigator.navigateUp() })
+                onNavigationClick = { navigator.navigateUp() },
+                actionIcon = if (state.isReadingMode) ImageVector.vectorResource(R.drawable.ic_text_format) else null,
+                onActionClick = { isShowSettings.value = true }
+            )
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
@@ -105,7 +123,18 @@ fun WorkReadingScreen(
                     return@Column
                 } else {
 
+                    ReaderSettingsView(
+                        isSheetVisible = isShowSettings.value,
+                        currentStyle = state.readerStyle,
+                        onDismissRequest = {
+                            isShowSettings.value = false
+                            Timber.e("ReaderSettingsView: onDismissRequest called with style: $it")
+                            viewModel.onReaderStyleChange(it)
+                        }
+                    )
+
                     WorkContentView(
+                        readerStyle = state.readerStyle,
                         volume = state.selectedVolume,
                         selectedChapter = state.selectedChapter,
                         chapterContent = state.chapterContent,
@@ -161,11 +190,18 @@ fun ContentsView(
 @Composable
 fun WorkContentView(
     modifier: Modifier = Modifier,
+    readerStyle: ReaderStyle,
     volume: Volume,
     selectedChapter: Chapter,
     chapterContent: String,
     readerNavBarContent: @Composable () -> Unit = { }
 ) {
+
+    val fontSize = readerStyle.fontSize.sp
+    val lineHeight = (readerStyle.fontSize * readerStyle.lineHeight).sp
+
+    val fontFamily = getFontFamilyFromAssets(fontName = readerStyle.font)
+
     Column {
 
         LazyColumn(
@@ -179,14 +215,16 @@ fun WorkContentView(
                     text = volume.title,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontFamily = fontFamily
                 )
                 Text(
                     text = selectedChapter.title,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    fontFamily = fontFamily
                 )
             }
             item {
@@ -194,7 +232,9 @@ fun WorkContentView(
                     text = chapterContent,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 18.sp
+                    fontSize = fontSize,
+                    lineHeight = lineHeight,
+                    fontFamily = fontFamily
                 )
             }
         }
@@ -283,6 +323,45 @@ fun ContentItemView(
 
 @Preview
 @Composable
+fun ReaderSettingsViewPreview() {
+    ReaderSettingsView(true, ReaderStyle.Default)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ReaderSettingsView(
+    isSheetVisible: Boolean,
+    currentStyle: ReaderStyle,
+    onDismissRequest: (ReaderStyle) -> Unit = {}
+) {
+    val sheetState = rememberModalBottomSheetState()
+
+    var readerStyle by remember { mutableStateOf(currentStyle) }
+
+    if (!isSheetVisible) return
+
+    ModalBottomSheet(
+        onDismissRequest = {
+            onDismissRequest(readerStyle)
+        },
+        sheetState = sheetState
+    ) {
+        ReaderSettingsBottomSheet(
+            currentFontSize = readerStyle.fontSize,
+            onFontSizeChange = { readerStyle = readerStyle.copy(fontSize = it) },
+            currentSpacing = readerStyle.lineHeight,
+            onSpacingChange = { readerStyle = readerStyle.copy(lineHeight = it) },
+            currentFontFamily = readerStyle.font,
+            onFontFamilyChange = { readerStyle = readerStyle.copy(font = it) },
+            isDarkTheme = readerStyle.darkTheme,
+            onThemeChange = { readerStyle = readerStyle.copy(darkTheme = it) }
+        )
+    }
+}
+
+
+@Preview
+@Composable
 fun ContentItemViewPreview(modifier: Modifier = Modifier) {
     ContentItemView(
         modifier = modifier,
@@ -300,7 +379,8 @@ fun WorkContentViewPreview(modifier: Modifier = Modifier) {
         modifier = modifier.background(color = MaterialTheme.colorScheme.background),
         volume = Volume("1", "Volume 1"),
         selectedChapter = Chapter("1", "Chapter 1"),
-        chapterContent = "This is the content of Chapter 1"
+        chapterContent = "This is the content of Chapter 1",
+        readerStyle = ReaderStyle.Default,
     )
 }
 
@@ -321,5 +401,18 @@ fun CardDetailImage(modifier: Modifier, imageUrl: String) {
                 shape = RoundedCornerShape(16.dp)
             ),
         onClick = {}
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun TopBarPreview(modifier: Modifier = Modifier) {
+    AuroraTopBar(
+        text = "Work Details Here",
+        navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+        onNavigationClick = { },
+        actionIcon = ImageVector.vectorResource(R.drawable.ic_text_format),
+        onActionClick = {}
     )
 }
