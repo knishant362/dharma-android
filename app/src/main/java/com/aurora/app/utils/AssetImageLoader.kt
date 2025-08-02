@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import com.aurora.app.domain.model.TarotCard
 import timber.log.Timber
 
 object AssetImageLoader {

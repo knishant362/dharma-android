@@ -4,12 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aurora.app.domain.model.dashboard.Featured
 import com.aurora.app.domain.model.dashboard.WorkSection
-import com.aurora.app.domain.model.spread.toSpreadDetailDTO
 import com.aurora.app.domain.repo.MainRepository
-import com.aurora.app.domain.repo.TarotRepository
 import com.aurora.app.utils.ResponseState
 import com.aurora.app.utils.TimeUtil
-import com.aurora.app.utils.TimeUtil.isToday
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +18,6 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val mainRepository: MainRepository,
-    private val tarotRepository: TarotRepository
 ) : ViewModel() {
 
 
@@ -69,16 +65,6 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    private fun getFeaturedData(): List<Featured> {
-        val date = TimeUtil.getTodayFormatted()
-        val featuredData = listOf(
-            Featured(0, date, "YOUR DAILY DOSE\nOF SPIRITUAL WISDOM", "READ SCRIPTURE"),
-            Featured(1, date, "SHLOKA OF THE DAY", "VIEW NOW"),
-            Featured(2, date, "WHAT'S YOUR ENERGY\nACCORDING TO THE GITA?", "EXPLORE"),
-        )
-        return featuredData
-    }
-
     private fun getFeaturedDataHindi(): List<Featured> {
         val date = TimeUtil.getTodayFormatted()
         val featuredData = listOf(
@@ -92,18 +78,9 @@ class DashboardViewModel @Inject constructor(
     private fun setupDashboard() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val results = mainRepository.getSavedSpreads()
-                val todaySpreadResults = results.filter { isToday(it.createdAt) }
-                val todaySpreadResultsMap = todaySpreadResults.associateBy { it.spreadDetailId }
-                val spreads = tarotRepository.getDashboardSpreads().mapIndexed { index, spread ->
-                    spread.toSpreadDetailDTO(index, todaySpreadResultsMap[spread.id])
-                }
                 val userProfile = mainRepository.getUserProfile()
                 _uiState.value = DashboardUiState(
                     featuredItems = getFeaturedDataHindi(),
-                    todayResults = todaySpreadResults,
-                    spreadResults = results,
-                    spreads = spreads,
                     user = userProfile
                 )
             } catch (e: Exception) {

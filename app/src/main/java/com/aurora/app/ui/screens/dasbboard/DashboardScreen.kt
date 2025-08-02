@@ -52,7 +52,6 @@ import com.aurora.app.utils.toDownloadUrl
 import com.aurora.app.utils.toThumb
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
-import com.ramcosta.composedestinations.generated.destinations.ExploreScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.WorkReadingScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -98,7 +97,6 @@ fun DashboardScreen(
                         TarotFeaturedSection(
                             featuredItems = uiState.featuredItems,
                             onClick = {
-                                navigator.navigate(ExploreScreenDestination())
                             }
                         )
                     }
