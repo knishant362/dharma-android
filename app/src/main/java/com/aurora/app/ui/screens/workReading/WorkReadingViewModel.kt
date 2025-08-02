@@ -11,6 +11,7 @@ import com.aurora.app.domain.repo.MainRepository
 import com.aurora.app.utils.Decrypt
 import com.google.common.reflect.TypeToken
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,6 +58,26 @@ class WorkReadingViewModel @Inject constructor(
                         isLoading = false,
                         volumes = volumes,
                         postModel = response.first(),
+                    )
+                } else {
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        errorMessage = "Post not found for id: ${workDto.id}"
+                    )
+                }
+
+            } else if (workDto.mType == WorkType.CHAPTER.type) {
+                val post = repository.getPosts("pbook-hi-${workDto.id}").firstOrNull()
+                Timber.e("WorkReadingViewModel: WorkType.CHAPTER, fetching details for id: ${workDto.id}, post: $post")
+                if (post != null) {
+                    val jsonObject = Gson().fromJson(post.extra, JsonObject::class.java)
+                    val textValue = jsonObject.get("text").asString ?: ""
+                    Timber.e("WorkReadingViewModel: textValue: $textValue")
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        chapterContent = textValue,
+                        postModel = post,
+                        isReadingMode = true,
                     )
                 } else {
                     _uiState.value = _uiState.value.copy(

@@ -44,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.aurora.app.R
 import com.aurora.app.data.model.WorkDto
 import com.aurora.app.domain.model.ReaderStyle
+import com.aurora.app.domain.model.dashboard.WorkType
 import com.aurora.app.ui.components.AuroraImage
 import com.aurora.app.ui.components.AuroraTopBar
 import com.aurora.app.ui.navigation.ScreenTransition
@@ -100,6 +101,15 @@ fun WorkReadingScreen(
                 )
             } else {
 
+                ReaderSettingsView(
+                    isSheetVisible = isShowSettings.value,
+                    currentStyle = state.readerStyle,
+                    onDismissRequest = {
+                        isShowSettings.value = false
+                        viewModel.onReaderStyleChange(it)
+                    }
+                )
+
                 if (state.postModel == null) {
                     Text(
                         text = "Loading work details...",
@@ -110,6 +120,18 @@ fun WorkReadingScreen(
                     )
                     return@Column
                 }
+
+                if (state.workDto != null && state.workDto.mType == WorkType.CHAPTER.type) {
+                    WorkContentView(
+                        readerStyle = state.readerStyle,
+                        volume = null,
+                        selectedChapterTitle = "",
+                        chapterContent = state.chapterContent,
+                        readerNavBarContent = {}
+                    )
+                    return@Column
+                }
+
                 if (state.selectedVolume == null || state.selectedChapter == null) {
                     Text(
                         text = "Please select a volume and chapter to read.",
@@ -121,15 +143,6 @@ fun WorkReadingScreen(
                     return@Column
                 } else {
 
-                    ReaderSettingsView(
-                        isSheetVisible = isShowSettings.value,
-                        currentStyle = state.readerStyle,
-                        onDismissRequest = {
-                            isShowSettings.value = false
-                            Timber.e("ReaderSettingsView: onDismissRequest called with style: $it")
-                            viewModel.onReaderStyleChange(it)
-                        }
-                    )
 
                     ChaptersListView(
                         isSheetVisible = isChaptersListVisible.value,
@@ -147,7 +160,7 @@ fun WorkReadingScreen(
                     WorkContentView(
                         readerStyle = state.readerStyle,
                         volume = state.selectedVolume,
-                        selectedChapter = state.selectedChapter,
+                        selectedChapterTitle = state.selectedChapter.title,
                         chapterContent = state.chapterContent,
                         readerNavBarContent = {
                             ReaderNavBarSection(
@@ -200,15 +213,14 @@ fun ContentsView(
 fun WorkContentView(
     modifier: Modifier = Modifier,
     readerStyle: ReaderStyle,
-    volume: Volume,
-    selectedChapter: Chapter,
+    volume: Volume?,
+    selectedChapterTitle: String,
     chapterContent: String,
     readerNavBarContent: @Composable () -> Unit = { }
 ) {
 
     val fontSize = readerStyle.fontSize.sp
     val lineHeight = (readerStyle.fontSize * readerStyle.lineHeight).sp
-
     val fontFamily = getFontFamilyFromAssets(fontName = readerStyle.font)
 
     Column {
@@ -221,14 +233,14 @@ fun WorkContentView(
         ) {
             item {
                 Text(
-                    text = volume.title,
+                    text = volume?.title ?: "",
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontFamily = fontFamily
                 )
                 Text(
-                    text = selectedChapter.title,
+                    text = selectedChapterTitle,
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -348,7 +360,7 @@ fun WorkContentViewPreview(modifier: Modifier = Modifier) {
     WorkContentView(
         modifier = modifier.background(color = MaterialTheme.colorScheme.background),
         volume = Volume("1", "Volume 1"),
-        selectedChapter = Chapter("1", "Chapter 1"),
+        selectedChapterTitle = "Chapter 1",
         chapterContent = "This is the content of Chapter 1",
         readerStyle = ReaderStyle.Default,
     )
