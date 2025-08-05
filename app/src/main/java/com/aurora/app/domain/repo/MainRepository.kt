@@ -49,5 +49,6 @@ interface MainRepository {
 
     suspend fun getPosts(id: String): List<PostEntity>
 
+    suspend fun getPosts(mType: Int): List<PostEntity>
 
 }

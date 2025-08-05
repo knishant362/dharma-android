@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -53,6 +54,7 @@ import com.aurora.app.utils.toThumb
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.RingtoneScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.WorkReadingScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import timber.log.Timber
@@ -78,9 +80,11 @@ fun DashboardScreen(
             )
         },
         content = { paddingValues ->
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .padding(paddingValues)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(paddingValues)
+            ) {
                 Image(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -97,6 +101,7 @@ fun DashboardScreen(
                         TarotFeaturedSection(
                             featuredItems = uiState.featuredItems,
                             onClick = {
+                                navigator.navigate(RingtoneScreenDestination())
                             }
                         )
                     }
@@ -265,7 +270,7 @@ fun WorkListView(
     categoryName: String,
     works: List<WorkDto>,
     onClick: (WorkDto) -> Unit
-){
+) {
     Column(modifier = modifier) {
         Text(
             text = categoryName.uppercase(),
@@ -284,7 +289,8 @@ fun WorkListView(
                     imageUrl = work.coverImage?.toDownloadUrl()?.toThumb() ?: "",
                     modifier = Modifier
                         .weight(1f)
-                        .aspectRatio(2 / 3.8f),
+                        .width(150.dp)
+                        .aspectRatio(1 / 1.5f),
                     onClick = { onClick(work) }
                 )
             }

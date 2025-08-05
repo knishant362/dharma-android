@@ -14,4 +14,7 @@ interface AppDao {
 
     @Query("SELECT * FROM postV2 WHERE _id = :id")
     fun getPostsById(id: String): List<PostEntity>
+
+    @Query("SELECT * FROM postV2 WHERE mtype = :mType")
+    fun getPostsByType(mType: Int): List<PostEntity>
 }

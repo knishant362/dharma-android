@@ -99,6 +99,10 @@ class MainRepositoryImpl @Inject constructor(
         return appDao.getPostsById(id)
     }
 
+    override suspend fun getPosts(mType: Int): List<PostEntity> {
+        return appDao.getPostsByType(mType)
+    }
+
     override suspend fun fetchWorks(): ResponseState<List<WorkDto>> =
         safeApiCall(
             call = { apiService.fetchWorks() },
