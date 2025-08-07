@@ -1,0 +1,7 @@
+<wallpaper
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:label="Video Live Wallpaper"
+    android:thumbnail="@drawable/app_icon"
+    android:description="@string/app_name"
+    android:settingsActivity=""
+    />

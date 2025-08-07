@@ -55,6 +55,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.RingtoneScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.WallpaperListScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.WorkReadingScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import timber.log.Timber
@@ -100,8 +101,12 @@ fun DashboardScreen(
                     item {
                         TarotFeaturedSection(
                             featuredItems = uiState.featuredItems,
-                            onClick = {
-                                navigator.navigate(RingtoneScreenDestination())
+                            onClick = { index, featured ->
+                                when(index) {
+                                    0 -> navigator.navigate(RingtoneScreenDestination())
+                                    1 -> navigator.navigate(WallpaperListScreenDestination())
+                                    else -> navigator.navigate(RingtoneScreenDestination())
+                                }
                             }
                         )
                     }
@@ -167,7 +172,7 @@ fun GreetingSection(
 fun TarotFeaturedSection(
     modifier: Modifier = Modifier,
     featuredItems: List<Featured>,
-    onClick: (Featured) -> Unit
+    onClick: (Int, Featured) -> Unit
 ) {
     if (featuredItems.isEmpty()) return
 
@@ -186,7 +191,7 @@ fun TarotFeaturedSection(
         ) { page ->
             TarotCarouselCard(
                 featured = featuredItems[page],
-                onDrawCardsClick = { onClick(it) },
+                onDrawCardsClick = { onClick(page, it) },
                 modifier = Modifier.fillMaxWidth()
             )
         }

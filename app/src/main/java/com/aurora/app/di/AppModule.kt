@@ -11,7 +11,9 @@ import com.aurora.app.data.local.database.dao.AppDao
 import com.aurora.app.data.local.storage.StorageManagerImpl
 import com.aurora.app.data.remote.api.ApiService
 import com.aurora.app.data.repo.MainRepositoryImpl
+import com.aurora.app.data.repo.MediaRepositoryImpl
 import com.aurora.app.domain.repo.MainRepository
+import com.aurora.app.domain.repo.MediaRepository
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import dagger.Module
 import dagger.Provides
@@ -93,6 +95,12 @@ object AppModule {
     @Singleton
     fun provideMainRepository(@ApplicationContext context: Context, apiService: ApiService, storageManagerImpl: StorageManagerImpl, appDao: AppDao): MainRepository {
         return MainRepositoryImpl(context, apiService, storageManagerImpl, appDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMediaRepository(@ApplicationContext context: Context): MediaRepository {
+        return MediaRepositoryImpl(context)
     }
 
     @Provides

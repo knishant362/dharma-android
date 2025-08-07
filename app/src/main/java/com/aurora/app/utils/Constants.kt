@@ -10,4 +10,7 @@ object Constants {
     const val PACK_NAME = "LST"
     const val IMAGE_DIRECTORY = "data/images"
 
+    const val APP_PREFERENCES = "app_preferences"
+    const val WALLPAPER_KEY = "wallpaper_key"
+
 }

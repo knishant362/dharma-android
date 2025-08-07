@@ -7,16 +7,17 @@ import com.aurora.app.data.local.database.entity.PostEntity
 import com.aurora.app.data.local.storage.StorageManager
 import com.aurora.app.data.model.SpreadResult
 import com.aurora.app.data.model.User
-import com.aurora.app.data.model.WallpaperDataDto
-import com.aurora.app.data.model.WallpaperDto
 import com.aurora.app.data.model.WorkDto
 import com.aurora.app.data.model.toReaderStyleModel
 import com.aurora.app.data.model.toWorkDto
+import com.aurora.app.data.model.wallpaper.WallpaperExtra
 import com.aurora.app.data.model.work.WorkModel
 import com.aurora.app.data.remote.api.ApiService
 import com.aurora.app.data.remote.request.ImageUploadRequest
 import com.aurora.app.domain.model.ReaderStyle
 import com.aurora.app.domain.model.toReaderStyle
+import com.aurora.app.domain.model.wallpaper.WallpaperExtraDto
+import com.aurora.app.domain.model.wallpaper.toDto
 import com.aurora.app.domain.repo.MainRepository
 import com.aurora.app.utils.Constants
 import com.aurora.app.utils.ResponseState
@@ -31,6 +32,8 @@ class MainRepositoryImpl @Inject constructor(
     private val storageManager: StorageManager,
     private val appDao: AppDao
 ) : MainRepository {
+
+    val gson = Gson()
 
     override suspend fun fetchReaderStyle(): ReaderStyle {
         return storageManager.getReaderStyle()?.toReaderStyle() ?: ReaderStyle.Default
@@ -63,7 +66,6 @@ class MainRepositoryImpl @Inject constructor(
         storageManager.setRelationshipStatus(relationshipStatus)
         storageManager.setOccupation(occupation)
     }
-    val gson = Gson()
 
     override suspend fun getWorkDetails(workDto: WorkDto): ResponseState<WorkModel?> {
         val folder = File(context.filesDir, Constants.WORK_DIRECTORY)
@@ -99,26 +101,31 @@ class MainRepositoryImpl @Inject constructor(
         return appDao.getPostsById(id)
     }
 
-    override suspend fun getPosts(mType: Int): List<PostEntity> {
+    override suspend fun getPostsByType(mType: String): List<PostEntity> {
         return appDao.getPostsByType(mType)
+    }
+
+    override suspend fun getWallpapersData(id: String): ResponseState<WallpaperExtraDto> {
+        return try {
+            val response = appDao.getPostsById(id).firstOrNull()?.extra ?: throw Exception("No data found")
+            val data = gson.fromJson(response, WallpaperExtra::class.java)
+            ResponseState.Success(data.toDto())
+        } catch (e: Exception) {
+            ResponseState.Error(message = e.message ?: "Unknown error")
+        }
+    }
+
+    override suspend fun getWallpapers(
+        mType: String,
+        data: String
+    ): List<PostEntity> {
+        return appDao.getPosts(mType = mType, topics = data)
     }
 
     override suspend fun fetchWorks(): ResponseState<List<WorkDto>> =
         safeApiCall(
             call = { apiService.fetchWorks() },
             success = { it.items.map { work -> work.toWorkDto() } }
-        )
-
-    override suspend fun getWallpapers(page: Int): ResponseState<WallpaperDataDto> =
-        safeApiCall(
-            call = { apiService.fetchWallpapers(page) },
-            success = { it.toWallpaperDataDto() }
-        )
-
-    override suspend fun getAlbumWallpapers(albumId: String): ResponseState<List<WallpaperDto>> =
-        safeApiCall(
-            call = { apiService.fetchAlbumWallpapers("(album_id='${albumId}')") },
-            success = { it.wallpapers.map { item -> WallpaperDto.fromEntity(item) } }
         )
 
     override suspend fun uploadWallpaper(request: ImageUploadRequest): ResponseState<String> =

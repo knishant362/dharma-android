@@ -3,12 +3,11 @@ package com.aurora.app.domain.repo
 import com.aurora.app.data.local.database.entity.PostEntity
 import com.aurora.app.data.model.SpreadResult
 import com.aurora.app.data.model.User
-import com.aurora.app.data.model.WallpaperDataDto
-import com.aurora.app.data.model.WallpaperDto
 import com.aurora.app.data.model.WorkDto
 import com.aurora.app.data.model.work.WorkModel
 import com.aurora.app.data.remote.request.ImageUploadRequest
 import com.aurora.app.domain.model.ReaderStyle
+import com.aurora.app.domain.model.wallpaper.WallpaperExtraDto
 import com.aurora.app.utils.ResponseState
 
 interface MainRepository {
@@ -20,10 +19,6 @@ interface MainRepository {
     suspend fun getUserProfile(): User
 
     suspend fun fetchWorks(): ResponseState<List<WorkDto>>
-
-    suspend fun getWallpapers(page: Int): ResponseState<WallpaperDataDto>
-
-    suspend fun getAlbumWallpapers(albumId: String): ResponseState<List<WallpaperDto>>
 
     suspend fun uploadWallpaper(request: ImageUploadRequest): ResponseState<String>
 
@@ -49,6 +44,10 @@ interface MainRepository {
 
     suspend fun getPosts(id: String): List<PostEntity>
 
-    suspend fun getPosts(mType: Int): List<PostEntity>
+    suspend fun getPostsByType(mType: String): List<PostEntity>
+
+    suspend fun getWallpapersData(id: String): ResponseState<WallpaperExtraDto>
+
+    suspend fun getWallpapers(mType: String, data: String): List<PostEntity>
 
 }

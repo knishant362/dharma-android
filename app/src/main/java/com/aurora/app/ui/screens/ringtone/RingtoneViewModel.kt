@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aurora.app.data.local.database.entity.PostEntity
 import com.aurora.app.domain.model.dashboard.Ringtone
+import com.aurora.app.domain.model.dashboard.WorkType
 import com.aurora.app.domain.repo.MainRepository
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,7 +31,7 @@ class RingtoneViewModel @Inject constructor(
     val gson = Gson()
 
     private fun fetchRingtones() = viewModelScope.launch(Dispatchers.IO) {
-        val posts = repository.getPosts(mType = 13001)
+        val posts = repository.getPostsByType(mType = WorkType.RINGTONE.type)
         val ringtones = posts.mapNotNull { post ->
             post.toRingtone()
         }
