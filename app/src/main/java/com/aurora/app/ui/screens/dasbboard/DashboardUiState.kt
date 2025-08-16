@@ -11,5 +11,6 @@ data class DashboardUiState(
     val featuredItems: List<Featured> = emptyList(),
     val works: List<WorkDto> = emptyList(),
     val workSections: List<WorkSection> = emptyList(),
-    val user: User? = null
+    val user: User? = null,
+    val categories: List<CategoryItem> = emptyList(),
 )

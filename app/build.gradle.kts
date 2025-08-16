@@ -170,5 +170,6 @@ dependencies {
     implementation("com.valentinilk.shimmer:compose-shimmer:1.3.1")
     implementation("com.github.commandiron:WheelPickerCompose:1.1.11")
 
+    implementation("org.jsoup:jsoup:1.17.2")
 
 }

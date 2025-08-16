@@ -8,5 +8,6 @@ data class Featured(
     val id: Long,
     val date: String,
     val title: String,
-    val buttonText: String
+    val buttonText: String,
+    val background: Int
 ): Parcelable

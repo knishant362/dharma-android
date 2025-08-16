@@ -11,6 +11,7 @@ import com.aurora.app.utils.ResponseState
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -28,11 +29,7 @@ class WallpaperListViewModel @Inject constructor(
     private val state = MutableStateFlow(WallpaperListUiState(isLoading = true))
     val uiState = state.asStateFlow()
 
-    init {
-        fetchWallpapers()
-    }
-
-    private fun fetchWallpapers() = viewModelScope.launch(Dispatchers.IO) {
+    fun fetchWallpapers() = viewModelScope.launch(Dispatchers.IO) {
         val result = mainRepository.getWallpapersData("hi:page:wallapaper_page")
         Timber.tag("fetchWallpapers").d("fetchWallpapers: ${result.data?.sections}")
         when (result) {
@@ -40,6 +37,7 @@ class WallpaperListViewModel @Inject constructor(
             is ResponseState.Success -> {
                 val response = result.data?.sections ?: emptyList()
                 val wallpaperSections = response.map { prepareWallpaperSections(it) }
+                delay(500)
                 state.update {
                     it.copy(
                         wallpaperSections = wallpaperSections,

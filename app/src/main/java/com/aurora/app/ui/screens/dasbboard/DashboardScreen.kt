@@ -1,8 +1,13 @@
 package com.aurora.app.ui.screens.dasbboard
 
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +15,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,6 +24,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
@@ -25,22 +34,36 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.aurora.app.R
@@ -48,16 +71,17 @@ import com.aurora.app.data.model.WorkDto
 import com.aurora.app.domain.model.dashboard.Featured
 import com.aurora.app.ui.components.AuroraImage
 import com.aurora.app.ui.components.AuroraTopBar
-import com.aurora.app.ui.components.button.AuroraOutlinedButton
 import com.aurora.app.utils.toDownloadUrl
 import com.aurora.app.utils.toThumb
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.HoroscopeScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.RingtoneScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.WallpaperListScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.WorkReadingScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.delay
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,6 +137,16 @@ fun DashboardScreen(
                     if (!uiState.isLoading) {
                         item {
                             GreetingSection(uiState.user?.name ?: "")
+                        }
+                        item {
+                            CategoriesGrid(uiState.categories, onCategoryClick = { index, category ->
+                                when (index) {
+                                    0 -> navigator.navigate(RingtoneScreenDestination())
+                                    2 -> navigator.navigate(WallpaperListScreenDestination())
+                                    4 -> navigator.navigate(HoroscopeScreenDestination())
+                                    else -> navigator.navigate(RingtoneScreenDestination())
+                                }
+                            })
                         }
                         items(uiState.workSections) { workSection ->
                             WorkListView(
@@ -215,59 +249,104 @@ fun TarotFeaturedSection(
     }
 }
 
-
 @Composable
 fun TarotCarouselCard(
     featured: Featured,
     onDrawCardsClick: (Featured) -> Unit,
     modifier: Modifier = Modifier
 ) {
+
     Box(
         modifier = modifier
-            .height(220.dp)
+            .height(240.dp)
             .padding(horizontal = 8.dp)
-            .clip(RoundedCornerShape(16.dp))
             .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(16.dp)
-            ),
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .clip(RoundedCornerShape(20.dp))
+            .padding(4.dp)
+            .clip(RoundedCornerShape(16.dp)),
         contentAlignment = Alignment.Center
     ) {
         Image(
             modifier = Modifier.matchParentSize(),
-            painter = painterResource(R.drawable.bg_land),
+            painter = painterResource(featured.background),
             contentDescription = "",
             contentScale = ContentScale.Crop
         )
+
         Column(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+
+                Text(
+                    text = featured.date,
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        fontWeight = FontWeight.Medium
+                    ),
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+                )
+
+            Spacer(Modifier.height(12.dp))
+
             Text(
-                text = featured.date,
-                color = Color.Black,
-                style = MaterialTheme.typography.bodyMedium
-            )
-            Spacer(Modifier.height(8.dp))
-            Text(
-                featured.title,
-                color = MaterialTheme.colorScheme.primary,
+                text = featured.title,
+                color = Color.White,
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    fontWeight = FontWeight.Bold,
+                    shadow = Shadow(
+                        color = Color.Black.copy(alpha = 0.8f),
+                        offset = Offset(2f, 2f),
+                        blurRadius = 4f
+                    ),
+                    lineHeight = 28.sp
+                ),
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
             )
-            Spacer(Modifier.height(8.dp))
-            AuroraOutlinedButton(
-                modifier = Modifier,
-                text = featured.buttonText,
-                textColor = Color.Black,
-                onClick = { onDrawCardsClick(featured) }
-            )
+
+            Spacer(Modifier.height(16.dp))
+
+            Surface(
+                modifier = Modifier
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = RoundedCornerShape(25.dp)
+                    )
+                    .clickable { onDrawCardsClick(featured) },
+                shape = RoundedCornerShape(25.dp),
+                color = Color.White.copy(alpha = 0.9f),
+                border = BorderStroke(
+                    width = 1.dp,
+                    brush = Brush.linearGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f)
+                        )
+                    )
+                )
+            ) {
+                Text(
+                    text = featured.buttonText,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp)
+                )
+            }
         }
     }
 }
-
 
 @Composable
 fun WorkListView(
@@ -317,4 +396,92 @@ fun WallpaperItemView(
         image = imageUrl,
         onClick = onClick
     )
+}
+
+data class CategoryItem(
+    val title: String,
+    val subtitle: String,
+    val icon: Int,
+    val gradient: List<Color>
+)
+
+@Composable
+fun CategoriesGrid(categories: List<CategoryItem>, onCategoryClick: (Int, CategoryItem) -> Unit) {
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .height(400.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        itemsIndexed(categories) { index, category ->
+            CategoryCard(index, category, onClick = onCategoryClick)
+        }
+    }
+
+    Spacer(modifier = Modifier.height(32.dp))
+}
+
+@Composable
+fun CategoryCard(index: Int, category: CategoryItem, onClick: (Int, CategoryItem) -> Unit) {
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1f,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+    )
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .scale(scale)
+            .clickable {
+                isPressed = true
+                onClick(index, category)
+            },
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Brush.linearGradient(category.gradient))
+                .padding(24.dp)
+        ) {
+            Column {
+                Text(
+                    text = category.title,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+                Text(
+                    text = category.subtitle,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White.copy(alpha = 0.9f)
+                )
+            }
+
+            Image(
+                painter = painterResource(id = category.icon),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(48.dp)
+                    .align(Alignment.BottomEnd),
+                contentScale = ContentScale.Crop
+            )
+        }
+    }
+
+    LaunchedEffect(isPressed) {
+        if (isPressed) {
+            delay(150)
+            isPressed = false
+        }
+    }
 }

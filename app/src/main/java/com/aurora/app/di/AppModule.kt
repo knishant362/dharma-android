@@ -10,6 +10,7 @@ import com.aurora.app.data.local.database.AppDatabase
 import com.aurora.app.data.local.database.dao.AppDao
 import com.aurora.app.data.local.storage.StorageManagerImpl
 import com.aurora.app.data.remote.api.ApiService
+import com.aurora.app.data.remote.api.horoscope.HoroscopeService
 import com.aurora.app.data.repo.MainRepositoryImpl
 import com.aurora.app.data.repo.MediaRepositoryImpl
 import com.aurora.app.domain.repo.MainRepository
@@ -99,8 +100,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMediaRepository(@ApplicationContext context: Context): MediaRepository {
-        return MediaRepositoryImpl(context)
+    fun provideHoroscopeService(): HoroscopeService {
+        return HoroscopeService()
+    }
+
+    @Provides
+    @Singleton
+    fun provideMediaRepository(@ApplicationContext context: Context, horoscopeService: HoroscopeService): MediaRepository {
+        return MediaRepositoryImpl(context, horoscopeService)
     }
 
     @Provides
@@ -157,9 +164,9 @@ object AppModule {
                 }
             }
 
-            Log.d("DB_COPY", "Copied $DB_NAME to ${dbPath.absolutePath}")
+            Timber.tag("DB_COPY").d("Copied $DB_NAME to ${dbPath.absolutePath}")
         } catch (e: IOException) {
-            Log.e("DB_COPY", "Error copying DB from assets: ${e.localizedMessage}", e)
+            Timber.tag("DB_COPY").e(e, "Error copying DB from assets: ${e.localizedMessage}")
             throw RuntimeException("Failed to copy database from assets", e)
         }
     }
