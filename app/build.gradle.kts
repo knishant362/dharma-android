@@ -171,5 +171,8 @@ dependencies {
     implementation("com.github.commandiron:WheelPickerCompose:1.1.11")
 
     implementation("org.jsoup:jsoup:1.17.2")
+    implementation("com.google.accompanist:accompanist-pager:0.32.0")
+    implementation(files("libs/ffmpeg.aar"))
+    implementation ("com.arthenica:smart-exception-java:0.2.1")
 
 }

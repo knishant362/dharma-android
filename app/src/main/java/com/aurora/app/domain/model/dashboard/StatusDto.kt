@@ -1,12 +1,10 @@
-package com.aurora.app.domain.model.wallpaper
+package com.aurora.app.domain.model.dashboard
 
-import com.aurora.app.domain.model.dashboard.MetaData
 import com.google.gson.Gson
 import org.json.JSONObject
 import timber.log.Timber
 
-
-data class WallpaperDto(
+data class StatusDto(
     val id: String,
     val name: String,
     val dname: String,
@@ -16,7 +14,8 @@ data class WallpaperDto(
     val ename: String
 )
 
-fun String.toWallpaperDto(wallpaperId: String): WallpaperDto? {
+
+fun String.toStatusDto(id: String): StatusDto? {
     try {
         val obj = JSONObject(this)
         val name = obj.optString("name", "")
@@ -28,7 +27,7 @@ fun String.toWallpaperDto(wallpaperId: String): WallpaperDto? {
         val metaObj = obj.optJSONObject("meta")
         val meta = metaObj?.let { Gson().fromJson(it.toString(), MetaData::class.java) }
 
-        return WallpaperDto(wallpaperId, name, dname, url, extension, meta, ename)
+        return StatusDto(id, name, dname, url, extension, meta, ename)
     } catch (e: Exception) {
         Timber.e(e)
         return null

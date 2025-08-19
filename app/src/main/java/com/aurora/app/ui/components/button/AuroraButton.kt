@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -29,7 +30,13 @@ fun AuroraButton(
     icon: ImageVector? = null,
     contentPadding: PaddingValues = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
     cornerRadius: Dp = 50.dp,
-    textColor: Color = MaterialTheme.colorScheme.onSurface
+    textColor: Color = MaterialTheme.colorScheme.onSurface,
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+        disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
+    )
 ) {
     Button(
         onClick = onClick,
@@ -39,12 +46,7 @@ fun AuroraButton(
         enabled = enabled && !loading,
         shape = RoundedCornerShape(cornerRadius),
         contentPadding = contentPadding,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary,
-            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
-            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        colors = colors
     ) {
         if (loading) {
             CircularProgressIndicator(
@@ -59,8 +61,8 @@ fun AuroraButton(
                     imageVector = icon,
                     contentDescription = null,
                     modifier = Modifier
-                        .size(20.dp)
-                        .padding(end = 8.dp)
+                        .size(24.dp)
+                        .padding(end = 4.dp)
                 )
             }
 

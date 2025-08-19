@@ -78,6 +78,7 @@ import com.ramcosta.composedestinations.annotation.RootGraph
 import com.ramcosta.composedestinations.generated.destinations.HoroscopeScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.ProfileScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.RingtoneScreenDestination
+import com.ramcosta.composedestinations.generated.destinations.StatusMakerScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.WallpaperListScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.WorkReadingScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -143,6 +144,7 @@ fun DashboardScreen(
                                 when (index) {
                                     0 -> navigator.navigate(RingtoneScreenDestination())
                                     2 -> navigator.navigate(WallpaperListScreenDestination())
+                                    3 -> navigator.navigate(StatusMakerScreenDestination())
                                     4 -> navigator.navigate(HoroscopeScreenDestination())
                                     else -> navigator.navigate(RingtoneScreenDestination())
                                 }

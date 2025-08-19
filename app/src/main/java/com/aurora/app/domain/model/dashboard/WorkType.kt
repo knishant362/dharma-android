@@ -7,5 +7,6 @@ enum class WorkType(val type: String) {
     RINGTONE("13001"),
     WALLPAPER("4101"),
     GOD("4111"),
-    LIVE_WALLPAPER("4102"),;
+    LIVE_WALLPAPER("4102"),
+    STATUS("4002");
 }
