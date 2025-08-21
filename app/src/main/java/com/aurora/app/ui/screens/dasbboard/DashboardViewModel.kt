@@ -87,12 +87,12 @@ class DashboardViewModel @Inject constructor(
                 R.drawable.ic_anahata,
                 listOf(Color(0xFFFF6B6B), Color(0xFFFF8E8E), Color(0xFFFFA8A8))
             ),
-            CategoryItem(
-                "Religious",
-                "Books",
-                R.drawable.ic_book_hindu,
-                listOf(Color(0xFF4ECDC4), Color(0xFF44A08D))
-            ),
+//            CategoryItem(
+//                "Religious",
+//                "Books",
+//                R.drawable.ic_book_hindu,
+//                listOf(Color(0xFF4ECDC4), Color(0xFF44A08D))
+//            ),
             CategoryItem(
                 "Wallpapers",
                 "Hindu",
@@ -111,12 +111,12 @@ class DashboardViewModel @Inject constructor(
                 R.drawable.ic_trishul,
                 listOf(Horoscope2, Horoscope3)
             ),
-            CategoryItem(
-                "VIP",
-                "Plus",
-                R.drawable.ic_temple,
-                listOf(Color(0xFFFB8C00), Color(0xFFFF6F00))
-            )
+//            CategoryItem(
+//                "VIP",
+//                "Plus",
+//                R.drawable.ic_temple,
+//                listOf(Color(0xFFFB8C00), Color(0xFFFF6F00))
+//            )
         )
         return categories
     }

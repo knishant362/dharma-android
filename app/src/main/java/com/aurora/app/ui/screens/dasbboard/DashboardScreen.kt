@@ -1,8 +1,5 @@
 package com.aurora.app.ui.screens.dasbboard
 
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,16 +40,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -82,7 +74,6 @@ import com.ramcosta.composedestinations.generated.destinations.StatusMakerScreen
 import com.ramcosta.composedestinations.generated.destinations.WallpaperListScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.WorkReadingScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
-import kotlinx.coroutines.delay
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -143,9 +134,9 @@ fun DashboardScreen(
                             CategoriesGrid(uiState.categories, onCategoryClick = { index, category ->
                                 when (index) {
                                     0 -> navigator.navigate(RingtoneScreenDestination())
-                                    2 -> navigator.navigate(WallpaperListScreenDestination())
-                                    3 -> navigator.navigate(StatusMakerScreenDestination())
-                                    4 -> navigator.navigate(HoroscopeScreenDestination())
+                                    1 -> navigator.navigate(WallpaperListScreenDestination())
+                                    2 -> navigator.navigate(StatusMakerScreenDestination())
+                                    3 -> navigator.navigate(HoroscopeScreenDestination())
                                     else -> navigator.navigate(RingtoneScreenDestination())
                                 }
                             })
@@ -360,22 +351,22 @@ fun WorkListView(
     Column(modifier = modifier) {
         Text(
             text = categoryName.uppercase(),
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            modifier = Modifier.padding(start = 28.dp, end = 28.dp, top = 16.dp, bottom = 4.dp),
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSurface
         )
         LazyRow(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 24.dp)
         ) {
             items(works) { work ->
                 WallpaperItemView(
                     imageUrl = work.coverImage?.toDownloadUrl()?.toThumb() ?: "",
                     modifier = Modifier
                         .weight(1f)
-                        .width(150.dp)
+                        .width(164.dp)
                         .aspectRatio(1 / 1.5f),
                     onClick = { onClick(work) }
                 )
@@ -415,7 +406,7 @@ fun CategoriesGrid(categories: List<CategoryItem>, onCategoryClick: (Int, Catego
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp)
-            .height(400.dp),
+            .height(264.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -423,25 +414,16 @@ fun CategoriesGrid(categories: List<CategoryItem>, onCategoryClick: (Int, Catego
             CategoryCard(index, category, onClick = onCategoryClick)
         }
     }
-
-    Spacer(modifier = Modifier.height(32.dp))
 }
 
 @Composable
 fun CategoryCard(index: Int, category: CategoryItem, onClick: (Int, CategoryItem) -> Unit) {
-    var isPressed by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.95f else 1f,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-    )
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
-            .scale(scale)
             .clickable {
-                isPressed = true
                 onClick(index, category)
             },
         shape = RoundedCornerShape(20.dp),
@@ -477,13 +459,6 @@ fun CategoryCard(index: Int, category: CategoryItem, onClick: (Int, CategoryItem
                     .align(Alignment.BottomEnd),
                 contentScale = ContentScale.Crop
             )
-        }
-    }
-
-    LaunchedEffect(isPressed) {
-        if (isPressed) {
-            delay(150)
-            isPressed = false
         }
     }
 }

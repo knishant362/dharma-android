@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,6 +48,7 @@ import com.aurora.app.domain.model.ReaderStyle
 import com.aurora.app.domain.model.dashboard.WorkType
 import com.aurora.app.ui.components.AuroraImage
 import com.aurora.app.ui.components.AuroraTopBar
+import com.aurora.app.ui.components.utils.FloatingEffect
 import com.aurora.app.ui.navigation.ScreenTransition
 import com.aurora.app.ui.screens.workReading.components.ChaptersListView
 import com.aurora.app.ui.screens.workReading.components.ReaderNavBarSection
@@ -186,7 +188,7 @@ fun ContentsView(
     uiState: WorkReadingUIState,
     onClick: (selectedVolume: Volume) -> Unit
 ) {
-    LazyColumn(modifier = modifier.padding(16.dp)) {
+    LazyColumn(modifier = modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         item {
             val imageUrl = uiState.workDto?.coverImage?.toDownloadUrl()?.toThumb()
             if (imageUrl != null) {
@@ -365,25 +367,28 @@ fun WorkContentViewPreview(modifier: Modifier = Modifier) {
         readerStyle = ReaderStyle.Default,
     )
 }
-
 @Composable
 fun CardDetailImage(modifier: Modifier, imageUrl: String) {
-    AuroraImage(
-        image = imageUrl,
-        modifier = modifier
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .clip(RoundedCornerShape(14.dp))
-            .border(
-                width = 2.dp,
-                color = Color.Black,
-                shape = RoundedCornerShape(16.dp)
-            ),
-        onClick = {}
-    )
+    FloatingEffect(modifier = modifier) {
+        AuroraImage(
+            image = imageUrl,
+            modifier = Modifier
+                .width(164.dp)
+                .aspectRatio(1 / 1.5f)
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .clip(RoundedCornerShape(16.dp))
+                .border(
+                    width = 2.dp,
+                    color = Color.Black,
+                    shape = RoundedCornerShape(16.dp)
+                ),
+            onClick = {}
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
