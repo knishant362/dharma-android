@@ -74,7 +74,7 @@ class DashboardViewModel @Inject constructor(
         val featuredData = listOf(
             Featured(0, date, "नए रिंगटोन का संग्रह", "सुनिए और डाउनलोड करें", R.drawable.bg_halo_1),
             Featured(1, date, "आज के लाइव वॉलपेपर", "अभी देखें", R.drawable.bg_halo_3),
-            Featured(2, date, "पुस्तक की सिफारिश", "पढ़ना शुरू करें", R.drawable.bg_halo_4),
+            Featured(2, date, "स्टेटस मेकर", "स्टेटस बनाना शुरू करें", R.drawable.bg_halo_4),
         )
         return featuredData
     }

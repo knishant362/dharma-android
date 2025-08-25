@@ -68,7 +68,7 @@ fun ProfileScreen(
         ) {
             Image(
                 modifier = Modifier.fillMaxSize(),
-                painter = painterResource(R.drawable.bg_main),
+                painter = painterResource(R.drawable.bg_land),
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )

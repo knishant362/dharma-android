@@ -29,15 +29,13 @@ class SplashViewModel @Inject constructor(
 
 
         viewModelScope.launch {
-//            val name = storageManager.getName()
-//            delay(1000)
-//            if (name.isBlank()) {
-//                _navigationEvent.emit(SplashNavigationEvent.NavigateToOnboarding)
-//            } else {
-//                _navigationEvent.emit(SplashNavigationEvent.NavigateToDashboard)
-//            }
-            _navigationEvent.emit(SplashNavigationEvent.NavigateToDashboard)
-
+            val name = storageManager.getName()
+            delay(1000)
+            if (name.isBlank()) {
+                _navigationEvent.emit(SplashNavigationEvent.NavigateToOnboarding)
+            } else {
+                _navigationEvent.emit(SplashNavigationEvent.NavigateToDashboard)
+            }
         }
     }
 }

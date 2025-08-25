@@ -121,6 +121,7 @@ fun DashboardScreen(
                                 when(index) {
                                     0 -> navigator.navigate(RingtoneScreenDestination())
                                     1 -> navigator.navigate(WallpaperListScreenDestination())
+                                    2 -> navigator.navigate(StatusMakerScreenDestination())
                                     else -> navigator.navigate(RingtoneScreenDestination())
                                 }
                             }

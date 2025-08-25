@@ -1,6 +1,5 @@
 package com.aurora.app.ui.screens.onboarding
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,15 +26,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.aurora.app.R
 import com.aurora.app.designsystem.theme.calistogaFontFamily
+import com.aurora.app.ui.components.AnimatedGradientBox
 import com.aurora.app.ui.components.DatePickerSheet
 import com.aurora.app.ui.components.StepProgressBar
 import com.aurora.app.ui.components.button.AuroraButton
@@ -45,6 +42,7 @@ import com.aurora.app.ui.components.utils.rememberNotificationPermissionRequeste
 import com.aurora.app.ui.navigation.ScreenTransition
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.DashboardScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
@@ -61,15 +59,14 @@ fun OnboardingScreen(
 
     LaunchedEffect(Unit) {
         viewModel.navigateToDashboard.collectLatest {
-            navigator.popBackStack()
-//            navigator.navigate(ExploreScreenDestination)
-//            navigator.navigate(DashboardScreenDestination)
+            navigator.navigate(DashboardScreenDestination)
         }
     }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
 
         Column(
@@ -97,6 +94,7 @@ fun OnboardingScreen(
 }
 
 
+
 @Composable
 fun TopSection(
     modifier: Modifier = Modifier,
@@ -110,12 +108,7 @@ fun TopSection(
         contentAlignment = Alignment.Center
     ) {
 
-        Image(
-            modifier = Modifier.matchParentSize(),
-            painter = painterResource(id = R.drawable.bg_land),
-            contentDescription = null,
-            contentScale = ContentScale.Crop
-        )
+        AnimatedGradientBox(currentStep = currentStep) {
 
         Column(
             modifier = modifier
@@ -128,9 +121,12 @@ fun TopSection(
                 modifier = Modifier
                     .windowInsetsTopHeight(WindowInsets.statusBars)
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             Text(
-                text = "TAR🌓T",
-                style = MaterialTheme.typography.titleLarge.copy(
+                text = "✦ SANATAN DHARAM ✦",
+                style = MaterialTheme.typography.titleMedium.copy(
                     color = Color.White,
                     letterSpacing = 6.sp
                 ),
@@ -169,6 +165,7 @@ fun TopSection(
                 )
         )
 
+        }
     }
 }
 
@@ -215,7 +212,7 @@ fun NameSection(
     ) {
 
         Text(
-            text = "Welcome to Daily Tarot!\nLet's get to know each other",
+            text = "Welcome to Sanatan Dharam!\nLet's know about you",
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleLarge
         )
@@ -398,7 +395,7 @@ fun NotificationSection(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "This is to remind you of new predictions, daily tarot readings, and updates.",
+            text = "This is to remind you of daily horoscope, new content, and updates.",
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
         )
@@ -436,12 +433,6 @@ fun FinishSetupSection(
                 .fillMaxHeight(1f)
         ) {
 
-            Image(
-                modifier = Modifier.matchParentSize(),
-                painter = painterResource(id = R.drawable.app_icon),
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
 
             Box(
                 modifier = Modifier
@@ -465,7 +456,7 @@ fun FinishSetupSection(
         ) {
 
             Text(
-                text = "Your Tarot journey begins now.",
+                text = "Your spiritual journey begins here.",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
             )
@@ -473,7 +464,7 @@ fun FinishSetupSection(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Start your journey with Daily Tarot.",
+                text = "Stay connected with devotion and wisdom daily.",
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
             )
@@ -481,7 +472,7 @@ fun FinishSetupSection(
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "The answers you seek may be closer than you think.",
+                text = "Books, Status Ringtones, Wallpapers & Horoscope – all in one app.",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
             )
@@ -489,7 +480,7 @@ fun FinishSetupSection(
             Spacer(modifier = Modifier.height(24.dp))
 
             AuroraButton(
-                text = "GET A TAROT READING",
+                text = "START NOW!",
                 onClick = { onFinishClick() },
             )
 

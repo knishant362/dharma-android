@@ -30,7 +30,7 @@ fun AuroraTextField(
         Box(
             modifier = Modifier
                 .background(
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                     shape = RoundedCornerShape(50)
                 )
                 .padding(horizontal = 20.dp, vertical = 14.dp)
