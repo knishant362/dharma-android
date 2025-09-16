@@ -35,13 +35,14 @@ android {
         applicationId = "com.sanatan.daily.mandir"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.0"
+        versionCode = 1
+        versionName = "0.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "BASE_URL", loadProperty("app.BASE_URL"))
         buildConfigField("String", "AUTH_TOKEN", loadProperty("app.AUTH_TOKEN"))
+        buildConfigField("String", "HOST_BASE_URL", loadProperty("app.HOST_BASE_URL"))
     }
 
     signingConfigs {
