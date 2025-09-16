@@ -25,10 +25,6 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import timber.log.Timber
-import java.io.File
-import java.io.FileOutputStream
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
@@ -93,8 +89,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMainRepository(@ApplicationContext context: Context, apiService: ApiService, storageManagerImpl: StorageManagerImpl, appDao: AppDao): MainRepository {
-        return MainRepositoryImpl(context, apiService, storageManagerImpl, appDao)
+    fun provideMainRepository(@ApplicationContext context: Context, apiService: ApiService, storageManagerImpl: StorageManagerImpl, appDao: AppDao, database: AppDatabase): MainRepository {
+        return MainRepositoryImpl(context, apiService, storageManagerImpl, appDao, database)
     }
 
     @Provides
@@ -115,31 +111,16 @@ object AppModule {
         return StorageManagerImpl(dataStore)
     }
 
-    private const val DB_NAME = "dharma_database.db"
+    const val DB_NAME = "dharma.db"
 
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase {
-
-//        val dbPath = context.getDatabasePath("dharma_database.db")
-//        dbPath.parentFile?.mkdirs() // Ensure directory exists
-//        Timber.d("AppDatabase Database path: ${dbPath.absolutePath}")
-
-
         return Room.databaseBuilder(
             context,
             AppDatabase::class.java,
-            "dharma.db"
-        ).createFromAsset("dharma.db").build()
-//
-//        return Room.databaseBuilder(
-//            context.applicationContext,
-//            AppDatabase::class.java,
-//            "dharma_database.db"
-//        )
-//            .createFromAsset("dharma_database.db") // Adjust if in subfolder, e.g., "databases/dharma_database.db"
-//            .fallbackToDestructiveMigration()
-//            .build()
+            DB_NAME
+        ).createFromAsset(DB_NAME).build()
     }
 
     @Provides
@@ -147,29 +128,5 @@ object AppModule {
     fun provideAppDao(database: AppDatabase): AppDao {
         return database.appDao()
     }
-
-    private fun copyDatabaseFromAssets(context: Context, dbPath: File) {
-        try {
-            dbPath.parentFile?.mkdirs()
-
-            context.assets.list("")?.forEach {
-                Timber.e("Nishant Asset: $it")
-            }
-
-
-            context.assets.open(DB_NAME).use { input ->
-                FileOutputStream(dbPath).use { output ->
-                    input.copyTo(output)
-                }
-            }
-
-            Timber.tag("DB_COPY").d("Copied $DB_NAME to ${dbPath.absolutePath}")
-        } catch (e: IOException) {
-            Timber.tag("DB_COPY").e(e, "Error copying DB from assets: ${e.localizedMessage}")
-            throw RuntimeException("Failed to copy database from assets", e)
-        }
-    }
-
-
 
 }

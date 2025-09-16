@@ -1,5 +1,6 @@
 package com.aurora.app.data.remote.api
 
+import com.aurora.app.data.model.VersionInfo
 import com.aurora.app.data.remote.response.WorkResponse
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
@@ -33,4 +34,8 @@ interface ApiService {
         @Url fileUrl: String
     ): Response<JsonObject>
 
+    @GET
+    suspend fun getDbVersion(
+        @Url url: String
+    ): Response<VersionInfo>
 }

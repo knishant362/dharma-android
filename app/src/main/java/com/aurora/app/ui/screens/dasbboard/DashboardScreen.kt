@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -30,11 +31,14 @@ import androidx.compose.foundation.pager.PageSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.rounded.AccountCircle
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -114,11 +118,15 @@ fun DashboardScreen(
                     modifier = Modifier
                 ) {
 
+                    if (uiState.showUpgradeDialog) {
+                        item { UpdatingDialog() }
+                    }
+
                     item {
                         TarotFeaturedSection(
                             featuredItems = uiState.featuredItems,
                             onClick = { index, featured ->
-                                when(index) {
+                                when (index) {
                                     0 -> navigator.navigate(RingtoneScreenDestination())
                                     1 -> navigator.navigate(WallpaperListScreenDestination())
                                     2 -> navigator.navigate(StatusMakerScreenDestination())
@@ -132,15 +140,17 @@ fun DashboardScreen(
                             GreetingSection(uiState.user?.name ?: "")
                         }
                         item {
-                            CategoriesGrid(uiState.categories, onCategoryClick = { index, category ->
-                                when (index) {
-                                    0 -> navigator.navigate(RingtoneScreenDestination())
-                                    1 -> navigator.navigate(WallpaperListScreenDestination())
-                                    2 -> navigator.navigate(StatusMakerScreenDestination())
-                                    3 -> navigator.navigate(HoroscopeScreenDestination())
-                                    else -> navigator.navigate(RingtoneScreenDestination())
-                                }
-                            })
+                            CategoriesGrid(
+                                uiState.categories,
+                                onCategoryClick = { index, category ->
+                                    when (index) {
+                                        0 -> navigator.navigate(RingtoneScreenDestination())
+                                        1 -> navigator.navigate(WallpaperListScreenDestination())
+                                        2 -> navigator.navigate(StatusMakerScreenDestination())
+                                        3 -> navigator.navigate(HoroscopeScreenDestination())
+                                        else -> navigator.navigate(RingtoneScreenDestination())
+                                    }
+                                })
                         }
                         items(uiState.workSections) { workSection ->
                             WorkListView(
@@ -279,14 +289,14 @@ fun TarotCarouselCard(
             verticalArrangement = Arrangement.Center
         ) {
 
-                Text(
-                    text = featured.date,
-                    color = Color.White,
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        fontWeight = FontWeight.Medium
-                    ),
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-                )
+            Text(
+                text = featured.date,
+                color = Color.White,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontWeight = FontWeight.Medium
+                ),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+            )
 
             Spacer(Modifier.height(12.dp))
 
@@ -460,6 +470,65 @@ fun CategoryCard(index: Int, category: CategoryItem, onClick: (Int, CategoryItem
                     .align(Alignment.BottomEnd),
                 contentScale = ContentScale.Crop
             )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UpdatingDialog(
+    onDismiss: () -> Unit = {}
+) {
+
+    BasicAlertDialog(
+        onDismissRequest = { onDismiss() }
+    ) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .padding(16.dp)
+                .wrapContentWidth()
+                .wrapContentWidth(Alignment.CenterHorizontally),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        ) {
+
+            Column(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .widthIn(min = 200.dp, max = 280.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CloudDownload,
+                    contentDescription = "Updating",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(48.dp)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "Updating App Content…",
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "Please wait while the latest content is downloaded.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    textAlign = TextAlign.Center,
+                    color = Color.Gray
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                CircularProgressIndicator(
+                    modifier = Modifier.size(32.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }

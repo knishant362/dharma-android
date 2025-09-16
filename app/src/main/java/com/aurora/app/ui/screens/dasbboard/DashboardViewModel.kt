@@ -15,6 +15,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -31,6 +33,7 @@ class DashboardViewModel @Inject constructor(
     init {
         setupDashboard()
         fetchWorks()
+        checkAppVersion()
     }
 
     private fun fetchWorks() {
@@ -42,12 +45,13 @@ class DashboardViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(isLoading = true)
                 val response = mainRepository.fetchWorks()
                 Timber.e("Fetched works response: $response")
-                when(response) {
+                when (response) {
                     is ResponseState.Error -> {
                         _uiState.value = _uiState.value.copy(
                             errorMessages = response.message ?: "Error fetching works"
                         )
                     }
+
                     is ResponseState.Loading -> {}
                     is ResponseState.Success -> {
                         val works = response.data ?: emptyList()
@@ -60,11 +64,16 @@ class DashboardViewModel @Inject constructor(
                                     works = works
                                 )
                             }
-                        _uiState.value = _uiState.value.copy(works = works, workSections = workSections, isLoading = false)
+                        _uiState.value = _uiState.value.copy(
+                            works = works,
+                            workSections = workSections,
+                            isLoading = false
+                        )
                     }
                 }
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(errorMessages = e.message ?: "Error fetching works")
+                _uiState.value =
+                    _uiState.value.copy(errorMessages = e.message ?: "Error fetching works")
             }
         }
     }
@@ -72,7 +81,13 @@ class DashboardViewModel @Inject constructor(
     private fun getFeaturedDataHindi(): List<Featured> {
         val date = TimeUtil.getTodayFormatted()
         val featuredData = listOf(
-            Featured(0, date, "नए रिंगटोन का संग्रह", "सुनिए और डाउनलोड करें", R.drawable.bg_halo_1),
+            Featured(
+                0,
+                date,
+                "नए रिंगटोन का संग्रह",
+                "सुनिए और डाउनलोड करें",
+                R.drawable.bg_halo_1
+            ),
             Featured(1, date, "आज के लाइव वॉलपेपर", "अभी देखें", R.drawable.bg_halo_3),
             Featured(2, date, "स्टेटस मेकर", "स्टेटस बनाना शुरू करें", R.drawable.bg_halo_4),
         )
@@ -125,13 +140,46 @@ class DashboardViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val userProfile = mainRepository.getUserProfile()
-                _uiState.value = DashboardUiState(
-                    featuredItems = getFeaturedDataHindi(),
-                    categories = getCategories(),
-                    user = userProfile
-                )
+                _uiState.update {
+                    it.copy(
+                        featuredItems = getFeaturedDataHindi(),
+                        categories = getCategories(),
+                        user = userProfile
+                    )
+                }
             } catch (e: Exception) {
-                _uiState.value = DashboardUiState(errorMessages = e.message ?: "Error loading spreads")
+                _uiState.update { it.copy(errorMessages = e.message ?: "Error loading spreads") }
+            }
+        }
+    }
+
+    private fun checkAppVersion() = viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val localVersion = mainRepository.getDbVersion()
+                Timber.e("Local DB version: $localVersion")
+                mainRepository.verifyDatabase().collectLatest { response ->
+                    when (response) {
+                        is ResponseState.Success -> {
+                            _uiState.update { it.copy(showUpgradeDialog = false) }
+                            Timber.d("Database updated to version ${response.data}")
+                        }
+
+                        is ResponseState.Error -> {
+                            Timber.e("Database update failed: ${response.message}")
+                            _uiState.update { it.copy(showUpgradeDialog = false) }
+                        }
+                        is ResponseState.Loading -> {
+                            _uiState.update { it.copy(showUpgradeDialog = true) }
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                Timber.e(e, "Error checking app version: ${e.message}")
+                _uiState.update {
+                    it.copy(errorMessages = e.message ?: "Error fetching version")
+                }
             }
         }
     }

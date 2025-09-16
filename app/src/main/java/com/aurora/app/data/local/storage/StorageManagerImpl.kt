@@ -3,6 +3,7 @@ package com.aurora.app.data.local.storage
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import com.aurora.app.data.model.SpreadResult
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -20,6 +21,7 @@ object PreferenceKeys {
     val RelationshipStatus = stringPreferencesKey("user_relationship_status")
     val Occupation = stringPreferencesKey("user_occupation")
     val ReaderStyle = stringPreferencesKey("reader_style")
+    val DbVersion = intPreferencesKey("db_version")
 }
 
 @Singleton
@@ -148,6 +150,13 @@ class StorageManagerImpl @Inject constructor(
 
     override suspend fun getOccupation(): String {
         return dataStore.data.first()[PreferenceKeys.Occupation] ?: ""
+    }
+
+    override suspend fun saveVersion(version: Int) {
+        dataStore.edit { it[PreferenceKeys.DbVersion] = version }
+    }
+    override suspend fun getVersion(): Int? {
+        return dataStore.data.first()[PreferenceKeys.DbVersion]
     }
 
     // Gson helper extension

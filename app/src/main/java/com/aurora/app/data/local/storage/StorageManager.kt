@@ -31,4 +31,7 @@ interface StorageManager {
     suspend fun setOccupation(occupation: String)
     suspend fun getOccupation(): String
 
+    suspend fun saveVersion(version: Int)
+    suspend fun getVersion(): Int?
+
 }

@@ -13,4 +13,7 @@ data class DashboardUiState(
     val workSections: List<WorkSection> = emptyList(),
     val user: User? = null,
     val categories: List<CategoryItem> = emptyList(),
+
+    val remoteVersion: Int = 1,
+    val showUpgradeDialog: Boolean = false
 )

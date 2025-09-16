@@ -9,6 +9,7 @@ import com.aurora.app.data.remote.request.ImageUploadRequest
 import com.aurora.app.domain.model.ReaderStyle
 import com.aurora.app.domain.model.wallpaper.WallpaperExtraDto
 import com.aurora.app.utils.ResponseState
+import kotlinx.coroutines.flow.Flow
 
 interface MainRepository {
 
@@ -49,5 +50,9 @@ interface MainRepository {
     suspend fun getWallpapersData(id: String): ResponseState<WallpaperExtraDto>
 
     suspend fun getWallpapers(mType: String, data: String): List<PostEntity>
+
+    suspend fun verifyDatabase(): Flow<ResponseState<Int>>
+
+    suspend fun getDbVersion(): Int?
 
 }
