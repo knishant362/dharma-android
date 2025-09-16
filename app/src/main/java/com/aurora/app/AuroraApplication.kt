@@ -1,6 +1,7 @@
 package com.aurora.app
 
 import android.app.Application
+import com.aurora.app.core.analytics.firebase.FirebaseApp
 import com.aurora.app.utils.Constants.ONESIGNAL_APP_ID
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
@@ -18,6 +19,7 @@ class AuroraApplication : Application() {
         super.onCreate()
         Timber.plant(Timber.DebugTree())
 
+        FirebaseApp.init()
         subscribeUserFirebase()
         initOneSignal()
 
@@ -29,8 +31,6 @@ class AuroraApplication : Application() {
                 Firebase.messaging.subscribeToTopic("weather").await()
             }
         }
-
-
     }
 
     private fun initOneSignal() {

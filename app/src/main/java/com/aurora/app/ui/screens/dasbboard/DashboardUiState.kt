@@ -8,6 +8,9 @@ import com.aurora.app.domain.model.dashboard.WorkSection
 data class DashboardUiState(
     val isLoading: Boolean = false,
     val errorMessages: String = "",
+    val featuredEnabled: Boolean = true,
+    val categoriesEnabled: Boolean = true,
+    val worksEnabled: Boolean = true,
     val featuredItems: List<Featured> = emptyList(),
     val works: List<WorkDto> = emptyList(),
     val workSections: List<WorkSection> = emptyList(),

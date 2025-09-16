@@ -11,6 +11,9 @@ import com.aurora.app.domain.model.dashboard.WorkSection
 import com.aurora.app.domain.repo.MainRepository
 import com.aurora.app.utils.ResponseState
 import com.aurora.app.utils.TimeUtil
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.ktx.remoteConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +21,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -26,15 +30,56 @@ class DashboardViewModel @Inject constructor(
     private val mainRepository: MainRepository,
 ) : ViewModel() {
 
+    private val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
 
     private val _uiState = MutableStateFlow(DashboardUiState(isLoading = true))
     val uiState = _uiState.asStateFlow()
 
     init {
-        setupDashboard()
-        fetchWorks()
+        fetchDashboardConfig()
+        setupUserProfile()
         checkAppVersion()
     }
+
+
+    private fun fetchDashboardConfig() {
+        viewModelScope.launch {
+            try {
+                val activated = remoteConfig.fetchAndActivate().await()
+
+                Timber.d("Remote config activated: $activated")
+
+                val featured = remoteConfig.getBoolean("dashboard_featured")
+                val categories = remoteConfig.getBoolean("dashboard_categories")
+                val works = remoteConfig.getBoolean("dashboard_works")
+
+                _uiState.update { current ->
+                    current.copy(
+                        featuredEnabled = featured,
+                        categoriesEnabled = categories,
+                        worksEnabled = works,
+                        featuredItems = if (featured) getFeaturedDataHindi() else emptyList(),
+                        categories = if (categories) getCategories() else emptyList()
+                    )
+                }
+
+                if (works) fetchWorks()
+
+            } catch (e: Exception) {
+                // Fallback to defaults
+                _uiState.update { current ->
+                    current.copy(
+                        featuredEnabled = false,
+                        categoriesEnabled = false,
+                        worksEnabled = false,
+                        featuredItems = emptyList(),
+                        categories = emptyList()
+                    )
+                }
+            }
+        }
+    }
+
 
     private fun fetchWorks() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -136,21 +181,10 @@ class DashboardViewModel @Inject constructor(
         return categories
     }
 
-    private fun setupDashboard() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val userProfile = mainRepository.getUserProfile()
-                _uiState.update {
-                    it.copy(
-                        featuredItems = getFeaturedDataHindi(),
-                        categories = getCategories(),
-                        user = userProfile
-                    )
-                }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(errorMessages = e.message ?: "Error loading spreads") }
-            }
-        }
+
+    private fun setupUserProfile() = viewModelScope.launch {
+        val userProfile = mainRepository.getUserProfile()
+        _uiState.update { it.copy(user = userProfile) }
     }
 
     private fun checkAppVersion() = viewModelScope.launch {
