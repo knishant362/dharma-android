@@ -4,10 +4,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aurora.app.R
+import com.aurora.app.data.model.WorkDto
 import com.aurora.app.designsystem.theme.Horoscope2
 import com.aurora.app.designsystem.theme.Horoscope3
 import com.aurora.app.domain.model.dashboard.Featured
 import com.aurora.app.domain.model.dashboard.WorkSection
+import com.aurora.app.domain.model.dashboard.WorkType
 import com.aurora.app.domain.repo.MainRepository
 import com.aurora.app.utils.ResponseState
 import com.aurora.app.utils.TimeUtil
@@ -101,7 +103,7 @@ class DashboardViewModel @Inject constructor(
                     is ResponseState.Success -> {
                         val works = response.data ?: emptyList()
                         Timber.e("Fetched works: ${works.size}")
-                        val workSections = works.groupBy { it.category }
+                        val workSections = works.sortByCategory()
                             .map { (categoryName, works) ->
                                 WorkSection(
                                     id = categoryName,
@@ -218,4 +220,24 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    private fun List<WorkDto>.sortByCategory(): MutableMap<String, MutableList<WorkDto>> {
+        try {
+            val books = mutableMapOf<String, MutableList<WorkDto>>()
+            val otherCategories = setOf("chalisa", "aarti", "mantra", "kavach", "stotram")
+            this.forEach { work ->
+                val category = if (work.mType == WorkType.BOOK.type) "Books" else {
+                    otherCategories.find { work.id.contains(it) } ?: otherCategories.last()
+                }
+                if (books.containsKey(category)) {
+                    books[category]?.add(work)
+                } else {
+                    books[category] = mutableListOf(work)
+                }
+            }
+            return books
+        } catch (e: Exception) {
+            Timber.e(e)
+            return mutableMapOf()
+        }
+    }
 }

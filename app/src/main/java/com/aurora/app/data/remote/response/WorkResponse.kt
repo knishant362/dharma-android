@@ -1,29 +1,29 @@
 package com.aurora.app.data.remote.response
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import com.aurora.app.domain.model.dashboard.Ringtone
+import com.google.gson.JsonObject
 
-@Parcelize
-data class WorkResponse(
-    val items: List<Work>,
+data class WorkResponse<T>(
     val page: Int,
     val perPage: Int,
     val totalItems: Int,
-    val totalPages: Int
-): Parcelable
+    val totalPages: Int,
+    val items: List<T>,
+)
 
-@Parcelize
 data class Work(
     val collectionId: String,
     val collectionName: String,
-    val coverImage: String,
-    val description: LocalizedField?,
+    val coverImage: String?,
     val id: String,
-    val postId: String,
-    val jsonFile: String,
-    val language: String?,
-    val title: LocalizedField?,
-    val category: String,
-    val mType: String? = null
-): Parcelable
-
+    val _id: String,
+    val content_type: String,
+    val data: Ringtone,
+    val mtype: String,
+    val extra: JsonObject,
+    val extra_en: String,
+    val lang: String,
+    val topics: String,
+    val created_at: String,
+    val updated_at: String
+)

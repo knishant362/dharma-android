@@ -1,6 +1,7 @@
 package com.aurora.app.data.remote.api
 
 import com.aurora.app.data.model.VersionInfo
+import com.aurora.app.data.remote.response.Work
 import com.aurora.app.data.remote.response.WorkResponse
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
@@ -15,10 +16,11 @@ import retrofit2.http.Url
 
 interface ApiService {
 
-    @GET("/api/collections/work/records")
+    @GET("/api/collections/workV2/records")
     suspend fun fetchWorks(
-        @Query("expand") expand: String = "jsonFile"
-    ): Response<WorkResponse>
+        @Query("filter") filter: String,
+        @Query("perPage") perPage: Int,
+    ): Response<WorkResponse<Work>>
 
     @Multipart
     @POST("api/wallpaper")

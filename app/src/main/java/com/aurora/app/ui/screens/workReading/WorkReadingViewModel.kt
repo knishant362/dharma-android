@@ -67,7 +67,7 @@ class WorkReadingViewModel @Inject constructor(
                 }
 
             } else if (workDto.mType == WorkType.CHAPTER.type) {
-                val post = repository.getPosts("pbook-hi-${workDto.id}").firstOrNull()
+                val post = repository.getPosts(workDto.id).firstOrNull()
                 Timber.e("WorkReadingViewModel: WorkType.CHAPTER, fetching details for id: ${workDto.id}, post: $post")
                 if (post != null) {
                     val jsonObject = Gson().fromJson(post.extra, JsonObject::class.java)

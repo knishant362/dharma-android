@@ -134,7 +134,7 @@ class MainRepositoryImpl @Inject constructor(
 
     override suspend fun fetchWorks(): ResponseState<List<WorkDto>> =
         safeApiCall(
-            call = { apiService.fetchWorks() },
+            call = { apiService.fetchWorks(filter = "", perPage = 200) },
             success = { it.items.map { work -> work.toWorkDto() } }
         )
 

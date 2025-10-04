@@ -120,7 +120,7 @@ object AppModule {
             context,
             AppDatabase::class.java,
             DB_NAME
-        ).createFromAsset(DB_NAME).build()
+        ).createFromAsset(DB_NAME).fallbackToDestructiveMigration().build()
     }
 
     @Provides

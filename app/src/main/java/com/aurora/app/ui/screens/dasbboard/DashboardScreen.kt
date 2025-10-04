@@ -46,6 +46,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -382,18 +384,121 @@ fun WorkListView(
             contentPadding = PaddingValues(horizontal = 24.dp)
         ) {
             items(works) { work ->
-                WallpaperItemView(
-                    imageUrl = work.coverImage?.toDownloadUrl()?.toThumb() ?: "",
-                    modifier = Modifier
-                        .weight(1f)
-                        .width(164.dp)
-                        .aspectRatio(1 / 1.5f),
-                    onClick = { onClick(work) }
-                )
+                if (!work.coverImage.isNullOrEmpty()){
+                    val url = work.coverImage.toDownloadUrl().toThumb()
+                    WallpaperItemView(
+                        imageUrl = url,
+                        modifier = Modifier
+                            .weight(1f)
+                            .width(164.dp)
+                            .aspectRatio(1 / 1.5f),
+                        onClick = { onClick(work) }
+                    )
+                } else {
+                    BookCover(
+                        modifier = Modifier
+                            .weight(1f)
+                            .width(164.dp)
+                            .aspectRatio(1 / 1.5f),
+                        work = work,
+                        onClick = { onClick(work) }
+                    )
+                }
+
             }
         }
     }
 }
+
+val imageAndThemeColorsPairs = listOf(
+    R.drawable.bg_halo_1 to Color.White,
+    R.drawable.bg_halo_2 to Color.Black,
+    R.drawable.bg_halo_3 to Color.Black,
+    R.drawable.bg_halo_4 to Color.Black,
+)
+
+@Composable
+fun BookCover(
+    modifier: Modifier = Modifier,
+    work: WorkDto,
+    onClick: () -> Unit
+) {
+
+    val randomImage = rememberSaveable{ mutableStateOf(imageAndThemeColorsPairs.random())}
+
+    Card(
+        modifier = modifier
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter
+        ) {
+            Image(
+                painter = painterResource(id = randomImage.value.first),
+                contentDescription = work.title?.hi,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(16.dp))
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Image(
+                    painter = painterResource(id = R.drawable.ic_lotus),
+                    contentDescription = work.title?.hi,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f)
+                )
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = work.title?.hi ?: "Unknown",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontFamily = getFontFamilyFromAssets("Hind-Bold"),
+                            textAlign = TextAlign.Center,
+                            fontSize = 20.sp,
+                        ),
+                        color = randomImage.value.second,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = "By Sanatan Dharam",
+                        fontSize = 8.sp,
+                        color = randomImage.value.second,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun WallpaperItemView(
