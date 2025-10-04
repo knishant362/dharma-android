@@ -1,5 +1,6 @@
 package com.aurora.app.ui.screens.dasbboard
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -55,6 +56,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -67,6 +69,8 @@ import com.aurora.app.data.model.WorkDto
 import com.aurora.app.domain.model.dashboard.Featured
 import com.aurora.app.ui.components.AuroraImage
 import com.aurora.app.ui.components.AuroraTopBar
+import com.aurora.app.ui.components.utils.ForceUpdateChecker
+import com.aurora.app.ui.screens.workReading.components.getFontFamilyFromAssets
 import com.aurora.app.utils.toDownloadUrl
 import com.aurora.app.utils.toThumb
 import com.ramcosta.composedestinations.annotation.Destination
@@ -89,6 +93,11 @@ fun DashboardScreen(
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val context = LocalContext.current
+    ForceUpdateChecker {
+        (context as? ComponentActivity)?.finishAffinity()
+    }
 
     Scaffold(
         topBar = {
