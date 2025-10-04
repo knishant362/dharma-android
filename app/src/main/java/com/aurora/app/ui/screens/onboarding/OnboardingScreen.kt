@@ -59,6 +59,7 @@ fun OnboardingScreen(
 
     LaunchedEffect(Unit) {
         viewModel.navigateToDashboard.collectLatest {
+            navigator.popBackStack()
             navigator.navigate(DashboardScreenDestination)
         }
     }
