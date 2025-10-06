@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.ChatBubbleOutline
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.RemoveRedEye
@@ -160,6 +161,7 @@ fun StatusMakerScreen(
                 onDismiss = { showEditProfile = false },
                 onSave = { updatedProfile ->
                     showEditProfile = false
+                    viewModel.onUpdateProfile(updatedProfile)
                 }
             )
         }
@@ -167,31 +169,46 @@ fun StatusMakerScreen(
         Column(
             modifier = Modifier.align(Alignment.BottomStart)
         ) {
-            AuroraButton(
-                text = "Share it",
-                onClick = {
-                    val meta = state.statusVideos[pagerState.currentPage].meta
-                    navigator.navigate(
-                        StatusExportScreenDestination(
-                            state.statusVideos[pagerState.currentPage].url,
-                            state.userProfile!!,
-                            meta?.h ?: 1280,
-                            meta?.w ?: 720,
-                            overlayProperties[overlayStyleIndex],
-                        )
+            Row {
+                AuroraButton(
+                    text = "Edit Profile",
+                    onClick = {
+                        showEditProfile = true
+                    },
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .weight(1f),
+                    icon = Icons.Default.Edit,
+                    textColor = Color.White,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue.copy(alpha = 0.7f),
                     )
-
-//                    navigator.navigate(VideoSuccessScreenDestination())
-                },
-                modifier = Modifier
-                    .padding(24.dp)
-                    .fillMaxWidth(),
-                icon = Icons.Default.Share,
-                textColor = Color.White,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Purple4,
                 )
-            )
+                AuroraButton(
+                    text = "Share it",
+                    onClick = {
+                        val meta = state.statusVideos[pagerState.currentPage].meta
+                        navigator.navigate(
+                            StatusExportScreenDestination(
+                                state.statusVideos[pagerState.currentPage].url,
+                                state.userProfile!!,
+                                meta?.h ?: 1280,
+                                meta?.w ?: 720,
+                                overlayProperties[overlayStyleIndex],
+                            )
+                        )
+                              },
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .weight(1f),
+                    icon = Icons.Default.Share,
+                    textColor = Color.White,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Purple4,
+                    )
+                )
+            }
+
         }
     }
 }

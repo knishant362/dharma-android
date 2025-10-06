@@ -58,4 +58,10 @@ class StatusMakerViewModel @Inject constructor(
             )
         }
     }
+
+    fun onUpdateProfile(newProfile: UserProfile) {
+        _state.update {
+            it.copy(userProfile = newProfile)
+        }
+    }
 }

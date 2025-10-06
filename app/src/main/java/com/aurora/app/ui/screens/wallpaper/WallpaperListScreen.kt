@@ -89,6 +89,7 @@ import com.aurora.app.ui.components.ModernTopBar
 import com.aurora.app.ui.navigation.ScreenTransition
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootGraph
+import com.ramcosta.composedestinations.generated.destinations.SeeAllScreenDestination
 import com.ramcosta.composedestinations.generated.destinations.WallpaperPreviewScreenDestination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.valentinilk.shimmer.shimmer
@@ -165,6 +166,9 @@ fun WallpaperListScreen(
 
                         modernWallpaperSection(
                             wallpaperSections = uiState.wallpaperSections,
+                            seeAllClick = {
+                                navigator.navigate(SeeAllScreenDestination(it))
+                            },
                             onClick = { wallpaper ->
                                 Timber.e("Clicked on wallpaper: $wallpaper")
                                 scope.launch {
@@ -319,7 +323,8 @@ fun StatCard(
 
 fun LazyListScope.modernWallpaperSection(
     wallpaperSections: List<WallpaperSectionView>,
-    onClick: (WallpaperDto) -> Unit
+    onClick: (WallpaperDto) -> Unit,
+    seeAllClick: (WallpaperSectionView) -> Unit
 ) {
     itemsIndexed(wallpaperSections) { sectionIndex, section ->
         val animationDelay = sectionIndex * 100
@@ -355,7 +360,7 @@ fun LazyListScope.modernWallpaperSection(
                 }
 
                 TextButton(
-                    onClick = { /* Navigate to see all */ },
+                    onClick = { seeAllClick(section) },
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = Color.White
                     )
@@ -498,7 +503,7 @@ fun ModernWallpaperCard(
                 )
 
                 Text(
-                    text = if (wallpaper.extension == "webp") "Static" else "Live",
+                    text = if (wallpaper.extension == "webp") "Wallpaper" else "Live",
                     style = MaterialTheme.typography.bodySmall.copy(
                         color = Color.White.copy(alpha = 0.8f)
                     )

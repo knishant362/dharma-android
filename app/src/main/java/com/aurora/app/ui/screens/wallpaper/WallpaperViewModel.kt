@@ -36,7 +36,7 @@ class WallpaperListViewModel @Inject constructor(
             is ResponseState.Loading -> state.update { it.copy(isLoading = true) }
             is ResponseState.Success -> {
                 val response = result.data?.sections ?: emptyList()
-                val wallpaperSections = response.map { prepareWallpaperSections(it) }
+                val wallpaperSections = response.map { prepareWallpaperSections(it) }.filter { it.wallpapers.isNotEmpty() }
                 delay(500)
                 state.update {
                     it.copy(
@@ -59,7 +59,7 @@ class WallpaperListViewModel @Inject constructor(
     private suspend fun prepareWallpaperSections(section: WallpaperSectionDto): WallpaperSectionView {
         val type = when (section.stype) {
             "GOD_WALLPAPER" -> WorkType.WALLPAPER
-            "GODS" -> WorkType.GOD
+//            "GODS" -> WorkType.GOD //Todo("Uncomment when ALL Screen with Gods Filters is implemented")
             "TOP_LIVE_WALLPAPER" -> WorkType.LIVE_WALLPAPER
             else -> null
         }
@@ -84,7 +84,7 @@ class WallpaperListViewModel @Inject constructor(
         return WallpaperSectionView(
             id = section.title,
             title = section.title,
-            wallpapers = wallpapers
+            wallpapers = wallpapers.shuffled()
         )
     }
 

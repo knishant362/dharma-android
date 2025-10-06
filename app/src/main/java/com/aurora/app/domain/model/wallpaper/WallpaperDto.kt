@@ -1,11 +1,14 @@
 package com.aurora.app.domain.model.wallpaper
 
+import android.os.Parcelable
 import com.aurora.app.domain.model.dashboard.MetaData
 import com.google.gson.Gson
+import kotlinx.parcelize.Parcelize
 import org.json.JSONObject
 import timber.log.Timber
 
 
+@Parcelize
 data class WallpaperDto(
     val id: String,
     val name: String,
@@ -14,7 +17,7 @@ data class WallpaperDto(
     val extension: String,
     val meta: MetaData?,
     val ename: String
-)
+): Parcelable
 
 fun String.toWallpaperDto(wallpaperId: String): WallpaperDto? {
     try {
