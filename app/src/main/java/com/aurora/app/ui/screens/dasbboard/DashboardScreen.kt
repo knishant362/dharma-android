@@ -424,7 +424,9 @@ fun BookCover(
     onClick: () -> Unit
 ) {
 
-    val randomImage = rememberSaveable{ mutableStateOf(imageAndThemeColorsPairs.random())}
+    val randomIndex = rememberSaveable { imageAndThemeColorsPairs.indices.random() }
+    val (imageRes, textColor) = imageAndThemeColorsPairs[randomIndex]
+
 
     Card(
         modifier = modifier
@@ -439,7 +441,7 @@ fun BookCover(
             contentAlignment = Alignment.BottomCenter
         ) {
             Image(
-                painter = painterResource(id = randomImage.value.first),
+                painter = painterResource(id = imageRes),
                 contentDescription = work.title?.hi,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -480,7 +482,7 @@ fun BookCover(
                             textAlign = TextAlign.Center,
                             fontSize = 20.sp,
                         ),
-                        color = randomImage.value.second,
+                        color = textColor,
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -489,7 +491,7 @@ fun BookCover(
                     Text(
                         text = "By Sanatan Dharam",
                         fontSize = 8.sp,
-                        color = randomImage.value.second,
+                        color = textColor,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
                     )
